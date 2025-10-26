@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Moriris Members – Videos</title>
+  <style>
+    body{font-family:system-ui;margin:16px}
+    .top{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px}
+    .card{border:1px solid #ddd;border-radius:12px;overflow:hidden}
+    .title{padding:10px 12px;font-weight:600}
+    .frame-wrap{position:relative;background:#000;aspect-ratio:16/9}
+    .overlay{
+      position:absolute;inset:0; /* クリックや右クリックのコピー抑止用 */
+      background:transparent;
+    }
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <h1>Members Videos</h1>
+    <div>
+      <span id="user"></span>
+      <button id="logout">ログアウト</button>
+    </div>
+  </div>
+
+  <div id="gate" class="hidden">
+    <p>会員ではありません。<a href="/">ログインページへ戻る</a></p>
+    <p>※ 決済連携後は入会ボタンでStripe Checkoutへ飛ばせます</p>
+  </div>
+
+  <div id="list" class="grid hidden"></div>
+
+  <script src="./js/app.js"></script>
+  <script>
+    // 右クリック/キーボードの簡易抑止（絶対防げるわけではありません）
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey||e.metaKey) && ['s','u','p','c'].includes(e.key.toLowerCase())) e.preventDefault();
+      if (e.key === 'F12') e.preventDefault();
+    });
+
+    (async () => {
+      const { data: { user } } = await sb.auth.getUser();
+      if(!user){ location.replace('/'); return; }
+      document.getElementById('user').textContent = user.email || '';
+
+      // 会員（is_active）チェック
+      const { data: profile, error: pe } = await sb
+        .from('profiles')
+        .select('is_active')
+        .eq('id', user.id)
+        .single();
+
+      if (pe || !profile?.is_active) {
+        document.getElementById('gate').classList.remove('hidden');
+        return;
+      }
+
+      // 動画リスト取得
+      const { data: videos, error } = await sb
+        .from('member_videos')
+        .select('id,title,yt_id')
+        .eq('published', true)
+        .order('id', { ascending: false });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      const list = document.getElementById('list');
+      list.classList.remove('hidden');
+      list.innerHTML = '';
+
+      for (const v of videos) {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        // YouTube埋め込み（プライバシー強化ドメイン + 軽いオプション）
+        const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1`;
+
+        card.innerHTML = `
+          <div class="frame-wrap">
+            <iframe
+              src="${src}"
+              title="${escapeHtml(v.title)}"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              referrerpolicy="no-referrer"
+              loading="lazy"
+              style="width:100%;height:100%;position:absolute;inset:0;">
+            </iframe>
+            <div class="overlay"></div>
+          </div>
+          <div class="title">${escapeHtml(v.title)}</div>
+        `;
+        list.appendChild(card);
+      }
+
+      document.getElementById('logout').onclick = async () => {
+        await sb.auth.signOut();
+        location.replace('/');
+      };
+    })();
+
+    function escapeHtml(s){
+      return s?.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) || '';
+    }
+  </script>
+</body>
+</html>
