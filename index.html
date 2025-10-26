@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Moriris Members – Login</title>
+  <link rel="canonical" href="https://member.moriris.com/" />
+  <style>
+    body{font-family:system-ui;margin:24px}
+    .card{max-width:480px;margin:auto;padding:20px;border:1px solid #ddd;border-radius:12px}
+    input,button{padding:10px;font-size:16px}
+    input{width:100%;margin:6px 0 12px}
+    button{cursor:pointer}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Moriris Members</h1>
+    <p>メールアドレスを入力してログイン（Magic Link）</p>
+    <input id="email" type="email" placeholder="your@email.com" />
+    <button id="login">メールを送る</button>
+    <p id="msg"></p>
+    <hr>
+    <button id="to-members">会員ページへ</button>
+  </div>
+
+  <script src="./js/app.js"></script>
+  <script>
+    const msg = document.getElementById('msg');
+    document.getElementById('login').onclick = async () => {
+      const email = document.getElementById('email').value.trim();
+      if(!email){ msg.textContent = "メールを入力してください"; return; }
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: { emailRedirectTo: location.origin + "/members.html" }
+      });
+      msg.textContent = error ? error.message : "メールを確認してください。";
+    };
+
+    document.getElementById('to-members').onclick = () => location.href = '/members.html';
+  </script>
+</body>
+</html>
