@@ -136,9 +136,11 @@
         if (!user) user = (await sb.auth.getSession()).data.session?.user || null;
         log('user', user);
 
+        // user取得の最後
         if (!user) {
-          $("#status").textContent = t().checking;
-          setTimeout(()=>{ if(!debug) location.replace('./'); }, 300);
+          // メッセージを出して 0.5秒後にログインへ
+          $("#status").textContent = I18N[document.documentElement.lang].notLogged || "Not logged in.";
+          setTimeout(()=> location.replace('./'), 500);
           return;
         }
 
