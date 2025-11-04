@@ -11,10 +11,7 @@
     .card{border:1px solid #ddd;border-radius:12px;overflow:hidden}
     .title{padding:10px 12px;font-weight:600}
     .frame-wrap{position:relative;background:#000;aspect-ratio:16/9}
-    .overlay{
-      position:absolute;inset:0; /* クリックや右クリックのコピー抑止用 */
-      background:transparent;
-    }
+    .overlay{position:absolute;inset:0;background:transparent}
     .hidden{display:none}
   </style>
 </head>
@@ -34,9 +31,19 @@
 
   <div id="list" class="grid hidden"></div>
 
-  <script src="./js/app.js"></script>
+  <!-- 1) Supabase ライブラリ -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- 2) Supabase初期化（このページ内に埋め込み） -->
   <script>
-    // 右クリック/キーボードの簡易抑止（絶対防げるわけではありません）
+    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+    window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  </script>
+
+  <!-- 3) 会員チェック & 動画一覧表示 -->
+  <script>
+    // 右クリック/キーボードの簡易抑止（完全防止ではありません）
     document.addEventListener('contextmenu', e => e.preventDefault());
     document.addEventListener('keydown', e => {
       if ((e.ctrlKey||e.metaKey) && ['s','u','p','c'].includes(e.key.toLowerCase())) e.preventDefault();
@@ -44,68 +51,69 @@
     });
 
     (async () => {
-      const { data: { user } } = await sb.auth.getUser();
-      if(!user){ location.replace('/'); return; }
-      document.getElementById('user').textContent = user.email || '';
+      try {
+        // ログイン確認
+        const { data: { user } } = await sb.auth.getUser();
+        if (!user) { location.replace('/'); return; }
+        document.getElementById('user').textContent = user.email || '';
 
-      // 会員（is_active）チェック
-      const { data: profile, error: pe } = await sb
-        .from('profiles')
-        .select('is_active')
-        .eq('id', user.id)
-        .single();
+        // 会員（is_active）チェック
+        const { data: profile, error: pe } = await sb
+          .from('profiles')
+          .select('is_active')
+          .eq('id', user.id)
+          .single();
 
-      if (pe || !profile?.is_active) {
-        document.getElementById('gate').classList.remove('hidden');
-        return;
+        if (pe || !profile?.is_active) {
+          document.getElementById('gate').classList.remove('hidden');
+          return;
+        }
+
+        // 動画リスト取得
+        const { data: videos, error } = await sb
+          .from('member_videos')
+          .select('id,title,yt_id')
+          .eq('published', true)
+          .order('id', { ascending: false });
+
+        if (error) { console.error(error); alert('読み込みに失敗しました'); return; }
+
+        const list = document.getElementById('list');
+        list.classList.remove('hidden');
+        list.innerHTML = '';
+
+        for (const v of videos) {
+          const card = document.createElement('div');
+          card.className = 'card';
+          const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1`;
+
+          card.innerHTML = `
+            <div class="frame-wrap">
+              <iframe
+                src="${src}"
+                title="${escapeHtml(v.title)}"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+                referrerpolicy="no-referrer"
+                loading="lazy"
+                style="width:100%;height:100%;position:absolute;inset:0;">
+              </iframe>
+              <div class="overlay"></div>
+            </div>
+            <div class="title">${escapeHtml(v.title)}</div>
+          `;
+          list.appendChild(card);
+        }
+
+        document.getElementById('logout').onclick = async () => {
+          await sb.auth.signOut();
+          location.replace('/');
+        };
+      } catch (e) {
+        console.error(e);
+        alert('エラーが発生しました。再読み込みしてください。');
       }
-
-      // 動画リスト取得
-      const { data: videos, error } = await sb
-        .from('member_videos')
-        .select('id,title,yt_id')
-        .eq('published', true)
-        .order('id', { ascending: false });
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      const list = document.getElementById('list');
-      list.classList.remove('hidden');
-      list.innerHTML = '';
-
-      for (const v of videos) {
-        const card = document.createElement('div');
-        card.className = 'card';
-
-        // YouTube埋め込み（プライバシー強化ドメイン + 軽いオプション）
-        const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1`;
-
-        card.innerHTML = `
-          <div class="frame-wrap">
-            <iframe
-              src="${src}"
-              title="${escapeHtml(v.title)}"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen
-              referrerpolicy="no-referrer"
-              loading="lazy"
-              style="width:100%;height:100%;position:absolute;inset:0;">
-            </iframe>
-            <div class="overlay"></div>
-          </div>
-          <div class="title">${escapeHtml(v.title)}</div>
-        `;
-        list.appendChild(card);
-      }
-
-      document.getElementById('logout').onclick = async () => {
-        await sb.auth.signOut();
-        location.replace('/');
-      };
     })();
 
     function escapeHtml(s){
