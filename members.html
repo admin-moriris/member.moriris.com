@@ -55,46 +55,39 @@
     // 右クリック抑止（任意）
     document.addEventListener('contextmenu', e => e.preventDefault());
 
-    const sleep = ms => new Promise(r => setTimeout(r, ms));
-    async function getUserWithRetry(max=40, interval=150){
-      for (let i=0;i<max;i++){
-        const s = await sb.auth.getSession();
-        log('session', s);
-        if (s?.data?.session?.user) return s.data.session.user;
-        const u = await sb.auth.getUser();
-        log('getUser', u);
-        if (u?.data?.user) return u.data.user;
-        await sleep(interval);
-      }
-      return null;
-    }
-
     (async () => {
       try {
         const status = $('#status');
 
-        // 1) ユーザー取得（初期化待ち込み）
-        const user = await getUserWithRetry();
+        // ① リダイレクトで渡ってきたトークンをセッション化（?code= または #access_token=）
+        // これを最初にやらないと session が永遠に null のままになります
+        try { await sb.auth.exchangeCodeForSession(window.location.href); } catch(_) {}
+
+        // ② ユーザー取得（初期化済みのはず）
+        let { data: { user } } = await sb.auth.getUser();
+        log('getUser(1)', { user });
+        if (!user) {
+          const s = await sb.auth.getSession();
+          log('getSession', s);
+          user = s?.data?.session?.user || null;
+        }
+
         if (!user) {
           status.textContent = '未ログインです。';
-          log('redirect', 'no user -> login');
-          if (!debug) location.replace('./'); // デバッグ時は戻さない
+          if (!debug) location.replace('./'); // debug=1 の時は止めて中身を見せる
           return;
         }
+
         $('#user').textContent = user.email || '';
         status.textContent = '会員ステータス確認中…';
 
-        // 2) プロフィール
+        // ③ 会員（is_active）チェック
         const prof = await sb.from('profiles').select('is_active').eq('id', user.id).single();
         log('profile', prof);
         if (prof.error) { status.textContent = 'プロフィール取得エラー'; return; }
-        if (!prof.data?.is_active) {
-          status.textContent = '';
-          $('#gate').classList.remove('hidden');
-          return;
-        }
+        if (!prof.data?.is_active) { status.textContent=''; $('#gate').classList.remove('hidden'); return; }
 
-        // 3) 動画
+        // ④ 動画取得
         status.textContent = '動画を読み込み中…';
         const vids = await sb.from('member_videos')
           .select('id,title,yt_id')
@@ -116,7 +109,7 @@
               </iframe>
               <div class="overlay"></div>
             </div>
-            <div class="title">${v.title}</div>
+            <div class="title">${escapeHtml(v.title)}</div>
           </div>
         `).join('');
 
@@ -124,10 +117,15 @@
         $('#logout').onclick = async () => { await sb.auth.signOut(); location.replace('./'); };
 
       } catch (e) {
+        console.error(e);
         $('#status').textContent = '予期せぬエラー';
         log('exception', String(e));
       }
     })();
+
+    function escapeHtml(s){
+      return s?.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) || '';
+    }
   </script>
 </body>
 </html>
