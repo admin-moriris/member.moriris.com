@@ -1,130 +1,229 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Moriris Members – Login</title>
-  <link rel="canonical" href="https://member.moriris.com/" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Moriris Members – Videos</title>
   <style>
     :root{
       --bg:#faf8f4; --panel:#ffffff; --ink:#1d1b16; --muted:#6b6964;
-      --accent:#75c29c; /* 柔らかいグリーン */
-      --radius:16px; --shadow:0 6px 24px rgba(0,0,0,.06);
+      --accent:#75c29c; --radius:16px; --shadow:0 6px 24px rgba(0,0,0,.06);
     }
     *{box-sizing:border-box}
     body{font-family:system-ui, -apple-system, "Segoe UI", Roboto; margin:0; background:var(--bg); color:var(--ink)}
-    .wrap{max-width:920px;margin:48px auto;padding:0 20px}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+    .wrap{max-width:1100px;margin:48px auto;padding:0 20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
     .brand{display:flex;align-items:center;gap:12px}
-    .brand h1{font-size:22px;margin:0}
-    .lang{display:flex;gap:8px}
-    .lang button{border:1px solid #ddd;background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer}
-    .lang .active{border-color:var(--accent); color:#0b5130}
-    .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
-    .lead{color:var(--muted);margin:6px 0 18px}
-    .row{display:flex;gap:16px;flex-wrap:wrap}
-    input,button{padding:12px 14px;font-size:16px;border-radius:12px;border:1px solid #ddd}
-    input{flex:1;min-width:240px}
+    .brand h1{margin:0;font-size:30px}
+    .userbar{display:flex;align-items:center;gap:12px}
+    .pill{border:1px solid #ddd;background:#fff;border-radius:999px;padding:6px 12px}
+    button{cursor:pointer;border-radius:12px;border:1px solid #ddd;padding:8px 12px;background:#fff}
     button.primary{background:var(--accent);color:#05361f;border-color:transparent}
-    button.ghost{background:#fff}
-    #msg{margin-top:12px;color:var(--muted)}
-    footer{margin-top:28px;color:var(--muted);font-size:14px}
-    a{color:#0d6b45}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:8px}
+    .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .title{padding:12px 14px;font-weight:600}
+    .frame-wrap{position:relative;background:#000;aspect-ratio:16/9}
+    .overlay{position:absolute;inset:0;background:transparent}
+    .hidden{display:none}
+    .muted{color:var(--muted)}
+    .banner{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:12px}
+    .lang{display:flex;gap:8px}
+    pre#dbg{white-space:pre-wrap;background:#f6f6f6;border:1px solid #eee;padding:12px;border-radius:8px}
+
+    /* 追加: セクション見出しとプランバッジ */
+    .section-title{margin:20px 4px 8px;font-weight:700;opacity:.9}
+    .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin-left:8px}
+    .badge.std{background:#e8f6ef;color:#0b5130}
+    .badge.pro{background:#ffe9b8;color:#5c3b00}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div class="brand">
-        <img src="https://official.moriris.com/assets/favicon-192.png" alt="" width="32" height="32" style="border-radius:8px"/>
-        <h1 id="t_title">Moriris Members</h1>
+        <img src="https://official.moriris.com/assets/favicon-192.png" alt="" width="36" height="36" style="border-radius:10px"/>
+        <h1 id="t_heading">Members Videos</h1>
       </div>
-      <div class="lang">
-        <button id="btn-ja" class="active">日本語</button>
-        <button id="btn-en">English</button>
+      <div class="userbar">
+        <div class="lang">
+          <button id="btn-ja" class="pill">日本語</button>
+          <button id="btn-en" class="pill">English</button>
+        </div>
+        <span id="user" class="pill"></span>
+        <button id="logout">Logout</button>
       </div>
     </header>
 
-    <div class="card">
-      <p class="lead" id="t_lead">メールアドレスを入力してログイン（マジックリンク）</p>
-      <div class="row">
-        <input id="email" type="email" placeholder="you@example.com" aria-label="email"/>
-        <button id="login" class="primary">メールを送る</button>
-        <button id="to-members" class="ghost">会員ページへ</button>
-      </div>
-      <p id="msg"></p>
+    <div id="status" class="muted banner">Checking your session…</div>
+
+    <div id="gate" class="hidden banner">
+      <p id="t_notmember">You are not a member yet.</p>
+      <p class="muted" id="t_contact">If this is a mistake, please contact us.</p>
+      <a href="./" id="t_back">Back to login</a>
     </div>
 
-    <footer>
-      <span id="t_note">メールが届かない場合は迷惑メールをご確認ください。</span>
-    </footer>
+    <!-- プラン別リストをここに描画 -->
+    <div id="list" class="grid hidden" aria-live="polite"></div>
+
+    <!-- デバッグ出力（必要時） -->
+    <pre id="dbg" class="hidden"></pre>
   </div>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // ---- Supabase init (同じプロジェクトを members.html と共有) ----
+    // ==== Supabase init（index.html と同じプロジェクトを使用）====
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true }
     });
 
-    // ---- i18n ----
-    const i18n = {
-      ja:{
-        title:"Moriris Members",
-        lead:"メールアドレスを入力してログイン（マジックリンク）",
-        send:"メールを送る",
-        goto:"会員ページへ",
-        hint:"メールが届かない場合は迷惑メールをご確認ください。"
-      },
-      en:{
-        title:"Moriris Members",
-        lead:"Sign in with your email (magic link).",
-        send:"Send link",
-        goto:"Go to Members",
-        hint:"If you don't see the email, please check your spam folder."
-      }
+    // ==== i18n ====
+    const I18N = {
+      ja:{ heading:"Members Videos", checking:"ログイン状態を確認しています…",
+           notmember:"会員ではありません。", contact:"誤りと思われる場合はお問い合わせください。",
+           back:"ログインに戻る", logout:"ログアウト",
+           std:"スタンダード", pro:"プレミアム", loading:"動画を読み込み中…", loadErr:"読み込みエラー" },
+      en:{ heading:"Members Videos", checking:"Checking your session…",
+           notmember:"You are not a member.", contact:"If this seems wrong, please contact us.",
+           back:"Back to login", logout:"Logout",
+           std:"Standard", pro:"Premium", loading:"Loading videos…", loadErr:"Load error" }
     };
     const $ = s => document.querySelector(s);
+    const langParam = new URL(location.href).searchParams.get('lang');
     const langKey = "moriris_lang";
 
     function setLang(lang){
       localStorage.setItem(langKey, lang);
-      const t = i18n[lang];
-      $("#t_title").textContent = t.title;
-      $("#t_lead").textContent = t.lead;
-      $("#login").textContent = t.send;
-      $("#to-members").textContent = t.goto;
-      $("#t_note").textContent = t.hint;
-      $("#btn-ja").classList.toggle("active", lang==="ja");
-      $("#btn-en").classList.toggle("active", lang==="en");
+      const t = I18N[lang];
+      $("#t_heading").textContent = t.heading;
+      $("#status").textContent = t.checking;
+      $("#t_notmember").textContent = t.notmember;
+      $("#t_contact").textContent = t.contact;
+      $("#t_back").textContent = t.back;
+      $("#logout").textContent = t.logout;
       document.documentElement.lang = lang;
     }
-    $("#btn-ja").onclick=()=>setLang("ja");
-    $("#btn-en").onclick=()=>setLang("en");
-    setLang(localStorage.getItem(langKey) || (navigator.language||"ja").startsWith("ja")?"ja":"en");
+    $("#btn-ja").onclick = ()=>setLang("ja");
+    $("#btn-en").onclick = ()=>setLang("en");
+    setLang(langParam || localStorage.getItem(langKey) || (navigator.language||"ja").startsWith("ja")?"ja":"en");
 
-    // 既にログインしていればメンバーズへ
-    sb.auth.getSession().then(({data})=>{
-      if (data.session) location.replace(`./members.html?lang=${localStorage.getItem(langKey)||"ja"}`);
+    // ==== デバッグ表示（?debug=1） ====
+    const debug = new URL(location.href).searchParams.get('debug') === '1';
+    const log = (k,v)=>{ if(!debug) return; const el=$("#dbg"); el.classList.remove("hidden"); el.textContent+=`\n${k}: ${JSON.stringify(v,null,2)}\n`; console.log(k,v); };
+
+    // 右クリック簡易抑止（任意）
+    document.addEventListener('contextmenu', e => e.preventDefault());
+
+    function escapeHtml(s){return s?.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))||'';}
+
+    // トークン自動更新/状態変化
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT') location.replace('./');
+      if (event === 'TOKEN_REFRESHED') log('token_refreshed', { user: session?.user?.id });
     });
 
-    const msg = $("#msg");
-    $("#login").onclick = async () => {
-      msg.textContent = (localStorage.getItem(langKey)==="en")?"Sending…":"送信中…";
-      const email = $("#email").value.trim();
-      if(!email){ msg.textContent = (localStorage.getItem(langKey)==="en")?"Please enter your email.":"メールを入力してください。"; return; }
-      const lang = localStorage.getItem(langKey) || "ja";
-      const { error } = await sb.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: `https://member.moriris.com/members.html?lang=${lang}` }
-      });
-      msg.textContent = error ? `Error: ${error.message}` :
-        (lang==="en" ? "Check your inbox for a magic link." : "メールをご確認ください。");
-    };
-    $("#to-members").onclick = () => location.href = `./members.html?lang=${localStorage.getItem(langKey)||"ja"}`;
+    (async () => {
+      const t = () => I18N[document.documentElement.lang];
+
+      try {
+        // 1) リダイレクトで渡ってきたトークンをセッション化（?code= も #access_token= も可）
+        try { await sb.auth.exchangeCodeForSession(window.location.href); } catch(_) {}
+
+        // 2) ユーザー取得（少しの遅延に備える）
+        let { data: { user } } = await sb.auth.getUser();
+        if (!user) user = (await sb.auth.getSession()).data.session?.user || null;
+        log('user', user);
+
+        if (!user) {
+          $("#status").textContent = t().checking;
+          setTimeout(()=>{ if(!debug) location.replace('./'); }, 300);
+          return;
+        }
+
+        $("#user").textContent = user.email || '';
+        $("#status").textContent = t().checking;
+
+        // 3) プロフィール（is_active, tier）
+        const prof = await sb.from('profiles').select('is_active,tier').eq('id', user.id).single();
+        log('profile', prof);
+        if (prof.error) { $("#status").textContent = 'Profile error'; return; }
+        if (!prof.data?.is_active) {
+          $("#status").textContent = '';
+          $("#gate").classList.remove('hidden');
+          return;
+        }
+
+        const myTier = (prof.data.tier||'standard').toLowerCase();   // 'standard' | 'premium' | 'vip'
+        const allowed = (myTier === 'premium' || myTier === 'vip') ? ['standard','premium'] : ['standard'];
+
+        // 4) 動画取得（RLSでも制限されるが、UIでも .in で二重に制限）
+        $("#status").textContent = t().loading;
+        const vidsRes = await sb.from('member_videos')
+          .select('id,title,yt_id,tier')
+          .eq('published', true)
+          .in('tier', allowed)
+          .order('id', { ascending: false });
+
+        if (vidsRes.error) { $("#status").textContent = t().loadErr; return; }
+        const vids = vidsRes.data || [];
+        log('videos', vids);
+
+        $("#status").textContent = '';
+        const list = $("#list"); list.classList.remove('hidden'); list.innerHTML = '';
+
+        // グルーピング
+        const std = vids.filter(v => v.tier === 'standard');
+        const pro = vids.filter(v => v.tier === 'premium');
+
+        // Standard セクション
+        if (std.length){
+          const h = document.createElement('div');
+          h.className = 'section-title'; h.textContent = t().std;
+          const b = document.createElement('span'); b.className='badge std'; b.textContent=t().std;
+          h.appendChild(b); list.appendChild(h);
+          std.forEach(v => list.appendChild(renderCard(v, t())));
+        }
+
+        // Premium セクション（standard会員にはそもそも返ってこない想定）
+        if (pro.length){
+          const h = document.createElement('div');
+          h.className = 'section-title'; h.textContent = t().pro;
+          const b = document.createElement('span'); b.className='badge pro'; b.textContent=t().pro;
+          h.appendChild(b); list.appendChild(h);
+          pro.forEach(v => list.appendChild(renderCard(v, t())));
+        }
+
+        // 5) ログアウト
+        $("#logout").onclick = async () => { await sb.auth.signOut(); location.replace('./'); };
+
+        // --- helpers ---
+        function renderCard(v, tt){
+          const card = document.createElement('div');
+          card.className = 'card';
+          const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1`;
+          card.innerHTML = `
+            <div class="frame-wrap">
+              <iframe src="${src}" title="${escapeHtml(v.title)}" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
+              <div class="overlay"></div>
+            </div>
+            <div class="title">
+              ${escapeHtml(v.title)}
+              <span class="badge ${v.tier==='premium'?'pro':'std'}">${v.tier==='premium'?tt.pro:tt.std}</span>
+            </div>
+          `;
+          return card;
+        }
+
+      } catch(e){
+        console.error(e);
+        $("#status").textContent='Unexpected error';
+        log('exception', String(e));
+      }
+    })();
   </script>
 </body>
 </html>
