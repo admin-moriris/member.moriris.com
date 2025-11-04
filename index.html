@@ -32,7 +32,7 @@
       if(!email){ msg.textContent = "メールを入力してください"; return; }
       const { error } = await sb.auth.signInWithOtp({
         email,
-        options: { emailRedirectTo: location.origin + "/members.html" }
+        options: { emailRedirectTo: "https://member.moriris.com/members.html" }
       });
       msg.textContent = error ? error.message : "メールを確認してください。";
     };
