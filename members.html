@@ -14,6 +14,7 @@
     .overlay{position:absolute;inset:0;background:transparent}
     .hidden{display:none}
     .muted{color:#666}
+    pre#dbg{white-space:pre-wrap;background:#f6f6f6;border:1px solid #eee;padding:12px;border-radius:8px}
   </style>
 </head>
 <body>
@@ -26,46 +27,44 @@
   </div>
 
   <p id="status" class="muted">ログイン状態を確認しています…</p>
+  <pre id="dbg" class="hidden"></pre>
 
   <div id="gate" class="hidden">
     <p>会員ではありません。<a href="./">ログインページへ戻る</a></p>
-    <p>※ 決済連携後は入会ボタンでStripe Checkoutへ飛ばせます</p>
   </div>
 
   <div id="list" class="grid hidden"></div>
 
-  <!-- 1) Supabase ライブラリ -->
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <!-- 2) Supabase 初期化 -->
   <script>
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
-    window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true }
     });
-  </script>
 
-  <!-- 3) 会員チェック & 動画一覧 -->
-  <script>
-    // 右クリック/キーボードの簡易抑止（完全防止ではありません）
+    const debug = new URL(location.href).searchParams.get('debug') === '1';
+    const $ = s => document.querySelector(s);
+    const log = (label, v) => { if (!debug) return;
+      const el = $('#dbg'); el.classList.remove('hidden');
+      el.textContent += `\n${label}: ${JSON.stringify(v, null, 2)}\n`;
+      console.log(label, v);
+    };
+
+    // 右クリック抑止（任意）
     document.addEventListener('contextmenu', e => e.preventDefault());
-    document.addEventListener('keydown', e => {
-      if ((e.ctrlKey||e.metaKey) && ['s','u','p','c'].includes(e.key.toLowerCase())) e.preventDefault();
-      if (e.key === 'F12') e.preventDefault();
-    });
 
-    const $ = sel => document.querySelector(sel);
     const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-    async function getUserWithRetry(maxTries = 20, intervalMs = 150) {
-      // セッション初期化を待ちつつ user を取得
-      for (let i = 0; i < maxTries; i++) {
+    async function getUserWithRetry(max=40, interval=150){
+      for (let i=0;i<max;i++){
         const s = await sb.auth.getSession();
+        log('session', s);
         if (s?.data?.session?.user) return s.data.session.user;
         const u = await sb.auth.getUser();
+        log('getUser', u);
         if (u?.data?.user) return u.data.user;
-        await sleep(intervalMs);
+        await sleep(interval);
       }
       return null;
     }
@@ -74,89 +73,61 @@
       try {
         const status = $('#status');
 
-        // 1) ログイン済みか安全に確認（初期化待ち込み）
+        // 1) ユーザー取得（初期化待ち込み）
         const user = await getUserWithRetry();
         if (!user) {
-          status.textContent = '未ログインです。ログインページへ戻ります。';
-          // 直リンク対策で相対パスに
-          location.replace('./');
+          status.textContent = '未ログインです。';
+          log('redirect', 'no user -> login');
+          if (!debug) location.replace('./'); // デバッグ時は戻さない
           return;
         }
         $('#user').textContent = user.email || '';
-        status.textContent = '会員ステータスを確認中…';
+        status.textContent = '会員ステータス確認中…';
 
-        // 2) 会員（is_active）チェック
-        const { data: profile, error: pe } = await sb
-          .from('profiles')
-          .select('is_active')
-          .eq('id', user.id)
-          .single();
-
-        if (pe) {
-          console.error('profile error:', pe);
-          status.textContent = '読み込みに失敗しました。再読み込みしてください。';
-          return;
-        }
-        if (!profile?.is_active) {
+        // 2) プロフィール
+        const prof = await sb.from('profiles').select('is_active').eq('id', user.id).single();
+        log('profile', prof);
+        if (prof.error) { status.textContent = 'プロフィール取得エラー'; return; }
+        if (!prof.data?.is_active) {
           status.textContent = '';
           $('#gate').classList.remove('hidden');
           return;
         }
 
+        // 3) 動画
         status.textContent = '動画を読み込み中…';
-
-        // 3) 動画リスト取得
-        const { data: videos, error } = await sb
-          .from('member_videos')
+        const vids = await sb.from('member_videos')
           .select('id,title,yt_id')
           .eq('published', true)
           .order('id', { ascending: false });
+        log('videos', vids);
 
-        if (error) {
-          console.error('video error:', error);
-          status.textContent = '動画の読み込みに失敗しました。';
-          return;
-        }
+        if (vids.error) { status.textContent = '動画取得エラー'; return; }
 
         status.textContent = '';
-        const list = $('#list');
-        list.classList.remove('hidden');
-        list.innerHTML = videos.map(v => {
-          const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1`;
-          return `
-            <div class="card">
-              <div class="frame-wrap">
-                <iframe
-                  src="${src}"
-                  title="${escapeHtml(v.title)}"
-                  frameborder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowfullscreen
-                  referrerpolicy="no-referrer"
-                  loading="lazy"
-                  style="width:100%;height:100%;position:absolute;inset:0;">
-                </iframe>
-                <div class="overlay"></div>
-              </div>
-              <div class="title">${escapeHtml(v.title)}</div>
+        const list = $('#list'); list.classList.remove('hidden');
+        list.innerHTML = vids.data.map(v => `
+          <div class="card">
+            <div class="frame-wrap">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1"
+                title="${v.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;">
+              </iframe>
+              <div class="overlay"></div>
             </div>
-          `;
-        }).join('');
+            <div class="title">${v.title}</div>
+          </div>
+        `).join('');
+
+        // ログアウト
+        $('#logout').onclick = async () => { await sb.auth.signOut(); location.replace('./'); };
+
       } catch (e) {
-        console.error(e);
-        alert('エラーが発生しました。再読み込みしてください。');
+        $('#status').textContent = '予期せぬエラー';
+        log('exception', String(e));
       }
-
-      // ログアウト
-      $('#logout').onclick = async () => {
-        await sb.auth.signOut();
-        location.replace('./');
-      };
     })();
-
-    function escapeHtml(s){
-      return s?.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) || '';
-    }
   </script>
 </body>
 </html>
