@@ -5,127 +5,196 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Moriris Members – Videos</title>
   <style>
-    body{font-family:system-ui;margin:16px}
-    .top{display:flex;gap:8px;align-items:center;justify-content:space-between}
+    :root{
+      --bg:#faf8f4; --panel:#ffffff; --ink:#1d1b16; --muted:#6b6964;
+      --accent:#75c29c; --radius:16px; --shadow:0 6px 24px rgba(0,0,0,.06);
+    }
+    *{box-sizing:border-box}
+    body{font-family:system-ui, -apple-system, "Segoe UI", Roboto; margin:0; background:var(--bg); color:var(--ink)}
+    .wrap{max-width:1100px;margin:48px auto;padding:0 20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand h1{margin:0;font-size:30px}
+    .userbar{display:flex;align-items:center;gap:12px}
+    .pill{border:1px solid #ddd;background:#fff;border-radius:999px;padding:6px 12px}
+    button{cursor:pointer;border-radius:12px;border:1px solid #ddd;padding:8px 12px;background:#fff}
+    button.primary{background:var(--accent);color:#05361f;border-color:transparent}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px}
-    .card{border:1px solid #ddd;border-radius:12px;overflow:hidden}
-    .title{padding:10px 12px;font-weight:600}
+    .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .title{padding:12px 14px;font-weight:600}
     .frame-wrap{position:relative;background:#000;aspect-ratio:16/9}
     .overlay{position:absolute;inset:0;background:transparent}
     .hidden{display:none}
-    .muted{color:#666}
+    .muted{color:var(--muted)}
+    .banner{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:12px}
+    .lang{display:flex;gap:8px}
     pre#dbg{white-space:pre-wrap;background:#f6f6f6;border:1px solid #eee;padding:12px;border-radius:8px}
   </style>
 </head>
 <body>
-  <div class="top">
-    <h1>Members Videos</h1>
-    <div>
-      <span id="user"></span>
-      <button id="logout">ログアウト</button>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <img src="https://official.moriris.com/assets/favicon-192.png" alt="" width="36" height="36" style="border-radius:10px"/>
+        <h1 id="t_heading">Members Videos</h1>
+      </div>
+      <div class="userbar">
+        <div class="lang">
+          <button id="btn-ja" class="pill">日本語</button>
+          <button id="btn-en" class="pill">English</button>
+        </div>
+        <span id="user" class="pill"></span>
+        <button id="logout">Logout</button>
+      </div>
+    </header>
+
+    <div id="status" class="muted banner">Checking your session…</div>
+
+    <div id="gate" class="hidden banner">
+      <p id="t_notmember">You are not a member yet.</p>
+      <p class="muted" id="t_contact">If this is a mistake, please contact us.</p>
+      <a href="./" id="t_back">Back to login</a>
     </div>
+
+    <div id="list" class="grid hidden" aria-live="polite"></div>
+
+    <pre id="dbg" class="hidden"></pre>
   </div>
-
-  <p id="status" class="muted">ログイン状態を確認しています…</p>
-  <pre id="dbg" class="hidden"></pre>
-
-  <div id="gate" class="hidden">
-    <p>会員ではありません。<a href="./">ログインページへ戻る</a></p>
-  </div>
-
-  <div id="list" class="grid hidden"></div>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
+    // ---- init ----
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       auth: { persistSession: true, autoRefreshToken: true }
     });
 
-    const debug = new URL(location.href).searchParams.get('debug') === '1';
-    const $ = s => document.querySelector(s);
-    const log = (label, v) => { if (!debug) return;
-      const el = $('#dbg'); el.classList.remove('hidden');
-      el.textContent += `\n${label}: ${JSON.stringify(v, null, 2)}\n`;
-      console.log(label, v);
+    // ---- i18n ----
+    const i18n = {
+      ja:{
+        heading:"Members Videos",
+        checking:"ログイン状態を確認しています…",
+        notmember:"会員ではありません。",
+        contact:"誤りと思われる場合はお問い合わせください。",
+        back:"ログインに戻る",
+        logout:"ログアウト"
+      },
+      en:{
+        heading:"Members Videos",
+        checking:"Checking your session…",
+        notmember:"You are not a member.",
+        contact:"If this seems wrong, please contact us.",
+        back:"Back to login",
+        logout:"Logout"
+      }
     };
+    const $ = s => document.querySelector(s);
+    const langParam = new URL(location.href).searchParams.get('lang');
+    const langKey = "moriris_lang";
+    function setLang(lang){
+      localStorage.setItem(langKey, lang);
+      const t=i18n[lang];
+      $("#t_heading").textContent=t.heading;
+      $("#status").textContent=t.checking;
+      $("#t_notmember").textContent=t.notmember;
+      $("#t_contact").textContent=t.contact;
+      $("#t_back").textContent=t.back;
+      $("#logout").textContent=t.logout;
+      document.documentElement.lang = lang;
+      $("#btn-ja").classList.toggle("pill", true);
+      $("#btn-en").classList.toggle("pill", true);
+    }
+    $("#btn-ja").onclick=()=>{ setLang("ja"); };
+    $("#btn-en").onclick=()=>{ setLang("en"); };
+    setLang(langParam || localStorage.getItem(langKey) || (navigator.language||"ja").startsWith("ja")?"ja":"en");
 
-    // 右クリック抑止（任意）
+    const debug = new URL(location.href).searchParams.get('debug') === '1';
+    const log = (k,v)=>{ if(!debug) return; const el=$("#dbg"); el.classList.remove("hidden"); el.textContent+=`\n${k}: ${JSON.stringify(v,null,2)}\n`; console.log(k,v); };
+
+    // 右クリック簡易抑止（任意）
     document.addEventListener('contextmenu', e => e.preventDefault());
+
+    // ---- UI helpers ----
+    function escapeHtml(s){return s?.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))||'';}
+
+    // ---- Auth auto refresh / state change ----
+    sb.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'TOKEN_REFRESHED') {
+        log('token_refreshed', { user: session?.user?.id });
+      }
+      if (event === 'SIGNED_OUT') {
+        location.replace('./');
+      }
+    });
 
     (async () => {
       try {
-        const status = $('#status');
-
-        // ① リダイレクトで渡ってきたトークンをセッション化（?code= または #access_token=）
-        // これを最初にやらないと session が永遠に null のままになります
+        // 1) まずリダイレクトトークンをセッションに交換（?code= も #access_token= もOK）
         try { await sb.auth.exchangeCodeForSession(window.location.href); } catch(_) {}
 
-        // ② ユーザー取得（初期化済みのはず）
+        // 2) ユーザー取得
         let { data: { user } } = await sb.auth.getUser();
         log('getUser(1)', { user });
         if (!user) {
           const s = await sb.auth.getSession();
-          log('getSession', s);
           user = s?.data?.session?.user || null;
         }
+        if (!user) { $("#status").textContent = i18n[document.documentElement.lang].checking; $("#status").textContent = i18n[document.documentElement.lang].checking; }
+        if (!user) { $("#status").textContent = i18n[document.documentElement.lang].checking; }
 
         if (!user) {
-          status.textContent = '未ログインです。';
-          if (!debug) location.replace('./'); // debug=1 の時は止めて中身を見せる
+          $("#status").textContent = i18n[document.documentElement.lang].checking;
+          // 少し待ってもだめならログインに戻す
+          setTimeout(()=>{ if(!debug) location.replace('./'); }, 300);
           return;
         }
 
-        $('#user').textContent = user.email || '';
-        status.textContent = '会員ステータス確認中…';
+        $("#user").textContent = user.email || '';
+        $("#status").textContent = i18n[document.documentElement.lang].checking;
 
-        // ③ 会員（is_active）チェック
+        // 3) 会員判定
         const prof = await sb.from('profiles').select('is_active').eq('id', user.id).single();
         log('profile', prof);
-        if (prof.error) { status.textContent = 'プロフィール取得エラー'; return; }
-        if (!prof.data?.is_active) { status.textContent=''; $('#gate').classList.remove('hidden'); return; }
+        if (prof.error) { $("#status").textContent = 'Profile error'; return; }
+        if (!prof.data?.is_active) {
+          $("#status").textContent = '';
+          $("#gate").classList.remove('hidden');
+          return;
+        }
 
-        // ④ 動画取得
-        status.textContent = '動画を読み込み中…';
-        const vids = await sb.from('member_videos')
-          .select('id,title,yt_id')
-          .eq('published', true)
-          .order('id', { ascending: false });
+        // 4) リスト表示
+        $("#status").textContent = (document.documentElement.lang==="ja")?"動画を読み込み中…":"Loading videos…";
+        const vids = await sb.from('member_videos').select('id,title,yt_id').eq('published', true).order('id',{ascending:false});
         log('videos', vids);
 
-        if (vids.error) { status.textContent = '動画取得エラー'; return; }
+        if (vids.error) { $("#status").textContent = 'Load error'; return; }
 
-        status.textContent = '';
-        const list = $('#list'); list.classList.remove('hidden');
-        list.innerHTML = vids.data.map(v => `
+        $("#status").textContent = '';
+        const list = $("#list"); list.classList.remove('hidden');
+        list.innerHTML = vids.data.map(v=>{
+          const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1`;
+          return `
           <div class="card">
             <div class="frame-wrap">
-              <iframe
-                src="https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1"
-                title="${v.title}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;">
-              </iframe>
+              <iframe src="${src}" title="${escapeHtml(v.title)}" frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
               <div class="overlay"></div>
             </div>
             <div class="title">${escapeHtml(v.title)}</div>
-          </div>
-        `).join('');
+          </div>`;
+        }).join('');
 
-        // ログアウト
-        $('#logout').onclick = async () => { await sb.auth.signOut(); location.replace('./'); };
+        // 5) ログアウト
+        $("#logout").onclick = async () => { await sb.auth.signOut(); location.replace('./'); };
 
-      } catch (e) {
-        console.error(e);
-        $('#status').textContent = '予期せぬエラー';
+      } catch(e){
+        console.error(e); $("#status").textContent='Unexpected error';
         log('exception', String(e));
       }
     })();
-
-    function escapeHtml(s){
-      return s?.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])) || '';
-    }
   </script>
 </body>
 </html>
