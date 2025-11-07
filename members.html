@@ -22,204 +22,75 @@
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px}
     .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
     .title{padding:12px 14px;font-weight:600}
-    .frame-wrap{position:relative;background:#000;aspect-ratio:16/9}
-    .overlay{position:absolute;inset:0;background:transparent}
-    .hidden{display:none}
-    .muted{color:var(--muted)}
     .banner{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:12px}
-    .lang{display:flex;gap:8px}
-    pre#dbg{white-space:pre-wrap;background:#f6f6f6;border:1px solid #eee;padding:12px;border-radius:8px}
-  　.section-title{margin:20px 4px 8px;font-weight:700;opacity:.9}
-  　.badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;margin-left:8px}
-　  .badge.std{background:#e8f6ef;color:#0b5130}
-　  .badge.pro{background:#ffe9b8;color:#5c3b00}
   </style>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div class="brand">
-        <img src="https://official.moriris.com/assets/favicon-192.png" alt="" width="36" height="36" style="border-radius:10px"/>
-        <h1 id="t_heading">Members Videos</h1>
+        <img src="https://official.moriris.com/assets/favicon-192.png" width="36" height="36" style="border-radius:10px"/>
+        <h1>Members Videos</h1>
       </div>
       <div class="userbar">
-        <div class="lang">
-          <button id="btn-ja" class="pill">日本語</button>
-          <button id="btn-en" class="pill">English</button>
-        </div>
         <span id="user" class="pill"></span>
         <button id="logout">Logout</button>
       </div>
     </header>
 
-    <div id="status" class="muted banner">Checking your session…</div>
+    <div id="status" class="banner">Checking your session…</div>
 
-    <div id="gate" class="hidden banner">
-      <p id="t_notmember">You are not a member yet.</p>
-      <p class="muted" id="t_contact">If this is a mistake, please contact us.</p>
-      <a href="./" id="t_back">Back to login</a>
+    <div id="plans" class="banner">
+      <h2>Subscription Plans</h2>
+      <p class="muted">Upgrade to unlock all member videos.</p>
+      <button id="btn-standard" class="primary">Subscribe Standard Plan</button>
     </div>
 
     <div id="list" class="grid hidden" aria-live="polite"></div>
-
-    <pre id="dbg" class="hidden"></pre>
   </div>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // ==== Supabase ====
-  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true }
-  });
+  <script>
+    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{persistSession:true,autoRefreshToken:true} });
 
-  // ==== i18n（既存テキストと同じ） ====
-  const I18N = {
-    ja:{ heading:"Members Videos", checking:"ログイン状態を確認しています…",
-         notmember:"会員ではありません。", contact:"誤りと思われる場合はお問い合わせください。",
-         back:"ログインに戻る", logout:"ログアウト",
-         std:"スタンダード", pro:"プレミアム", loading:"動画を読み込み中…", loadErr:"読み込みエラー",
-         notLogged:"未ログインです。ログインページへお戻りください。" },
-    en:{ heading:"Members Videos", checking:"Checking your session…",
-         notmember:"You are not a member.", contact:"If this seems wrong, please contact us.",
-         back:"Back to login", logout:"Logout",
-         std:"Standard", pro:"Premium", loading:"Loading videos…", loadErr:"Load error",
-         notLogged:"You are not logged in. Please go back to the login page." }
-  };
-  const $ = s => document.querySelector(s);
-  const langParam = new URL(location.href).searchParams.get('lang');
-  const langKey = "moriris_lang";
-  const debug = new URL(location.href).searchParams.get('debug') === '1';
-  const log = (k,v)=>{ if(!debug) return; const el=$("#dbg"); el.classList.remove("hidden"); el.textContent+=`\n${k}: ${JSON.stringify(v,null,2)}\n`; console.log(k,v); };
+    const STRIPE_API_URL = "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session";
 
-  function setLang(lang){
-    localStorage.setItem(langKey, lang);
-    const t = I18N[lang];
-    $("#t_heading").textContent = t.heading;
-    $("#status").textContent = t.checking;
-    $("#t_notmember").textContent = t.notmember;
-    $("#t_contact").textContent = t.contact;
-    $("#t_back").textContent = t.back;
-    $("#logout").textContent = t.logout;
-    document.documentElement.lang = lang;
-  }
-  $("#btn-ja").onclick = ()=>setLang("ja");
-  $("#btn-en").onclick = ()=>setLang("en");
-  setLang(langParam || localStorage.getItem(langKey) || (navigator.language||"ja").startsWith("ja")?"ja":"en");
-  const T = () => I18N[document.documentElement.lang];
+    (async () => {
+      const { data: { user } } = await sb.auth.getUser();
+      if (!user) { document.getElementById("status").textContent = "Please log in again."; return; }
+      document.getElementById("user").textContent = user.email;
 
-  // 右クリック抑止（任意）
-  document.addEventListener('contextmenu', e => e.preventDefault());
-
-  // トークン自動更新/状態変化
-  sb.auth.onAuthStateChange((event, session) => {
-    log('auth_state', {event, hasSession: !!session});
-    if (event === 'SIGNED_OUT') location.replace('./');
-  });
-
-  // セッション復元をしっかり待つユーティリティ
-  const sleep = ms => new Promise(r=>setTimeout(r,ms));
-  async function getUserWithRetry({tries=40, interval=150}={}){
-    // リダイレクトで渡ってきたcode/hashがあれば先にセッション化
-    try { await sb.auth.exchangeCodeForSession(window.location.href); } catch(e){ log('exchange_err', String(e)); }
-    for (let i=0;i<tries;i++){
-      let { data: { user }, error } = await sb.auth.getUser();
-      log('getUser', {iter:i, hasUser:!!user, error});
-      if (user) return user;
-      const s = await sb.auth.getSession();
-      log('getSession', {iter:i, hasSession:!!s?.data?.session});
-      if (s?.data?.session?.user) return s.data.session.user;
-      await sleep(interval);
-    }
-    return null;
-  }
-
-  function escapeHtml(s){return s?.replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))||'';}
-
-  (async () => {
-    try {
-      $("#status").textContent = T().checking;
-
-      // 1) しっかり復元を待つ（最大 ~6 秒）
-      const user = await getUserWithRetry();
-      if (!user) {
-        $("#status").textContent = T().notLogged + ' ';
-        const a = document.createElement('a'); a.href = './'; a.textContent = T().back;
-        $("#status").appendChild(a);
-        return; // ここで終了（無限ループ防止）
-      }
-
-      $("#user").textContent = user.email || '';
-      // 2) プロフィール
-      const prof = await sb.from('profiles').select('is_active,tier').eq('id', user.id).single();
-      log('profile', prof);
-      if (prof.error) { $("#status").textContent = 'Profile error'; return; }
-      if (!prof.data?.is_active) { $("#status").textContent=''; $("#gate").classList.remove('hidden'); return; }
-
-      const myTier = (prof.data.tier||'standard').toLowerCase();   // 'standard' | 'premium' | 'vip'
-      const allowed = (myTier === 'premium' || myTier === 'vip') ? ['standard','premium'] : ['standard'];
-
-      // 3) 動画
-      $("#status").textContent = T().loading;
-      const vidsRes = await sb.from('member_videos')
-        .select('id,title,yt_id,tier')
-        .eq('published', true)
-        .in('tier', allowed)
-        .order('id', { ascending: false });
-
-      if (vidsRes.error) { $("#status").textContent = T().loadErr; return; }
-      const vids = vidsRes.data || [];
-      log('videos', vids);
-
-      $("#status").textContent = '';
-      const list = $("#list"); list.classList.remove('hidden'); list.innerHTML = '';
-
-      const std = vids.filter(v => v.tier === 'standard');
-      const pro = vids.filter(v => v.tier === 'premium');
-
-      // セクション描画
-      renderSection(std, T().std, 'std');
-      renderSection(pro, T().pro, 'pro');
+      // プラン購入ボタン
+      document.getElementById("btn-standard").onclick = async () => {
+        try {
+          document.getElementById("status").textContent = "Redirecting to Stripe…";
+          const res = await fetch(STRIPE_API_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              user_id: user.id,
+              price_id: "price_1SQPclQt8oBthclHuQnAy8rN",
+              success_url: "https://member.moriris.com/members.html",
+              cancel_url: "https://member.moriris.com/members.html"
+            }),
+          });
+          if (!res.ok) throw new Error(await res.text());
+          const data = await res.json();
+          window.location.href = data.url;
+        } catch (e) {
+          alert("Error: " + e.message);
+        }
+      };
 
       // ログアウト
-      $("#logout").onclick = async () => { await sb.auth.signOut(); location.replace('./'); };
-
-      function renderSection(items, title, badgeClass){
-        if (!items.length) return;
-        const h = document.createElement('div');
-        h.className = 'section-title';
-        h.textContent = title;
-        const b = document.createElement('span'); b.className=`badge ${badgeClass}`; b.textContent=title;
-        h.appendChild(b); list.appendChild(h);
-        items.forEach(v => list.appendChild(renderCard(v, title, badgeClass)));
-      }
-
-      function renderCard(v, label, badgeClass){
-        const card = document.createElement('div');
-        card.className = 'card';
-        const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1&controls=1`;
-        card.innerHTML = `
-          <div class="frame-wrap">
-            <iframe src="${src}" title="${escapeHtml(v.title)}" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
-            <div class="overlay"></div>
-          </div>
-          <div class="title">
-            ${escapeHtml(v.title)}
-            <span class="badge ${badgeClass}">${label}</span>
-          </div>
-        `;
-        return card;
-      }
-    } catch (e) {
-      console.error(e);
-      $("#status").textContent = 'Unexpected error';
-      log('exception', String(e));
-    }
-  })();
-</script>
+      document.getElementById("logout").onclick = async () => {
+        await sb.auth.signOut();
+        location.replace("./");
+      };
+    })();
+  </script>
 </body>
 </html>
