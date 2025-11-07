@@ -23,6 +23,9 @@
     .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
     .title{padding:12px 14px;font-weight:600}
     .banner{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:12px}
+    .muted{color:var(--muted)}
+    .hidden{display:none}
+    iframe{width:100%;height:100%;border:0}
   </style>
 </head>
 <body>
@@ -40,12 +43,14 @@
 
     <div id="status" class="banner">Checking your session…</div>
 
-    <div id="plans" class="banner">
+    <!-- 未会員向け案内 -->
+    <div id="plans" class="banner hidden">
       <h2>Subscription Plans</h2>
       <p class="muted">Upgrade to unlock all member videos.</p>
       <button id="btn-standard" class="primary">Subscribe Standard Plan</button>
     </div>
 
+    <!-- 動画一覧 -->
     <div id="list" class="grid hidden" aria-live="polite"></div>
   </div>
 
@@ -53,26 +58,54 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+    const STRIPE_API_URL = "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{persistSession:true,autoRefreshToken:true} });
 
-    const STRIPE_API_URL = "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session";
+    const $ = s => document.querySelector(s);
 
     (async () => {
       const { data: { user } } = await sb.auth.getUser();
-      if (!user) { document.getElementById("status").textContent = "Please log in again."; return; }
-      document.getElementById("user").textContent = user.email;
+      if (!user) {
+        $("#status").textContent = "Please log in again.";
+        return;
+      }
 
-      // プラン購入ボタン
-      document.getElementById("btn-standard").onclick = async () => {
+      $("#user").textContent = user.email;
+
+      // 🔹 プロフィール情報を取得
+      const { data: prof, error } = await sb
+        .from("profiles")
+        .select("is_active, tier")
+        .eq("id", user.id)
+        .single();
+
+      if (error) {
+        console.error(error);
+        $("#status").textContent = "Profile not found.";
+        return;
+      }
+
+      // 🔹 tier 判定
+      if (!prof.is_active || !prof.tier) {
+        $("#status").textContent = "You are not an active member.";
+        $("#plans").classList.remove("hidden");
+      } else {
+        $("#status").textContent = "Welcome back! Your plan: " + prof.tier;
+        $("#list").classList.remove("hidden");
+        loadVideos(prof.tier);
+      }
+
+      // 🔹 Stripe チェックアウト起動
+      $("#btn-standard").onclick = async () => {
         try {
-          document.getElementById("status").textContent = "Redirecting to Stripe…";
+          $("#status").textContent = "Redirecting to Stripe…";
           const res = await fetch(STRIPE_API_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               user_id: user.id,
-              price_id: "price_1SQPclQt8oBthclHuQnAy8rN",
+              price_id: "price_1SQPclQt8oBthclHuQnAy8rN", // ← StripeプランID
               success_url: "https://member.moriris.com/members.html",
               cancel_url: "https://member.moriris.com/members.html"
             }),
@@ -81,16 +114,56 @@
           const data = await res.json();
           window.location.href = data.url;
         } catch (e) {
-          alert("Error: " + e.message);
+          console.error(e);
+          $("#status").textContent = "Error: " + e.message;
         }
       };
 
-      // ログアウト
-      document.getElementById("logout").onclick = async () => {
+      // 🔹 ログアウト
+      $("#logout").onclick = async () => {
         await sb.auth.signOut();
         location.replace("./");
       };
     })();
+
+    // ====== 動画ロード関数 ======
+    async function loadVideos(tier){
+      try {
+        $("#status").textContent = "Loading videos…";
+
+        const tiersAllowed = (tier === "premium" || tier === "vip")
+          ? ["standard","premium"]
+          : ["standard"];
+
+        const { data: videos, error } = await sb
+          .from("member_videos")
+          .select("id,title,yt_id,tier")
+          .in("tier", tiersAllowed)
+          .eq("published", true)
+          .order("id", { ascending: false });
+
+        if (error) throw error;
+        $("#status").textContent = "";
+        const list = $("#list");
+        list.innerHTML = "";
+
+        videos.forEach(v => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <div class="frame-wrap" style="position:relative;aspect-ratio:16/9;background:#000;">
+              <iframe src="https://www.youtube-nocookie.com/embed/${v.yt_id}?rel=0&modestbranding=1&playsinline=1&controls=1"
+                      title="${v.title}" allowfullscreen loading="lazy"></iframe>
+            </div>
+            <div class="title">${v.title} <span class="muted">(${v.tier})</span></div>
+          `;
+          list.appendChild(card);
+        });
+      } catch (e) {
+        console.error(e);
+        $("#status").textContent = "Failed to load videos.";
+      }
+    }
   </script>
 </body>
 </html>
