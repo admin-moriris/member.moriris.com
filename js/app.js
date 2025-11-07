@@ -1,8 +1,21 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  // ★ここをSupabaseの自分の値に置き換え
-  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+// 例：ブラウザ or FlutterFlow の fetch 呼び出し
+const { data: { user } } = await supabase.auth.getUser();
 
-  window.sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-</script>
+const response = await fetch(
+  "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
+  {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      user_id: user.id, // ✅ これがmetadata.user_idになる
+      price_id: "price_1SQPclQt8oBthclHuQnAy8rN", // あなたのStripeプランID
+      success_url: "https://official.moriris.com/success",
+      cancel_url: "https://official.moriris.com/cancel",
+    }),
+  }
+);
+
+const data = await response.json();
+
+// StripeのCheckoutページへリダイレクト
+window.location.href = data.url;
