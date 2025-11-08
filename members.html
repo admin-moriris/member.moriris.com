@@ -1,169 +1,44 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Moriris Members – Videos</title>
-  <style>
-    :root{
-      --bg:#faf8f4; --panel:#ffffff; --ink:#1d1b16; --muted:#6b6964;
-      --accent:#75c29c; --radius:16px; --shadow:0 6px 24px rgba(0,0,0,.06);
-    }
-    *{box-sizing:border-box}
-    body{font-family:system-ui, -apple-system, "Segoe UI", Roboto; margin:0; background:var(--bg); color:var(--ink)}
-    .wrap{max-width:1100px;margin:48px auto;padding:0 20px}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand h1{margin:0;font-size:30px}
-    .userbar{display:flex;align-items:center;gap:12px}
-    .pill{border:1px solid #ddd;background:#fff;border-radius:999px;padding:6px 12px}
-    button{cursor:pointer;border-radius:12px;border:1px solid #ddd;padding:8px 12px;background:#fff}
-    button.primary{background:var(--accent);color:#05361f;border-color:transparent}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px}
-    .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .title{padding:12px 14px;font-weight:600}
-    .banner{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:12px}
-    .muted{color:var(--muted)}
-    .hidden{display:none}
-    iframe{width:100%;height:100%;border:0}
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="./js/app.js"></script>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <div class="brand">
-        <img src="https://official.moriris.com/assets/favicon-192.png" width="36" height="36" style="border-radius:10px"/>
-        <h1>Members Videos</h1>
-      </div>
-      <div class="userbar">
-        <span id="user" class="pill"></span>
-        <button id="logout">Logout</button>
-      </div>
-    </header>
+  <h1>Members Videos</h1>
+  <p id="status">Checking your session...</p>
 
-    <div id="status" class="banner">Checking your session…</div>
+  <section id="plans">
+    <h2>Subscription Plans</h2>
+    <p>Upgrade to unlock all member videos.</p>
+    <button onclick="subscribeStandard()">Subscribe Standard Plan</button>
+  </section>
 
-    <!-- 未会員向け案内 -->
-    <div id="plans" class="banner hidden">
-      <h2>Subscription Plans</h2>
-      <p class="muted">Upgrade to unlock all member videos.</p>
-      <button id="btn-standard" class="primary">Subscribe Standard Plan</button>
-    </div>
-
-    <!-- 動画一覧 -->
-    <div id="list" class="grid hidden" aria-live="polite"></div>
-  </div>
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
-    const STRIPE_API_URL = "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session";
-    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, { auth:{persistSession:true,autoRefreshToken:true} });
-
-    const $ = s => document.querySelector(s);
-
-    (async () => {
+    const check = async () => {
       const { data: { user } } = await sb.auth.getUser();
       if (!user) {
-        $("#status").textContent = "Please log in again.";
+        document.getElementById("status").textContent = "ログインしていません。";
         return;
       }
 
-      $("#user").textContent = user.email;
-
-      // 🔹 プロフィール情報を取得
-      const { data: prof, error } = await sb
-        .from("profiles")
-        .select("is_active, tier")
-        .eq("id", user.id)
-        .single();
-
+      const { data, error } = await sb.from("profiles").select("*").eq("id", user.id).single();
       if (error) {
-        console.error(error);
-        $("#status").textContent = "Profile not found.";
+        document.getElementById("status").textContent = "Profile error.";
         return;
       }
 
-      // 🔹 tier 判定
-      if (!prof.is_active || !prof.tier) {
-        $("#status").textContent = "You are not an active member.";
-        $("#plans").classList.remove("hidden");
+      if (data.is_active) {
+        document.getElementById("status").textContent = "ようこそ、会員ページへ。";
+        document.getElementById("plans").style.display = "none";
       } else {
-        $("#status").textContent = "Welcome back! Your plan: " + prof.tier;
-        $("#list").classList.remove("hidden");
-        loadVideos(prof.tier);
+        document.getElementById("status").textContent = "未購読です。";
       }
-
-      // 🔹 Stripe チェックアウト起動
-      $("#btn-standard").onclick = async () => {
-        try {
-          $("#status").textContent = "Redirecting to Stripe…";
-          const res = await fetch(STRIPE_API_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              user_id: user.id,
-              price_id: "price_1SQPclQt8oBthclHuQnAy8rN", // ← StripeプランID
-              success_url: "https://member.moriris.com/members.html",
-              cancel_url: "https://member.moriris.com/members.html"
-            }),
-          });
-          if (!res.ok) throw new Error(await res.text());
-          const data = await res.json();
-          window.location.href = data.url;
-        } catch (e) {
-          console.error(e);
-          $("#status").textContent = "Error: " + e.message;
-        }
-      };
-
-      // 🔹 ログアウト
-      $("#logout").onclick = async () => {
-        await sb.auth.signOut();
-        location.replace("./");
-      };
-    })();
-
-    // ====== 動画ロード関数 ======
-    async function loadVideos(tier){
-      try {
-        $("#status").textContent = "Loading videos…";
-
-        const tiersAllowed = (tier === "premium" || tier === "vip")
-          ? ["standard","premium"]
-          : ["standard"];
-
-        const { data: videos, error } = await sb
-          .from("member_videos")
-          .select("id,title,yt_id,tier")
-          .in("tier", tiersAllowed)
-          .eq("published", true)
-          .order("id", { ascending: false });
-
-        if (error) throw error;
-        $("#status").textContent = "";
-        const list = $("#list");
-        list.innerHTML = "";
-
-        videos.forEach(v => {
-          const card = document.createElement("div");
-          card.className = "card";
-          card.innerHTML = `
-            <div class="frame-wrap" style="position:relative;aspect-ratio:16/9;background:#000;">
-              <iframe src="https://www.youtube-nocookie.com/embed/${v.yt_id}?rel=0&modestbranding=1&playsinline=1&controls=1"
-                      title="${v.title}" allowfullscreen loading="lazy"></iframe>
-            </div>
-            <div class="title">${v.title} <span class="muted">(${v.tier})</span></div>
-          `;
-          list.appendChild(card);
-        });
-      } catch (e) {
-        console.error(e);
-        $("#status").textContent = "Failed to load videos.";
-      }
-    }
+    };
+    check();
   </script>
 </body>
 </html>
