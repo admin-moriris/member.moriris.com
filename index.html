@@ -4,31 +4,51 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Moriris Members – Login</title>
-  <link rel="canonical" href="https://member.moriris.com/" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="./js/app.js"></script>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto;margin:24px}
+    .row{display:flex;gap:8px;flex-wrap:wrap}
+    input,button{font-size:16px;padding:10px 12px;border:1px solid #ddd;border-radius:10px}
+    button{cursor:pointer}
+    #msg{margin-top:10px;color:#555}
+  </style>
 </head>
 <body>
   <h1>Moriris Members</h1>
-  <input id="email" type="email" placeholder="you@example.com" />
-  <button id="login">メール送信</button>
-  <button id="to-members">会員ページへ</button>
 
-  <script>
-    const msg = document.createElement("p");
-    document.body.appendChild(msg);
+  <div class="row">
+    <input id="email" type="email" placeholder="you@example.com" />
+    <button id="send">メール送信</button>
+    <button id="to-members">会員ページへ</button>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button id="reset">セッションをリセット</button>
+  </div>
+  <p id="msg"></p>
 
-    document.getElementById("login").onclick = async () => {
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- App utils -->
+  <script type="module">
+    import { sb, setMsg, sendMagicLink, goMembers, resetSession } from "/js/app.js";
+
+    // 言語はローカル保存(ASCIIのみ)
+    const LANG_KEY = "moriris_lang";
+    const lang = localStorage.getItem(LANG_KEY) || ((navigator.language||"ja").startsWith("ja") ? "ja" : "en");
+    localStorage.setItem(LANG_KEY, lang);
+
+    document.getElementById("send").onclick = async () => {
       const email = document.getElementById("email").value.trim();
-      const { error } = await sb.auth.signInWithOtp({
-        email,
-        options: { emailRedirectTo: "https://member.moriris.com/members.html" },
-      });
-      msg.textContent = error ? "Error: " + error.message : "メールを確認してください。";
+      if (!email){ setMsg("メールを入力してください"); return; }
+      setMsg("送信中…");
+      const error = await sendMagicLink(email, `https://member.moriris.com/members.html?lang=${lang}`);
+      setMsg(error ? `Error: ${error.message}` : "メールをご確認ください。");
     };
 
-    document.getElementById("to-members").onclick = () => {
-      location.href = "./members.html";
+    document.getElementById("to-members").onclick = () => goMembers(lang);
+
+    document.getElementById("reset").onclick = async () => {
+      await resetSession();
+      setMsg("セッションをクリアしました。");
     };
   </script>
 </body>
