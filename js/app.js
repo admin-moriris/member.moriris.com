@@ -1,38 +1,33 @@
-// member.moriris.com/js/app.js
+<script type="module">
+// ===== Supabase init =====
 const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-const SUPABASE_ANON_KEY = "あなたのanonキー"; // 実キーに置き換え
-
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+const SUPABASE_ANON_KEY = "YOUR_PUBLIC_ANON_KEY"; // そのままの文字列でOK
+export const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
   auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" },
 });
 
-async function subscribeStandard() {
-  const { data: { user } } = await sb.auth.getUser();
-  if (!user) {
-    alert("ログインしてください。");
-    return;
-  }
+// ===== UI helpers =====
+const $ = (s) => document.querySelector(s);
+export function setMsg(t){ const el=$("#msg"); if(el) el.textContent=t; }
 
-  try {
-    const res = await fetch(
-      "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: user.id,
-          price_id: "price_1SQPclQt8oBthclHuQnAy8rN", // Stripeの価格ID
-          success_url: "https://official.moriris.com/success",
-          cancel_url: "https://official.moriris.com/cancel",
-        }),
-      }
-    );
-
-    if (!res.ok) throw new Error(await res.text());
-    const { url } = await res.json();
-    window.location.href = url;
-  } catch (err) {
-    console.error(err);
-    alert("Error: " + err.message);
-  }
+// ===== Auth: send magic link =====
+export async function sendMagicLink(email, redirectUrl){
+  const { error } = await sb.auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: redirectUrl },
+  });
+  return error;
 }
+
+// ===== Go Members =====
+export function goMembers(lang="ja"){
+  location.href = `/members.html?lang=${encodeURIComponent(lang)}`;
+}
+
+// ===== Reset session =====
+export async function resetSession(){
+  try { await sb.auth.signOut(); } catch {}
+  try { localStorage.removeItem("moriris-auth"); } catch {}
+  try { Object.keys(localStorage).forEach(k => { if(k.startsWith("sb-")) localStorage.removeItem(k); }); } catch {}
+}
+</script>
