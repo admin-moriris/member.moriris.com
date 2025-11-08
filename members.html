@@ -1,44 +1,29 @@
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Moriris Members – Videos</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script defer src="./js/app.js"></script>
-</head>
-<body>
-  <h1>Members Videos</h1>
-  <p id="status">Checking your session...</p>
+// members.html 内のスクリプトに追加 or 置換
+async function waitProfileActive(userId, {tries=20, interval=1500} = {}) {
+  for (let i=0; i<tries; i++) {
+    const { data, error } = await sb.from('profiles').select('is_active,tier').eq('id', userId).single();
+    if (!error && data && data.is_active) return data;
+    await new Promise(r=>setTimeout(r, interval));
+  }
+  return null;
+}
 
-  <section id="plans">
-    <h2>Subscription Plans</h2>
-    <p>Upgrade to unlock all member videos.</p>
-    <button onclick="subscribeStandard()">Subscribe Standard Plan</button>
-  </section>
+(async () => {
+  // ...既存の getUserWithRetry() で user を取得済みとする
+  const params = new URL(location.href).searchParams;
+  const success = params.get('success') === '1' || !!params.get('session_id');
 
-  <script>
-    const check = async () => {
-      const { data: { user } } = await sb.auth.getUser();
-      if (!user) {
-        document.getElementById("status").textContent = "ログインしていません。";
-        return;
-      }
+  let prof = await sb.from('profiles').select('is_active,tier').eq('id', user.id).single();
 
-      const { data, error } = await sb.from("profiles").select("*").eq("id", user.id).single();
-      if (error) {
-        document.getElementById("status").textContent = "Profile error.";
-        return;
-      }
+  if (success && (!prof.data?.is_active)) {
+    // 反映待ち
+    const waited = await waitProfileActive(user.id);
+    if (waited) prof = { data: waited, error: null };
+  }
 
-      if (data.is_active) {
-        document.getElementById("status").textContent = "ようこそ、会員ページへ。";
-        document.getElementById("plans").style.display = "none";
-      } else {
-        document.getElementById("status").textContent = "未購読です。";
-      }
-    };
-    check();
-  </script>
-</body>
-</html>
+  if (!prof.error && prof.data?.is_active) {
+    // 会員向けUIを表示（あなたの既存ロジックでOK）
+  } else {
+    // まだ未反映なら購読ブロックを表示
+  }
+})();
