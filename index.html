@@ -1,51 +1,47 @@
 <!doctype html>
-<html lang="ja">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Supabase OTP Minimal (ESM)</title>
+<meta charset="utf-8" />
+<title>OTP Minimal Test</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
 <h1>OTP Minimal Test</h1>
-<p id="status">Ready</p>
-<input id="email" type="email" value="you@example.com" style="padding:8px;width:260px">
-<button id="send" type="button" style="padding:8px 12px">メール送信</button>
-<pre id="log" style="background:#f6f6f6;border:1px solid #ddd;padding:10px;white-space:pre-wrap"></pre>
+<p id="msg"></p>
 
-<script type="module">
-  import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+<label>Email: <input id="email" type="email" value="test01@moriris.com" style="width:320px"/></label>
+<button id="send">メール送信</button>
 
-  const logEl = document.getElementById('log');
-  const log = (...a)=>{ console.log(...a); logEl.textContent += a.map(x=> typeof x==='string'?x: (x?.message || JSON.stringify(x,null,2))).join(' ')+"\n"; };
+<pre id="log" style="background:#f6f6f6;padding:12px;border:1px solid #eee"></pre>
 
+<script>
+  // ←ここをあなたの値に置換
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2ZYSSnkqprmzY0_eK5C6DA_nx075Rkb"; // ←あなたの publishable key
+  const SUPABASE_PUB = "sb_publishable_2ZYSSnkqprmzY0_eK5C6DA_nx075Rkb"; // Publishable key
 
-  let sb;
-  try {
-    sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
-    });
-    log("client created ok");
-  } catch (e) {
-    document.getElementById('status').textContent = "Client create error";
-    log("client error:", e);
-    throw e;
-  }
-
-  document.getElementById('send').addEventListener('click', async () => {
-    const email = document.getElementById('email').value.trim();
-    document.getElementById('status').textContent = "sending…";
-    try {
-      const { data, error } = await sb.auth.signInWithOtp({ /* 省略 */ });
-      console.log('otp result', { data, error, msg: error?.message });
-      log("otp result", { data, error });
-      document.getElementById('status').textContent = error ? ("Error: " + error.message) : "sent";
-    } catch (e) {
-      document.getElementById('status').textContent = "exception";
-      log("exception:", e);
-    }
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUB, {
+    auth: { persistSession: false }
   });
 
-  window.addEventListener('error', e => log("window.error", e.message));
-  window.addEventListener('unhandledrejection', e => log("unhandledrejection", String(e.reason||e)));
+  const log = (...a)=>{ document.getElementById('log').textContent += a.map(x=>(
+    typeof x==='string'?x:JSON.stringify(x,null,2))).join(' ') + '\n'; };
+
+  document.getElementById('send').onclick = async () => {
+    document.getElementById('msg').textContent = '';
+    document.getElementById('log').textContent = '';
+    const email = document.getElementById('email').value.trim();
+    if (!email) { document.getElementById('msg').textContent = 'emailが空です'; return; }
+
+    // 送信前に現在のキーとURLを表示
+    log('url', SUPABASE_URL);
+    log('key_prefix', SUPABASE_PUB.slice(0, 16));
+
+    const { data, error } = await sb.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true, // 新規作成を許可
+        emailRedirectTo: 'https://member.moriris.com/members.html'
+      }
+    });
+
+    log('otp result', { data, error, message: error?.message });
+    document.getElementById('msg').textContent = error ? `Error: ${error.message||error.name}` : 'OK';
+  };
 </script>
-</html>
