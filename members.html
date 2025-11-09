@@ -3,135 +3,67 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Members Videos</title>
+  <title>Moriris Members – Videos</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto;margin:24px}
-    .pill{border:1px solid #ddd;border-radius:999px;padding:6px 12px}
-    .btn{cursor:pointer;border:1px solid #ddd;border-radius:12px;padding:10px 14px}
-    .btn.primary{background:#75c29c;border-color:#75c29c;color:#05361f}
-    .card{border:1px solid #eee;border-radius:12px;padding:16px;margin-top:16px}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
+    body{font-family:system-ui, -apple-system, "Segoe UI", Roboto;margin:24px}
     .hidden{display:none}
-    #msg{color:#555}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js"></script>
 </head>
 <body>
   <h1>Members Videos</h1>
-  <p id="msg">Checking your session…</p>
-
-  <!-- 課金案内 -->
-  <div id="plans" class="card hidden">
-    <h2>Subscription Plans</h2>
-    <p>Upgrade to unlock all member videos.</p>
-    <button id="subscribe" class="btn primary">Subscribe Standard Plan</button>
+  <div id="status">Checking your session…</div>
+  <div id="gate" class="hidden">
+    <p>会員ではありません。<a href="./">ログインへ</a></p>
   </div>
+  <div id="list" class="hidden"></div>
+  <button id="logout">Logout</button>
 
-  <!-- 動画一覧 -->
-  <div id="list" class="grid hidden" aria-live="polite"></div>
-
-  <!-- Supabase CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@3"></script>
-
-  <script type="module">
-    // ===== Supabase =====
+  <script>
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_2ZYSSnkqprmzYO_eK5C6DA_nx075Rkb";
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: 'moriris-auth' }
     });
 
     const $ = s => document.querySelector(s);
-    const msg = $("#msg");
-    const listEl = $("#list");
-    const plans = $("#plans");
+    const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
-    // ===== Utility =====
-    const sleep = (ms)=>new Promise(r=>setTimeout(r,ms));
-    function escapeHtml(s){return s?.replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))||'';}
-
-    // ===== Checkout button =====
-    $("#subscribe").onclick = async () => {
-      try{
+    async function getUserWithRetry({tries=40, interval=150}={}) {
+      try { await sb.auth.exchangeCodeForSession(window.location.href); } catch {}
+      for (let i=0;i<tries;i++){
         const { data: { user } } = await sb.auth.getUser();
-        if(!user){ msg.textContent = "Please login first."; return; }
-
-        const res = await fetch(
-          "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" }, // ASCIIのみ
-            body: JSON.stringify({
-              user_id: user.id,
-              price_id: "price_1SQPclQt8oBthclHuQnAy8rN",
-              success_url: "https://member.moriris.com/members.html",
-              cancel_url: "https://member.moriris.com/members.html?canceled=1"
-            }),
-            credentials: "omit"
-          }
-        );
-        if(!res.ok){ throw new Error("Failed to create session"); }
-        const { url } = await res.json();
-        location.href = url;
-      }catch(e){
-        msg.textContent = `Error: ${e.message}`;
-      }
-    };
-
-    // ===== Load after login =====
-    async function getUserWithRetry({tries=40, interval=150}={}){
-      try{ await sb.auth.exchangeCodeForSession(window.location.href); }catch{}
-      for(let i=0;i<tries;i++){
-        const { data:{ user } } = await sb.auth.getUser();
-        if(user) return user;
+        if (user) return user;
         await sleep(interval);
       }
       return null;
     }
 
-    async function load(){
+    (async () => {
       const user = await getUserWithRetry();
-      if(!user){ msg.textContent = "Not logged in. Back to login."; return; }
+      if (!user) { $("#status").textContent = "未ログインです。"; return; }
 
-      // 1) プロフィール確認
+      // profiles の tier / is_active を確認
       const prof = await sb.from("profiles").select("is_active,tier").eq("id", user.id).single();
-      if(prof.error){ msg.textContent = "Profile error"; return; }
+      if (prof.error) { $("#status").textContent = "Profile error"; return; }
 
-      if(!prof.data?.is_active){
-        // まだ会員でない → プラン表示
-        msg.textContent = "";
-        plans.classList.remove("hidden");
+      if (!prof.data?.is_active) {
+        $("#status").textContent = "";
+        $("#gate").classList.remove("hidden");
         return;
       }
 
-      // 2) 動画一覧
-      msg.textContent = "Loading videos…";
-      const allowed = (prof.data.tier||"standard").toLowerCase()==="standard" ? ["standard"] : ["standard","premium"];
-      const vids = await sb.from("member_videos")
-        .select("id,title,yt_id,tier")
-        .eq("published", true).in("tier", allowed)
-        .order("id", { ascending:false });
-      if(vids.error){ msg.textContent = "Load error"; return; }
+      $("#status").textContent = "";
+      $("#list").classList.remove("hidden");
+      $("#list").textContent = `ようこそ。あなたのプラン: ${prof.data.tier}`;
+    })();
 
-      msg.textContent = "";
-      listEl.classList.remove("hidden");
-      listEl.innerHTML = "";
-      vids.data.forEach(v=>{
-        const card = document.createElement("div");
-        card.className = "card";
-        const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1`;
-        card.innerHTML = `
-          <div style="position:relative;background:#000;aspect-ratio:16/9">
-            <iframe src="${src}" title="${escapeHtml(v.title)}" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
-          </div>
-          <div style="margin-top:8px;font-weight:600">${escapeHtml(v.title)}</div>
-        `;
-        listEl.appendChild(card);
-      });
-    }
-
-    load();
+    $("#logout").onclick = async () => {
+      await sb.auth.signOut();
+      location.href = "./";
+    };
   </script>
 </body>
 </html>
