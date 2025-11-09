@@ -1,60 +1,94 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Members Videos</title>
+  <style>
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto;padding:24px;line-height:1.6;background:#fafafa;color:#222}
+    h1{margin-top:0}
+    .hidden{display:none}
+    button{padding:8px 14px;font-size:15px;border:1px solid #aaa;border-radius:8px;background:#fff;cursor:pointer}
+    .logout{margin-top:18px}
+    .warn{background:#fff7f7;color:#8a1f1f;padding:10px;border:1px solid #e8b7b7;border-radius:8px;margin-bottom:16px}
+    #status{margin-top:14px}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+  <h1>Members Videos</h1>
+  <div id="content">読み込み中...</div>
+  <div class="logout"><button id="logout">Logout</button></div>
+  <div id="status"></div>
 
-<script type="module">
-  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
-  });
+  <script>
+    // ===== Supabase設定 =====
+    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
-  const $ = s => document.querySelector(s);
-  const status = $("#status");
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
+    });
 
-  // 1) Magic Linkのcodeをセッションに交換
-  try {
-    await sb.auth.exchangeCodeForSession(window.location.href);
-    // URLをきれいに（code等を除去）
-    const url = new URL(location.href);
-    url.search = ""; url.hash = "";
-    history.replaceState({}, "", url);
-  } catch(_) {}
+    // ===== OTP失敗（期限切れなど）の表示 =====
+    (function showOtpErrorIfAny() {
+      const h = new URL(location.href).hash.slice(1);
+      if (!h) return;
+      const q = new URLSearchParams(h);
+      const err = q.get('error');
+      const code = q.get('error_code');
+      const desc = q.get('error_description');
+      if (err) {
+        const box = document.getElementById('status');
+        box.className = 'warn';
+        box.textContent = (code === 'otp_expired')
+          ? 'ログインリンクの有効期限が切れました。もう一度メールを送信してください。'
+          : `ログインに失敗しました: ${desc || code || err}`;
+        history.replaceState(null, '', location.pathname + location.search);
+      }
+    })();
 
-  // 2) ユーザー取得（数回リトライ）
-  async function getUserWithRetry(tries = 20, wait = 150) {
-    for (let i = 0; i < tries; i++) {
-      const { data: { user } } = await sb.auth.getUser();
-      if (user) return user;
-      await new Promise(r => setTimeout(r, wait));
+    // ===== プロフィール確認 =====
+    async function loadProfile() {
+      const { data: { user }, error } = await sb.auth.getUser();
+      const c = document.getElementById('content');
+      if (error || !user) {
+        c.innerHTML = `会員ではありません。 <a href="./index.html">ログインへ</a>`;
+        return;
+      }
+
+      const uid = user.id;
+      const { data: profile, error: e2 } = await sb
+        .from('profiles')
+        .select('*')
+        .eq('id', uid)
+        .single();
+
+      if (e2 || !profile) {
+        c.innerHTML = `プロフィール情報が見つかりません。<br> <a href="./index.html">ログインへ</a>`;
+        return;
+      }
+
+      if (!profile.is_active) {
+        c.innerHTML = `ようこそ。<br>あなたのプラン: <b>${profile.tier}</b><br><br>
+          ただいま有効なサブスクリプションがありません。<br>
+          <a href="./index.html">ログイン画面に戻る</a>`;
+        return;
+      }
+
+      // 有効会員
+      c.innerHTML = `ようこそ。あなたのプラン: <b>${profile.tier}</b>`;
     }
-    return null;
-  }
 
-  const user = await getUserWithRetry();
-  if (!user) {
-    status.innerHTML = 'ログインできていません。<a href="./index.html">ログインへ</a>';
-    return;
-  }
+    loadProfile();
 
-  // 3) プロフィールを確認
-  const prof = await sb.from("profiles").select("is_active,tier").eq("id", user.id).single();
-  if (prof.error) {
-    status.textContent = `Profile error: ${prof.error.message}`;
-    return;
-  }
-
-  if (!prof.data?.is_active) {
-    // まだ会員ではない。課金導線を表示
-    status.innerHTML = '会員ではありません。<a href="./index.html">ログインへ</a>';
-    // ここに「Subscribe」ボタンのUI（create-checkout-session呼び出し）を表示してよい
-    return;
-  }
-
-  // 4) 会員向けUI
-  status.textContent = `ようこそ。あなたのプラン：${prof.data.tier || "standard"}`;
-
-  // ログアウト
-  document.getElementById("logout").onclick = async () => {
-    await sb.auth.signOut();
-    location.href = "./index.html";
-  };
-</script>
+    // ===== ログアウト =====
+    document.getElementById('logout').onclick = async () => {
+      await sb.auth.signOut();
+      localStorage.removeItem('moriris-auth');
+      Object.keys(localStorage).forEach(k => { if (k.startsWith('sb-')) localStorage.removeItem(k); });
+      location.href = './index.html';
+    };
+  </script>
+</body>
+</html>
