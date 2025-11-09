@@ -27,29 +27,40 @@
 
   <!-- Supabase CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <!-- App utils -->
-  <script type="module">
-    import { sb, setMsg, sendMagicLink, goMembers, resetSession } from "/js/app.js";
 
-    // 言語はローカル保存(ASCIIのみ)
+  <!-- アプリ -->
+  <script type="module">
+    import { sb, $, setMsg, sendMagicLink, goMembers, resetSession } from "/js/app.js";
+
+    // 言語固定（ASCIIのみ）
     const LANG_KEY = "moriris_lang";
     const lang = localStorage.getItem(LANG_KEY) || ((navigator.language||"ja").startsWith("ja") ? "ja" : "en");
     localStorage.setItem(LANG_KEY, lang);
 
-    document.getElementById("send").onclick = async () => {
-      const email = document.getElementById("email").value.trim();
-      if (!email){ setMsg("メールを入力してください"); return; }
-      setMsg("送信中…");
-      const error = await sendMagicLink(email, `https://member.moriris.com/members.html?lang=${lang}`);
-      setMsg(error ? `Error: ${error.message}` : "メールをご確認ください。");
-    };
+    $("#send").addEventListener("click", async () => {
+      try {
+        const email = $("#email").value.trim();
+        if (!email){ setMsg("メールを入力してください"); return; }
+        setMsg("送信中…");
+        const { error } = await sendMagicLink(email, `https://member.moriris.com/members.html?lang=${lang}`);
+        if (error) {
+          console.error(error);
+          setMsg(`Error: ${error.message}`);
+        } else {
+          setMsg("メールをご確認ください。");
+        }
+      } catch (e) {
+        console.error(e);
+        setMsg(`Error: ${e.message}`);
+      }
+    });
 
-    document.getElementById("to-members").onclick = () => goMembers(lang);
+    $("#to-members").addEventListener("click", () => goMembers(lang));
 
-    document.getElementById("reset").onclick = async () => {
+    $("#reset").addEventListener("click", async () => {
       await resetSession();
       setMsg("セッションをクリアしました。");
-    };
+    });
   </script>
 </body>
 </html>
