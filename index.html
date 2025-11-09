@@ -1,47 +1,70 @@
 <!doctype html>
-<meta charset="utf-8" />
-<title>OTP Minimal Test</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Moriris Members – Login</title>
+  <style>
+    body{font-family:system-ui, -apple-system, "Segoe UI", Roboto;margin:24px}
+    input,button{font-size:16px;padding:10px;border-radius:10px;border:1px solid #ddd}
+    button{cursor:pointer}
+    #msg{margin-top:12px;color:#666}
+  </style>
+  <!-- Supabase SDK は UMD を明示。@2 を付けない -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js"></script>
+</head>
+<body>
+  <h1>Moriris Members</h1>
 
-<h1>OTP Minimal Test</h1>
-<p id="msg"></p>
+  <div>
+    <input id="email" type="email" placeholder="you@example.com" value="test01@moriris.com" />
+    <button id="login">メール送信</button>
+    <button id="to-members">会員ページへ</button>
+  </div>
+  <div style="margin-top:8px">
+    <button id="reset">セッションをリセット</button>
+  </div>
+  <p id="msg"></p>
 
-<label>Email: <input id="email" type="email" value="test01@moriris.com" style="width:320px"/></label>
-<button id="send">メール送信</button>
+  <script>
+    // ==== Supabase ====
+    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+    // ダッシュボード > Project Settings > API > Legacy API Keys の anon か、
+    // API Keys の Publishable key のどちらかを入れる（ここでは anon を使用）
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
-<pre id="log" style="background:#f6f6f6;padding:12px;border:1px solid #eee"></pre>
-
-<script>
-  // ← ここにあなたの Supabase プロジェクト情報を記入
-  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
-
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: false }
-  });
-
-  const log = (...a)=>{ document.getElementById('log').textContent += a.map(x=>(
-    typeof x==='string'?x:JSON.stringify(x,null,2))).join(' ') + '\n'; };
-
-  document.getElementById('send').onclick = async () => {
-    document.getElementById('msg').textContent = '';
-    document.getElementById('log').textContent = '';
-    const email = document.getElementById('email').value.trim();
-    if (!email) { document.getElementById('msg').textContent = 'emailが空です'; return; }
-
-    // 送信前に現在のキーとURLを表示
-    log('url', SUPABASE_URL);
-    log('key_prefix', SUPABASE_ANON_KEY.slice(0, 16));
-
-    const { data, error } = await sb.auth.signInWithOtp({
-      email,
-      options: {
-        shouldCreateUser: true, // 新規作成を許可
-        emailRedirectTo: 'https://member.moriris.com/members.html'
-      }
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: 'moriris-auth' }
     });
 
-    log('otp result', { data, error, message: error?.message });
-    document.getElementById('msg').textContent = error ? `Error: ${error.message||error.name}` : 'OK';
-  };
-</script>
+    const $ = s => document.querySelector(s);
+    const msg = $("#msg");
+
+    $("#login").onclick = async () => {
+      msg.textContent = "送信中…";
+      const email = $("#email").value.trim();
+      if (!email) { msg.textContent = "メールを入力してください。"; return; }
+
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options: {
+          shouldCreateUser: true,
+          // Supabase の Auth 設定 > Redirect URLs にこのURLを登録しておく
+          emailRedirectTo: "https://member.moriris.com/members.html"
+        }
+      });
+
+      msg.textContent = error ? `Error: ${error.message||error.name}` : "OK。メールをご確認ください。";
+    };
+
+    $("#to-members").onclick = () => location.href = "./members.html";
+
+    $("#reset").onclick = async () => {
+      try { await sb.auth.signOut(); } catch {}
+      try { localStorage.removeItem('moriris-auth'); } catch {}
+      msg.textContent = "セッションをクリアしました。";
+    };
+  </script>
+</body>
+</html>
