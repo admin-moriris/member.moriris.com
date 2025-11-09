@@ -22,73 +22,127 @@
   <div id="status"></div>
 
   <script>
-    // ===== Supabase設定 =====
-    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+  // ===== Supabase =====
+  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
-    });
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
+  });
 
-    // ===== OTP失敗（期限切れなど）の表示 =====
-    (function showOtpErrorIfAny() {
-      const h = new URL(location.href).hash.slice(1);
-      if (!h) return;
-      const q = new URLSearchParams(h);
-      const err = q.get('error');
-      const code = q.get('error_code');
-      const desc = q.get('error_description');
-      if (err) {
-        const box = document.getElementById('status');
-        box.className = 'warn';
-        box.textContent = (code === 'otp_expired')
-          ? 'ログインリンクの有効期限が切れました。もう一度メールを送信してください。'
-          : `ログインに失敗しました: ${desc || code || err}`;
-        history.replaceState(null, '', location.pathname + location.search);
-      }
-    })();
+  // Edge Function のURL
+  const FN_CHECKOUT = "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session";
+  // あなたの価格ID（サーバ側にも同じIDを置いている）
+  const PRICE_STANDARD = "price_1SQPclQt8oBthclHuQnAy8rN";
 
-    // ===== プロフィール確認 =====
-    async function loadProfile() {
-      const { data: { user }, error } = await sb.auth.getUser();
-      const c = document.getElementById('content');
-      if (error || !user) {
-        c.innerHTML = `会員ではありません。 <a href="./index.html">ログインへ</a>`;
-        return;
-      }
+  // OTPエラー表示（期限切れ等）
+  (function showOtpErrorIfAny() {
+    const h = new URL(location.href).hash.slice(1);
+    if (!h) return;
+    const q = new URLSearchParams(h);
+    const err = q.get('error');
+    const code = q.get('error_code');
+    const desc = q.get('error_description');
+    if (err) {
+      const box = document.getElementById('status');
+      box.className = 'warn';
+      box.textContent = (code === 'otp_expired')
+        ? 'ログインリンクの有効期限が切れました。もう一度メールを送信してください。'
+        : `ログインに失敗しました: ${desc || code || err}`;
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  })();
 
-      const uid = user.id;
-      const { data: profile, error: e2 } = await sb
-        .from('profiles')
-        .select('*')
-        .eq('id', uid)
-        .single();
+  // 決済完了リダイレクト後、Webhook反映待ちのポーリング
+  async function waitActivate(uid, timeoutMs = 20000) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+      const { data, error } = await sb.from('profiles').select('is_active,tier').eq('id', uid).single();
+      if (!error && data?.is_active) return data;
+      await new Promise(r => setTimeout(r, 1500));
+    }
+    return null;
+  }
 
-      if (e2 || !profile) {
-        c.innerHTML = `プロフィール情報が見つかりません。<br> <a href="./index.html">ログインへ</a>`;
-        return;
-      }
+  async function render() {
+    const root = document.getElementById('content');
+    root.textContent = '読み込み中…';
 
-      if (!profile.is_active) {
-        c.innerHTML = `ようこそ。<br>あなたのプラン: <b>${profile.tier}</b><br><br>
-          ただいま有効なサブスクリプションがありません。<br>
-          <a href="./index.html">ログイン画面に戻る</a>`;
-        return;
-      }
-
-      // 有効会員
-      c.innerHTML = `ようこそ。あなたのプラン: <b>${profile.tier}</b>`;
+    const { data: { user } } = await sb.auth.getUser();
+    if (!user) {
+      root.innerHTML = `会員ではありません。 <a href="./index.html">ログインへ</a>`;
+      return;
     }
 
-    loadProfile();
+    // checkout=success の直後はWebhookの反映を待つ
+    const urlp = new URL(location.href).searchParams;
+    const justSuccess = urlp.get('checkout') === 'success';
 
-    // ===== ログアウト =====
-    document.getElementById('logout').onclick = async () => {
-      await sb.auth.signOut();
-      localStorage.removeItem('moriris-auth');
-      Object.keys(localStorage).forEach(k => { if (k.startsWith('sb-')) localStorage.removeItem(k); });
-      location.href = './index.html';
-    };
-  </script>
+    let { data: prof, error } = await sb.from('profiles').select('tier,is_active').eq('id', user.id).single();
+    if (!error && !prof?.is_active && justSuccess) {
+      document.getElementById('status').textContent = '決済を確認中… まもなく視聴可能になります。';
+      const updated = await waitActivate(user.id, 20000);
+      if (updated) prof = updated;
+      document.getElementById('status').textContent = '';
+      history.replaceState(null, '', location.pathname); // クエリ除去
+    }
+
+    if (error || !prof) {
+      root.innerHTML = `プロフィール情報が見つかりません。<br><a href="./index.html">ログインへ</a>`;
+      return;
+    }
+
+    if (!prof.is_active) {
+      root.innerHTML = `
+        <p>ようこそ。<br>あなたのプラン：<b>${prof.tier}</b></p>
+        <p>ただいま有効なサブスクリプションがありません。</p>
+        <button id="btn-subscribe">Subscribe Standard Plan</button>
+        <p style="margin-top:10px;"><a href="./index.html">ログイン画面に戻る</a></p>
+      `;
+      document.getElementById('btn-subscribe').onclick = startCheckout;
+      return;
+    }
+
+    // 有効会員
+    root.innerHTML = `ようこそ。あなたのプラン：<b>${prof.tier}</b>`;
+  }
+
+  async function startCheckout() {
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session?.access_token) {
+      alert('ログインセッションがありません。いったんログアウトしてやり直してください。');
+      return;
+    }
+    const res = await fetch(FN_CHECKOUT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session.access_token}`
+      },
+      body: JSON.stringify({
+        price_id: PRICE_STANDARD,
+        success_url: location.origin + '/members.html?checkout=success',
+        cancel_url: location.origin + '/members.html?checkout=cancel'
+      })
+    });
+    if (!res.ok) {
+      const t = await res.text().catch(()=> '');
+      alert('Checkout作成に失敗しました: ' + t);
+      return;
+    }
+    const { url } = await res.json();
+    location.href = url;
+  }
+
+  render();
+
+  // ログアウト
+  document.getElementById('logout').onclick = async () => {
+    await sb.auth.signOut();
+    localStorage.removeItem('moriris-auth');
+    Object.keys(localStorage).forEach(k => { if (k.startsWith('sb-')) localStorage.removeItem(k); });
+    location.href = './index.html';
+  };
+</script>
 </body>
 </html>
