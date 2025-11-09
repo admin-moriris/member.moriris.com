@@ -35,13 +35,8 @@
     const email = document.getElementById('email').value.trim();
     document.getElementById('status').textContent = "sending…";
     try {
-      const { data, error } = await sb.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: "https://member.moriris.com/members.html",
-          shouldCreateUser: true,
-        },
-      });
+      const { data, error } = await sb.auth.signInWithOtp({ /* 省略 */ });
+      console.log('otp result', { data, error, msg: error?.message });
       log("otp result", { data, error });
       document.getElementById('status').textContent = error ? ("Error: " + error.message) : "sent";
     } catch (e) {
