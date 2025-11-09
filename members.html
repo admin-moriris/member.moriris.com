@@ -1,69 +1,60 @@
-<!doctype html>
-<html lang="ja">
-<head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Moriris Members – Videos</title>
-  <style>
-    body{font-family:system-ui, -apple-system, "Segoe UI", Roboto;margin:24px}
-    .hidden{display:none}
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/umd/supabase.js"></script>
-</head>
-<body>
-  <h1>Members Videos</h1>
-  <div id="status">Checking your session…</div>
-  <div id="gate" class="hidden">
-    <p>会員ではありません。<a href="./">ログインへ</a></p>
-  </div>
-  <div id="list" class="hidden"></div>
-  <button id="logout">Logout</button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
-  <script>
-    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+<script type="module">
+  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
+  });
 
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, storageKey: 'moriris-auth' }
-    });
+  const $ = s => document.querySelector(s);
+  const status = $("#status");
 
-    const $ = s => document.querySelector(s);
-    const sleep = ms => new Promise(r=>setTimeout(r,ms));
+  // 1) Magic Linkのcodeをセッションに交換
+  try {
+    await sb.auth.exchangeCodeForSession(window.location.href);
+    // URLをきれいに（code等を除去）
+    const url = new URL(location.href);
+    url.search = ""; url.hash = "";
+    history.replaceState({}, "", url);
+  } catch(_) {}
 
-    async function getUserWithRetry({tries=40, interval=150}={}) {
-      try { await sb.auth.exchangeCodeForSession(window.location.href); } catch {}
-      for (let i=0;i<tries;i++){
-        const { data: { user } } = await sb.auth.getUser();
-        if (user) return user;
-        await sleep(interval);
-      }
-      return null;
+  // 2) ユーザー取得（数回リトライ）
+  async function getUserWithRetry(tries = 20, wait = 150) {
+    for (let i = 0; i < tries; i++) {
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) return user;
+      await new Promise(r => setTimeout(r, wait));
     }
+    return null;
+  }
 
-    (async () => {
-      const user = await getUserWithRetry();
-      if (!user) { $("#status").textContent = "未ログインです。"; return; }
+  const user = await getUserWithRetry();
+  if (!user) {
+    status.innerHTML = 'ログインできていません。<a href="./index.html">ログインへ</a>';
+    return;
+  }
 
-      // profiles の tier / is_active を確認
-      const prof = await sb.from("profiles").select("is_active,tier").eq("id", user.id).single();
-      if (prof.error) { $("#status").textContent = "Profile error"; return; }
+  // 3) プロフィールを確認
+  const prof = await sb.from("profiles").select("is_active,tier").eq("id", user.id).single();
+  if (prof.error) {
+    status.textContent = `Profile error: ${prof.error.message}`;
+    return;
+  }
 
-      if (!prof.data?.is_active) {
-        $("#status").textContent = "";
-        $("#gate").classList.remove("hidden");
-        return;
-      }
+  if (!prof.data?.is_active) {
+    // まだ会員ではない。課金導線を表示
+    status.innerHTML = '会員ではありません。<a href="./index.html">ログインへ</a>';
+    // ここに「Subscribe」ボタンのUI（create-checkout-session呼び出し）を表示してよい
+    return;
+  }
 
-      $("#status").textContent = "";
-      $("#list").classList.remove("hidden");
-      $("#list").textContent = `ようこそ。あなたのプラン: ${prof.data.tier}`;
-    })();
+  // 4) 会員向けUI
+  status.textContent = `ようこそ。あなたのプラン：${prof.data.tier || "standard"}`;
 
-    $("#logout").onclick = async () => {
-      await sb.auth.signOut();
-      location.href = "./";
-    };
-  </script>
-</body>
-</html>
+  // ログアウト
+  document.getElementById("logout").onclick = async () => {
+    await sb.auth.signOut();
+    location.href = "./index.html";
+  };
+</script>
