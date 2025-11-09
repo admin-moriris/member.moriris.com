@@ -2,54 +2,74 @@
 <html lang="ja">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Moriris Members – Login</title>
+<title>Supabase OTP Minimal Test</title>
 
-<input id="email" type="email" placeholder="you@example.com" style="padding:12px;width:260px">
-<button id="login" type="button" style="padding:12px">メール送信</button>
-<p id="msg"></p>
+<h1>OTP Minimal Test</h1>
+<p id="status">Ready</p>
 
-<!-- supabase-js v3 を1本だけ読み込む -->
+<label>
+  Email:
+  <input id="email" type="email" value="you@example.com" style="padding:8px;width:260px">
+</label>
+<button id="send" type="button" style="padding:8px 12px">メール送信</button>
+
+<pre id="log" style="background:#f6f6f6;border:1px solid #ddd;padding:10px;white-space:pre-wrap"></pre>
+
+<!-- 1) v3 を1本だけ読み込む -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@3"></script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+(function () {
+  const logEl = document.getElementById('log');
+  const statusEl = document.getElementById('status');
+  const log = (...a) => { console.log(...a); logEl.textContent += a.map(x => 
+    typeof x === 'string' ? x : JSON.stringify(x, null, 2)
+  ).join(' ') + "\n"; };
+
+  // 2) あなたのプロジェクト値に置換
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2ZYSSnkqprmzY0_eK5C6DA_nx075Rkb"; // あなたの publishable key
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_2ZYSSnkqprmzY0_eK5C6DA_nx075Rkb"; // ← publishable key
 
-  // クライアント生成
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
-  });
+  // 3) クライアント作成
+  let sb;
+  try {
+    sb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
+    });
+    log("client created");
+  } catch (e) {
+    statusEl.textContent = "Client create error";
+    log("client error:", e);
+    return;
+  }
 
-  const $ = (s)=>document.querySelector(s);
-  const btn = $("#login");
-  const msg = $("#msg");
+  // 4) クリック動作
+  document.getElementById('send').addEventListener('click', async () => {
+    const email = document.getElementById('email').value.trim();
+    statusEl.textContent = "clicked";
+    log("clicked", { email });
+    if (!email) { statusEl.textContent = "no email"; return; }
 
-  btn.addEventListener("click", async () => {
-    const email = $("#email").value.trim();
-    msg.textContent = "";                // メッセージ初期化
-    console.log("clicked", email);       // クリック確認
-    if (!email) { msg.textContent = "メールを入力してください"; return; }
-
-    btn.disabled = true;
-    msg.textContent = "送信中…";
     try {
+      statusEl.textContent = "sending…";
       const { data, error } = await sb.auth.signInWithOtp({
         email,
         options: {
           emailRedirectTo: "https://member.moriris.com/members.html",
-          shouldCreateUser: true
+          shouldCreateUser: true,
         }
       });
-      console.log("signInWithOtp result:", { data, error });
-      if (error) throw error;
-      msg.textContent = "送信しました。メールを確認してください。";
+      log("otp result", { data, error });
+      if (error) { statusEl.textContent = "error"; log(error); }
+      else { statusEl.textContent = "sent (check inbox)"; }
     } catch (e) {
-      console.error(e);
-      msg.textContent = "Error: " + (e?.message || String(e));
-    } finally {
-      btn.disabled = false;
+      statusEl.textContent = "exception";
+      log("exception", e);
     }
   });
-});
+
+  // 5) エラー可視化
+  window.addEventListener('error', e => log("window.error", e.message));
+  window.addEventListener('unhandledrejection', e => log("unhandledrejection", String(e.reason||e)));
+})();
 </script>
 </html>
