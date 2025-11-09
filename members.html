@@ -1,148 +1,224 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Members Videos</title>
   <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto;padding:24px;line-height:1.6;background:#fafafa;color:#222}
-    h1{margin-top:0}
+    :root{
+      --bg:#faf8f4; --panel:#fff; --ink:#1d1b16; --muted:#6b6964;
+      --accent:#75c29c; --radius:16px; --shadow:0 6px 24px rgba(0,0,0,.06);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto}
+    .wrap{max-width:1100px;margin:42px auto;padding:0 20px}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{margin:0;font-size:34px}
+    .pill{border:1px solid #ddd;background:#fff;border-radius:999px;padding:6px 12px}
+    button{cursor:pointer;border-radius:12px;border:1px solid #ddd;padding:10px 14px;background:#fff;font-size:15px}
+    button.primary{background:var(--accent);color:#05361f;border-color:transparent}
+    .banner{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:12px}
+    .muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px}
+    .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+    .title{padding:12px 14px;font-weight:600}
     .hidden{display:none}
-    button{padding:8px 14px;font-size:15px;border:1px solid #aaa;border-radius:8px;background:#fff;cursor:pointer}
-    .logout{margin-top:18px}
-    .warn{background:#fff7f7;color:#8a1f1f;padding:10px;border:1px solid #e8b7b7;border-radius:8px;margin-bottom:16px}
-    #status{margin-top:14px}
+    a{color:#0d6b45}
+    pre#dbg{white-space:pre-wrap;background:#f6f6f6;border:1px solid #eee;padding:12px;border-radius:8px}
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
-  <h1>Members Videos</h1>
-  <div id="content">読み込み中...</div>
-  <div class="logout"><button id="logout">Logout</button></div>
-  <div id="status"></div>
+<div class="wrap">
+  <header>
+    <h1>Members Videos</h1>
+    <div>
+      <span id="userEmail" class="pill"></span>
+      <button id="logout">Logout</button>
+    </div>
+  </header>
 
-  <script>
-  // ===== Supabase =====
+  <div id="status" class="muted banner">ログイン状態を確認しています…</div>
+
+  <!-- Freeユーザー向けゲート -->
+  <div id="freeGate" class="banner hidden">
+    <p>ようこそ。あなたのプラン：<b id="planLabel">free</b></p>
+    <p class="muted">ただいま有効なサブスクリプションがありません。</p>
+    <button id="btnSubscribe" class="primary">サブスク登録（Standard）へ</button>
+  </div>
+
+  <!-- 非会員 or プロファイル未作成時 -->
+  <div id="notMember" class="banner hidden">
+    <p>会員ではありません。<a href="./">ログイン画面に戻る</a></p>
+  </div>
+
+  <!-- 動画リスト -->
+  <div id="listWrap" class="hidden">
+    <div id="videos" class="grid"></div>
+  </div>
+
+  <pre id="dbg" class="hidden"></pre>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // ==== Supabase ====
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+  // あなたの anon key（Dashboard > Project Settings > API > "anon"）
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
-
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    auth: { persistSession: true, autoRefreshToken: true, storageKey: 'moriris-auth' }
   });
 
-  // Edge Function のURL
-  const FN_CHECKOUT = "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session";
-  // あなたの価格ID（サーバ側にも同じIDを置いている）
-  const PRICE_STANDARD = "price_1SQPclQt8oBthclHuQnAy8rN";
+  // ==== 設定：Stripeの価格ID（置換してください） ====
+  const PRICE_ID_STANDARD = "price_xxx_replace_me"; // ←あなたの Standard プランの price_id
 
-  // OTPエラー表示（期限切れ等）
-  (function showOtpErrorIfAny() {
-    const h = new URL(location.href).hash.slice(1);
-    if (!h) return;
-    const q = new URLSearchParams(h);
-    const err = q.get('error');
-    const code = q.get('error_code');
-    const desc = q.get('error_description');
-    if (err) {
-      const box = document.getElementById('status');
-      box.className = 'warn';
-      box.textContent = (code === 'otp_expired')
-        ? 'ログインリンクの有効期限が切れました。もう一度メールを送信してください。'
-        : `ログインに失敗しました: ${desc || code || err}`;
-      history.replaceState(null, '', location.pathname + location.search);
-    }
-  })();
+  // ==== 小道具 ====
+  const $ = s => document.querySelector(s);
+  const show = (el, on) => el.classList.toggle('hidden', !on);
+  const debugOn = new URL(location.href).searchParams.get('debug') === '1';
+  const log = (...a)=>{ if(!debugOn) return; const el=$("#dbg"); show(el,true);
+    el.textContent += a.map(x=> typeof x==='string'?x:JSON.stringify(x,null,2)).join(' ') + "\n"; };
 
-  // 決済完了リダイレクト後、Webhook反映待ちのポーリング
-  async function waitActivate(uid, timeoutMs = 20000) {
-    const start = Date.now();
-    while (Date.now() - start < timeoutMs) {
-      const { data, error } = await sb.from('profiles').select('is_active,tier').eq('id', uid).single();
-      if (!error && data?.is_active) return data;
-      await new Promise(r => setTimeout(r, 1500));
+  // セッション復元を待つ
+  const sleep = ms => new Promise(r=>setTimeout(r,ms));
+  async function getUserWithRetry({tries=40, interval=150}={}){
+    try { await sb.auth.exchangeCodeForSession(window.location.href); } catch(e){ log('exchange_err', String(e)); }
+    for (let i=0;i<tries;i++){
+      const { data: { user } } = await sb.auth.getUser();
+      if (user) return user;
+      await sleep(interval);
     }
     return null;
   }
 
-  async function render() {
-    const root = document.getElementById('content');
-    root.textContent = '読み込み中…';
+  // プロファイル自己修復：無ければ作る（free）
+  async function loadProfileOrCreate(userId){
+    let { data: prof, error } = await sb
+      .from('profiles')
+      .select('id,tier,is_active')
+      .eq('id', userId)
+      .single();
 
-    const { data: { user } } = await sb.auth.getUser();
-    if (!user) {
-      root.innerHTML = `会員ではありません。 <a href="./index.html">ログインへ</a>`;
-      return;
+    const notFound = error && (error.code === 'PGRST116' || error.details?.includes('0 rows'));
+    if (notFound) {
+      const up = await sb.from('profiles').upsert(
+        { id: userId, tier: 'free', is_active: false },
+        { onConflict: 'id' }
+      );
+      if (up.error) { log('profiles upsert failed', up.error); return { data:null, error:up.error }; }
+      ({ data: prof, error } = await sb
+        .from('profiles')
+        .select('id,tier,is_active')
+        .eq('id', userId)
+        .single());
     }
-
-    // checkout=success の直後はWebhookの反映を待つ
-    const urlp = new URL(location.href).searchParams;
-    const justSuccess = urlp.get('checkout') === 'success';
-
-    let { data: prof, error } = await sb.from('profiles').select('tier,is_active').eq('id', user.id).single();
-    if (!error && !prof?.is_active && justSuccess) {
-      document.getElementById('status').textContent = '決済を確認中… まもなく視聴可能になります。';
-      const updated = await waitActivate(user.id, 20000);
-      if (updated) prof = updated;
-      document.getElementById('status').textContent = '';
-      history.replaceState(null, '', location.pathname); // クエリ除去
-    }
-
-    if (error || !prof) {
-      root.innerHTML = `プロフィール情報が見つかりません。<br><a href="./index.html">ログインへ</a>`;
-      return;
-    }
-
-    if (!prof.is_active) {
-      root.innerHTML = `
-        <p>ようこそ。<br>あなたのプラン：<b>${prof.tier}</b></p>
-        <p>ただいま有効なサブスクリプションがありません。</p>
-        <button id="btn-subscribe">Subscribe Standard Plan</button>
-        <p style="margin-top:10px;"><a href="./index.html">ログイン画面に戻る</a></p>
-      `;
-      document.getElementById('btn-subscribe').onclick = startCheckout;
-      return;
-    }
-
-    // 有効会員
-    root.innerHTML = `ようこそ。あなたのプラン：<b>${prof.tier}</b>`;
+    return { data: prof, error };
   }
 
-  async function startCheckout() {
-    const { data: { session } } = await sb.auth.getSession();
-    if (!session?.access_token) {
-      alert('ログインセッションがありません。いったんログアウトしてやり直してください。');
-      return;
-    }
-    const res = await fetch(FN_CHECKOUT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${session.access_token}`
-      },
-      body: JSON.stringify({
-        price_id: PRICE_STANDARD,
-        success_url: location.origin + '/members.html?checkout=success',
-        cancel_url: location.origin + '/members.html?checkout=cancel'
-      })
-    });
+  // チェックアウト作成 → Stripe へリダイレクト
+  async function createCheckout(userId){
+    const { data: sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+    if (!token) { alert('未ログインです'); return; }
+
+    const res = await fetch(
+      "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Functions 側がJWTを要求する場合に必要
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          price_id: PRICE_ID_STANDARD,
+          success_url: location.origin + location.pathname + "?lang=ja",
+          cancel_url: location.origin + location.pathname + "?lang=ja"
+        })
+      }
+    );
+
     if (!res.ok) {
-      const t = await res.text().catch(()=> '');
-      alert('Checkout作成に失敗しました: ' + t);
+      const t = await res.text();
+      alert("作成に失敗しました: " + t);
       return;
     }
-    const { url } = await res.json();
-    location.href = url;
+    const data = await res.json();
+    if (!data?.url) { alert("Checkout URLが取得できません"); return; }
+    location.href = data.url;
   }
 
-  render();
+  // 動画一覧（standard 以上）
+  async function renderVideos(allowedTiers){
+    const q = await sb.from('member_videos')
+      .select('id,title,yt_id,tier')
+      .eq('published', true)
+      .in('tier', allowedTiers)
+      .order('id', { ascending:false });
 
-  // ログアウト
-  document.getElementById('logout').onclick = async () => {
-    await sb.auth.signOut();
-    localStorage.removeItem('moriris-auth');
-    Object.keys(localStorage).forEach(k => { if (k.startsWith('sb-')) localStorage.removeItem(k); });
-    location.href = './index.html';
-  };
+    if (q.error) { $("#status").textContent = "動画の読み込みに失敗しました"; log('videos error', q.error); return; }
+    const list = q.data || [];
+    const wrap = $("#videos");
+    wrap.innerHTML = '';
+    for (const v of list){
+      const card = document.createElement('div');
+      card.className = 'card';
+      const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1`;
+      card.innerHTML = `
+        <div style="position:relative;background:#000;aspect-ratio:16/9">
+          <iframe src="${src}" title="${v.title}" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
+        </div>
+        <div class="title">${v.title}</div>
+      `;
+      wrap.appendChild(card);
+    }
+    show($("#listWrap"), true);
+  }
+
+  // ===== メイン =====
+  (async () => {
+    $("#status").textContent = "ログイン状態を確認しています…";
+
+    const user = await getUserWithRetry();
+    if (!user) {
+      $("#status").innerHTML = '未ログインです。<a href="./">ログイン画面に戻る</a>';
+      return;
+    }
+    $("#userEmail").textContent = user.email || '';
+
+    const profRes = await loadProfileOrCreate(user.id);
+    if (profRes.error || !profRes.data) {
+      $("#status").innerHTML = 'プロフィール情報が見つかりません。<a href="./">ログインへ</a>';
+      return;
+    }
+
+    const prof = profRes.data; // {tier,is_active}
+    log('profile', prof);
+
+    // プランに応じた表示
+    if (!prof.is_active || (prof.tier || 'free').toLowerCase() === 'free') {
+      $("#status").textContent = "";
+      $("#planLabel").textContent = prof.tier || 'free';
+      show($("#freeGate"), true);
+      $("#btnSubscribe").onclick = () => createCheckout(user.id);
+    } else {
+      $("#status").textContent = "動画を読み込み中…";
+      show($("#freeGate"), false);
+      // standard 以上視聴可
+      const allowed = (prof.tier.toLowerCase()==='standard') ? ['standard'] : ['standard','premium','vip'];
+      await renderVideos(allowed);
+      $("#status").textContent = "";
+    }
+
+    // Logout
+    $("#logout").onclick = async () => {
+      try { await sb.auth.signOut(); } catch {}
+      location.replace('./');
+    };
+  })();
 </script>
 </body>
 </html>
