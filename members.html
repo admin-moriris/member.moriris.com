@@ -39,186 +39,69 @@
 
   <div id="status" class="muted banner">ログイン状態を確認しています…</div>
 
-  <!-- Freeユーザー向けゲート -->
-  <div id="freeGate" class="banner hidden">
-    <p>ようこそ。あなたのプラン：<b id="planLabel">free</b></p>
-    <p class="muted">ただいま有効なサブスクリプションがありません。</p>
-    <button id="btnSubscribe" class="primary">サブスク登録（Standard）へ</button>
-  </div>
-
-  <!-- 非会員 or プロファイル未作成時 -->
-  <div id="notMember" class="banner hidden">
-    <p>会員ではありません。<a href="./">ログイン画面に戻る</a></p>
-  </div>
-
-  <!-- 動画リスト -->
-  <div id="listWrap" class="hidden">
-    <div id="videos" class="grid"></div>
-  </div>
-
-  <pre id="dbg" class="hidden"></pre>
+<!-- Freeユーザー向けの購読UI（必要な位置に置く） -->
+<div id="subscribe-box" style="margin:24px 0; display:none">
+  <p>すべての会員動画を視聴するには購読してください。</p>
+  <button id="btn-subscribe" class="primary">Subscribe Standard Plan</button>
+  <p id="sub-msg" class="muted"></p>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ==== Supabase ====
-  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  // あなたの anon key（Dashboard > Project Settings > API > "anon"）
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, storageKey: 'moriris-auth' }
-  });
+  // ==== あなたの価格IDに置換 ====
+  const PRICE_ID = "price_XXXXXXXXXXXXXX"; // 月額 standard 用
 
-  // ==== 設定：Stripeの価格ID（置換してください） ====
-  const PRICE_ID_STANDARD = "price_1SQPclQt8oBthclHuQnAy8rN"; // ←あなたの Standard プランの price_id
-
-  // ==== 小道具 ====
-  const $ = s => document.querySelector(s);
-  const show = (el, on) => el.classList.toggle('hidden', !on);
-  const debugOn = new URL(location.href).searchParams.get('debug') === '1';
-  const log = (...a)=>{ if(!debugOn) return; const el=$("#dbg"); show(el,true);
-    el.textContent += a.map(x=> typeof x==='string'?x:JSON.stringify(x,null,2)).join(' ') + "\n"; };
-
-  // セッション復元を待つ
-  const sleep = ms => new Promise(r=>setTimeout(r,ms));
-  async function getUserWithRetry({tries=40, interval=150}={}){
-    try { await sb.auth.exchangeCodeForSession(window.location.href); } catch(e){ log('exchange_err', String(e)); }
-    for (let i=0;i<tries;i++){
-      const { data: { user } } = await sb.auth.getUser();
-      if (user) return user;
-      await sleep(interval);
-    }
-    return null;
+  // tier 判定後に呼ぶ（既存のプロファイル取得処理の末尾あたり）
+  async function showSubscribeIfFree(myTier) {
+    const box = document.getElementById('subscribe-box');
+    if (!box) return;
+    const isFree = !myTier || myTier === 'free' || myTier === 'none';
+    box.style.display = isFree ? 'block' : 'none';
   }
 
-  // プロファイル自己修復：無ければ作る（free）
-  async function loadProfileOrCreate(userId){
-    let { data: prof, error } = await sb
-      .from('profiles')
-      .select('id,tier,is_active')
-      .eq('id', userId)
-      .single();
+  // クリックで Checkout を開始
+  document.getElementById('btn-subscribe')?.addEventListener('click', startCheckout);
 
-    const notFound = error && (error.code === 'PGRST116' || error.details?.includes('0 rows'));
-    if (notFound) {
-      const up = await sb.from('profiles').upsert(
-        { id: userId, tier: 'free', is_active: false },
-        { onConflict: 'id' }
+  async function startCheckout() {
+    const msg = document.getElementById('sub-msg');
+    msg.textContent = 'Redirecting...';
+    try {
+      // 現在のユーザー情報とアクセストークン
+      const { data: { user }, error } = await sb.auth.getUser();
+      if (error || !user) { msg.textContent = 'ログインが必要です'; return; }
+
+      // Edge Function を叩いて Checkout セッション作成
+      const res = await fetch(
+        "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            // verify_jwt=false でもそのまま送る。将来の強化用に残す。
+            "Authorization": `Bearer ${(await sb.auth.getSession()).data.session?.access_token||""}`
+          },
+          body: JSON.stringify({
+            user_id: user.id,                   // metadata.user_id に入れる
+            price_id: PRICE_ID,                 // 価格ID
+            success_url: location.origin + "/members.html?lang=" + (document.documentElement.lang||"ja"),
+            cancel_url: location.origin + "/members.html?lang=" + (document.documentElement.lang||"ja") + "&checkout=cancel"
+          })
+        }
       );
-      if (up.error) { log('profiles upsert failed', up.error); return { data:null, error:up.error }; }
-      ({ data: prof, error } = await sb
-        .from('profiles')
-        .select('id,tier,is_active')
-        .eq('id', userId)
-        .single());
-    }
-    return { data: prof, error };
-  }
 
-  // チェックアウト作成 → Stripe へリダイレクト
-  async function createCheckout(userId){
-    const { data: sess } = await sb.auth.getSession();
-    const token = sess?.session?.access_token;
-    if (!token) { alert('未ログインです'); return; }
-
-    const res = await fetch(
-      "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          // Functions 側がJWTを要求する場合に必要
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          price_id: PRICE_ID_STANDARD,
-          success_url: location.origin + location.pathname + "?lang=ja",
-          cancel_url: location.origin + location.pathname + "?lang=ja"
-        })
+      if (!res.ok) {
+        const t = await res.text();
+        msg.textContent = "Error: " + t;
+        return;
       }
-    );
 
-    if (!res.ok) {
-      const t = await res.text();
-      alert("作成に失敗しました: " + t);
-      return;
+      const data = await res.json();
+      if (!data?.url) { msg.textContent = "Error: no session URL"; return; }
+      // Stripe Checkout へ遷移
+      window.location.href = data.url;
+    } catch (e) {
+      msg.textContent = "Error: " + String(e);
     }
-    const data = await res.json();
-    if (!data?.url) { alert("Checkout URLが取得できません"); return; }
-    location.href = data.url;
   }
-
-  // 動画一覧（standard 以上）
-  async function renderVideos(allowedTiers){
-    const q = await sb.from('member_videos')
-      .select('id,title,yt_id,tier')
-      .eq('published', true)
-      .in('tier', allowedTiers)
-      .order('id', { ascending:false });
-
-    if (q.error) { $("#status").textContent = "動画の読み込みに失敗しました"; log('videos error', q.error); return; }
-    const list = q.data || [];
-    const wrap = $("#videos");
-    wrap.innerHTML = '';
-    for (const v of list){
-      const card = document.createElement('div');
-      card.className = 'card';
-      const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1`;
-      card.innerHTML = `
-        <div style="position:relative;background:#000;aspect-ratio:16/9">
-          <iframe src="${src}" title="${v.title}" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
-        </div>
-        <div class="title">${v.title}</div>
-      `;
-      wrap.appendChild(card);
-    }
-    show($("#listWrap"), true);
-  }
-
-  // ===== メイン =====
-  (async () => {
-    $("#status").textContent = "ログイン状態を確認しています…";
-
-    const user = await getUserWithRetry();
-    if (!user) {
-      $("#status").innerHTML = '未ログインです。<a href="./">ログイン画面に戻る</a>';
-      return;
-    }
-    $("#userEmail").textContent = user.email || '';
-
-    const profRes = await loadProfileOrCreate(user.id);
-    if (profRes.error || !profRes.data) {
-      $("#status").innerHTML = 'プロフィール情報が見つかりません。<a href="./">ログインへ</a>';
-      return;
-    }
-
-    const prof = profRes.data; // {tier,is_active}
-    log('profile', prof);
-
-    // プランに応じた表示
-    if (!prof.is_active || (prof.tier || 'free').toLowerCase() === 'free') {
-      $("#status").textContent = "";
-      $("#planLabel").textContent = prof.tier || 'free';
-      show($("#freeGate"), true);
-      $("#btnSubscribe").onclick = () => createCheckout(user.id);
-    } else {
-      $("#status").textContent = "動画を読み込み中…";
-      show($("#freeGate"), false);
-      // standard 以上視聴可
-      const allowed = (prof.tier.toLowerCase()==='standard') ? ['standard'] : ['standard','premium','vip'];
-      await renderVideos(allowed);
-      $("#status").textContent = "";
-    }
-
-    // Logout
-    $("#logout").onclick = async () => {
-      try { await sb.auth.signOut(); } catch {}
-      location.replace('./');
-    };
-  })();
 </script>
 </body>
 </html>
