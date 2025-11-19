@@ -60,27 +60,22 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./js/app.js"></script>
 <script>
   // ==== Supabase ====
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  // あなたの anon key（Dashboard > Project Settings > API > "anon"）
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+  const SUPABASE_ANON_KEY = "あなたの anon key"; // すでに入れてある値でOK
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, storageKey: 'moriris-auth' }
   });
 
-  // ==== 設定：Stripeの価格ID（置換してください） ====
-  const PRICE_ID_STANDARD = "price_1SQPclQt8oBthclHuQnAy8rN"; // ←あなたの Standard プランの price_id
+  const PRICE_ID_STANDARD = "price_1SQPclQt8oBthclHuQnAy8rN";
 
-  // ==== 小道具 ====
   const $ = s => document.querySelector(s);
   const show = (el, on) => el.classList.toggle('hidden', !on);
   const debugOn = new URL(location.href).searchParams.get('debug') === '1';
   const log = (...a)=>{ if(!debugOn) return; const el=$("#dbg"); show(el,true);
     el.textContent += a.map(x=> typeof x==='string'?x:JSON.stringify(x,null,2)).join(' ') + "\n"; };
 
-  // セッション復元を待つ
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
   async function getUserWithRetry({tries=40, interval=150}={}){
     try { await sb.auth.exchangeCodeForSession(window.location.href); } catch(e){ log('exchange_err', String(e)); }
@@ -92,7 +87,6 @@
     return null;
   }
 
-  // プロファイル自己修復：無ければ作る（free）
   async function loadProfileOrCreate(userId){
     let { data: prof, error } = await sb
       .from('profiles')
@@ -116,18 +110,18 @@
     return { data: prof, error };
   }
 
-  // チェックアウト作成 → Stripe へリダイレクト
+  // Stripe チェックアウト
   async function createCheckout(userId) {
     const { data: sess } = await sb.auth.getSession();
     const token = sess?.session?.access_token;
-  
+
     const res = await fetch(
       "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // verify-jwtを使う場合
+          "Authorization": `Bearer ${token}`,
         },
         body: JSON.stringify({
           user_id: userId,
@@ -137,10 +131,6 @@
         }),
       }
     );
-  
-    const data = await res.json();
-    location.href = data.url;
-  }
 
     if (!res.ok) {
       const t = await res.text();
@@ -148,11 +138,13 @@
       return;
     }
     const data = await res.json();
-    if (!data?.url) { alert("Checkout URLが取得できません"); return; }
+    if (!data?.url) {
+      alert("Checkout URLが取得できません");
+      return;
+    }
     location.href = data.url;
   }
 
-  // 動画一覧（standard 以上）
   async function renderVideos(allowedTiers){
     const q = await sb.from('member_videos')
       .select('id,title,yt_id,tier')
@@ -181,7 +173,6 @@
     show($("#listWrap"), true);
   }
 
-  // ===== メイン =====
   (async () => {
     $("#status").textContent = "ログイン状態を確認しています…";
 
@@ -198,10 +189,9 @@
       return;
     }
 
-    const prof = profRes.data; // {tier,is_active}
+    const prof = profRes.data;
     log('profile', prof);
 
-    // プランに応じた表示
     if (!prof.is_active || (prof.tier || 'free').toLowerCase() === 'free') {
       $("#status").textContent = "";
       $("#planLabel").textContent = prof.tier || 'free';
@@ -210,13 +200,11 @@
     } else {
       $("#status").textContent = "動画を読み込み中…";
       show($("#freeGate"), false);
-      // standard 以上視聴可
       const allowed = (prof.tier.toLowerCase()==='standard') ? ['standard'] : ['standard','premium','vip'];
       await renderVideos(allowed);
       $("#status").textContent = "";
     }
 
-    // Logout
     $("#logout").onclick = async () => {
       try { await sb.auth.signOut(); } catch {}
       location.replace('./');
