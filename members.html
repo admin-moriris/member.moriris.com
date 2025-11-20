@@ -3,92 +3,624 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Members Videos</title>
+  <title>Moriris Members</title>
   <style>
     :root{
-      --bg:#faf8f4; --panel:#fff; --ink:#1d1b16; --muted:#6b6964;
-      --accent:#75c29c; --radius:16px; --shadow:0 6px 24px rgba(0,0,0,.06);
+      --bg:#faf8f4;
+      --bg-soft:#f5ffe9;
+      --panel:#ffffff;
+      --ink:#24311c;
+      --muted:#6b6964;
+      --accent:#75c29c;
+      --accent-dark:#0b5130;
+      --radius:20px;
+      --shadow:0 10px 32px rgba(0,0,0,.08);
     }
-    *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto}
-    .wrap{max-width:1100px;margin:42px auto;padding:0 20px}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-    h1{margin:0;font-size:34px}
-    .pill{border:1px solid #ddd;background:#fff;border-radius:999px;padding:6px 12px}
-    button{cursor:pointer;border-radius:12px;border:1px solid #ddd;padding:10px 14px;background:#fff;font-size:15px}
-    button.primary{background:var(--accent);color:#05361f;border-color:transparent}
-    .banner{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-top:12px}
-    .muted{color:var(--muted)}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-top:16px}
-    .card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-    .title{padding:12px 14px;font-weight:600}
-    .hidden{display:none}
-    a{color:#0d6b45}
-    pre#dbg{white-space:pre-wrap;background:#f6f6f6;border:1px solid #eee;padding:12px;border-radius:8px}
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 0 0,#f5ffe9 0,transparent 55%),
+        radial-gradient(circle at 100% 100%,#f1ffe0 0,transparent 55%),
+        var(--bg);
+      color:var(--ink);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto;
+    }
+    .page{
+      max-width:1120px;
+      margin:32px auto 40px;
+      padding:0 18px 32px;
+    }
+    /* header */
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand img{
+      border-radius:14px;
+      box-shadow:0 4px 14px rgba(0,0,0,.12);
+    }
+    .brand-title{
+      display:flex;
+      flex-direction:column;
+    }
+    .brand-title span:first-child{
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+      color:var(--muted);
+    }
+    .brand-title span:last-child{
+      font-size:22px;
+      letter-spacing:.08em;
+    }
+    .lang{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .lang button{
+      border:1px solid #ddd;
+      background:#fff;
+      border-radius:999px;
+      padding:6px 12px;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .lang .active{
+      border-color:var(--accent);
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+
+    /* user badge */
+    .user-box{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .pill{
+      border-radius:999px;
+      background:#ffffff;
+      padding:4px 10px;
+      border:1px solid rgba(0,0,0,.04);
+    }
+    .btn{
+      border-radius:999px;
+      border:1px solid #ddd;
+      background:#fff;
+      padding:7px 12px;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .btn-primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+    .btn-outline{
+      background:#fff;
+    }
+    .btn-danger{
+      background:#ffe7e3;
+      border-color:#ffb3a7;
+      color:#8b1a07;
+      font-weight:600;
+    }
+
+    /* tabs */
+    .tabs{
+      margin-top:18px;
+      background:rgba(255,255,255,.9);
+      border-radius:999px;
+      box-shadow:0 4px 18px rgba(0,0,0,.06);
+      padding:4px;
+      display:flex;
+      gap:4px;
+      overflow:auto;
+    }
+    .tab-btn{
+      flex:1;
+      min-width:0;
+      border:none;
+      background:transparent;
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:14px;
+      cursor:pointer;
+      letter-spacing:.12em;
+    }
+    .tab-btn.active{
+      background:var(--accent);
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+
+    main{
+      margin-top:18px;
+    }
+    .card{
+      background:var(--panel);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px 20px 24px;
+      margin-bottom:18px;
+    }
+    .tab-pane{display:none;}
+    .tab-pane.active{display:block;}
+
+    h2{
+      margin:0 0 10px;
+      font-size:20px;
+    }
+    p{
+      margin:6px 0;
+      line-height:1.7;
+      font-size:14px;
+    }
+    .muted{color:var(--muted);}
+
+    /* HOME specific */
+    .home-layout{
+      display:grid;
+      grid-template-columns:minmax(0,2fr) minmax(0,1.4fr);
+      gap:18px;
+    }
+    @media (max-width:800px){
+      .home-layout{grid-template-columns:1fr;}
+    }
+    .status-box{
+      background:var(--bg-soft);
+      border-radius:16px;
+      padding:12px 14px;
+      font-size:13px;
+      margin-top:8px;
+    }
+    .status-key{
+      font-weight:600;
+    }
+    .plan-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.03);
+      font-size:13px;
+    }
+    .plan-pill{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      background:#e9f8ef;
+      color:#0b5130;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+    }
+    .cta-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
+    }
+
+    /* ANIMATION grid */
+    .video-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+      gap:16px;
+      margin-top:12px;
+    }
+    .video-card{
+      background:var(--panel);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .video-title{
+      padding:10px 12px 12px;
+      font-size:14px;
+      font-weight:600;
+    }
+
+    /* PICTUREBOOK */
+    .book-list{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+      gap:16px;
+      margin-top:10px;
+    }
+    .book-item{
+      background:var(--bg-soft);
+      border-radius:16px;
+      padding:12px 14px 14px;
+    }
+    .book-title{
+      font-weight:600;
+      margin-bottom:4px;
+    }
+    a{color:#0d6b45;text-decoration:none;}
+    a:hover{text-decoration:underline;}
+
+    /* footer */
+    footer{
+      margin-top:24px;
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+    }
+    .sns-row{
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      margin:10px 0 6px;
+    }
+    .sns-icon{
+      width:32px;
+      height:32px;
+      border-radius:999px;
+      background:#ffffff;
+      box-shadow:0 4px 12px rgba(0,0,0,.08);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:17px;
+      cursor:pointer;
+      text-decoration:none;
+      color:var(--ink);
+    }
+    .sns-icon span{
+      font-size:15px;
+      font-weight:600;
+    }
+
+    .hidden{display:none;}
+    pre#dbg{
+      white-space:pre-wrap;
+      background:#f6f6f6;
+      border:1px solid #eee;
+      padding:10px;
+      border-radius:10px;
+      font-size:11px;
+      margin-top:14px;
+    }
   </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>Members Videos</h1>
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <img src="https://official.moriris.com/assets/favicon-192.png"
+           alt="Moriris" width="48" height="48">
+      <div class="brand-title">
+        <span data-i18n="brand_meta">MEMBERS AREA</span>
+        <span>Moriris</span>
+      </div>
+    </div>
+
     <div>
-      <span id="userEmail" class="pill"></span>
-      <button id="logout">Logout</button>
+      <div class="user-box">
+        <span data-i18n="logged_in_label">Logged in as</span>
+        <span id="userEmail" class="pill"></span>
+        <button id="logout" class="btn btn-outline" data-i18n="logout">Logout</button>
+      </div>
+      <div class="lang" style="margin-top:6px;justify-content:flex-end;">
+        <button id="btn-ja" class="active">日本語</button>
+        <button id="btn-en">English</button>
+      </div>
     </div>
   </header>
 
-  <div id="status" class="muted banner">ログイン状態を確認しています…</div>
+  <!-- Tabs -->
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="home" data-i18n="tab_home">HOME</button>
+    <button class="tab-btn" data-tab="animation" data-i18n="tab_animation">ANIMATION</button>
+    <button class="tab-btn" data-tab="book" data-i18n="tab_book">PICTUREBOOK</button>
+  </nav>
 
-  <!-- Freeユーザー向けゲート -->
-  <div id="freeGate" class="banner hidden">
-    <p>ようこそ。あなたのプラン：<b id="planLabel">free</b></p>
-    <p class="muted">ただいま有効なサブスクリプションがありません。</p>
-    <button id="btnSubscribe" class="btn btn-green">サブスク登録（Standard）へ</button>
-  </div>
+  <main>
+    <!-- HOME -->
+    <section id="tab-home" class="tab-pane active">
+      <div class="card home-layout">
+        <div>
+          <h2 data-i18n="home_title">ようこそ、モリリスメンバーズへ</h2>
+          <p class="muted" data-i18n="home_intro">
+            メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。
+          </p>
 
-  <!-- Standardユーザー向け：解約ボタン -->
-  <div id="cancelGate" class="banner hidden">
-    <p>現在のプラン：<b>standard</b></p>
-    <p class="muted">サブスクを解約すると、次回更新から料金は発生せず、Freeプランに戻ります。</p>
-    <button id="btnCancel" class="btn btn-red">サブスクを解約する</button>
-  </div>
+          <div class="status-box">
+            <div>
+              <span data-i18n="plan_label">現在のプラン：</span>
+              <span class="plan-badge">
+                <span class="plan-pill" id="planPill">FREE</span>
+                <span id="planLabelText" data-i18n-plan="free">Free</span>
+              </span>
+            </div>
+            <p id="statusText"
+               class="muted"
+               style="margin-top:6px;"
+               data-status="checking"
+               data-i18n-status>
+              ログイン状態を確認しています…
+            </p>
+          </div>
 
+          <div class="cta-row" style="margin-top:12px;">
+            <button id="btnSubscribe" class="btn btn-primary hidden" data-i18n="btn_subscribe">
+              Standardプランに登録する
+            </button>
+            <button id="btnCancel" class="btn btn-danger hidden" data-i18n="btn_cancel">
+              サブスクを解約する
+            </button>
+          </div>
+        </div>
 
-  <!-- 非会員 or プロファイル未作成時 -->
-  <div id="notMember" class="banner hidden">
-    <p>会員ではありません。<a href="./">ログイン画面に戻る</a></p>
-  </div>
+        <div>
+          <h3 style="margin:0 0 6px;font-size:16px;" data-i18n="home_how_title">
+            メンバーエリアの楽しみ方
+          </h3>
+          <ul style="margin:4px 0 0;padding-left:18px;font-size:13px;line-height:1.7;">
+            <li data-i18n="home_how_1">
+              ANIMATIONタブからメンバー限定アニメを視聴できます。
+            </li>
+            <li data-i18n="home_how_2">
+              PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。
+            </li>
+            <li data-i18n="home_how_3">
+              プランの変更や解約は、上のボタンからいつでも行えます。
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
 
-  <!-- 動画リスト -->
-  <div id="listWrap" class="hidden">
-    <div id="videos" class="grid"></div>
-  </div>
+    <!-- ANIMATION -->
+    <section id="tab-animation" class="tab-pane">
+      <div class="card">
+        <h2 data-i18n="anim_title">メンバー限定アニメ</h2>
+        <p class="muted" id="animGateText" data-i18n="anim_gate">
+          Standardプランに登録すると、メンバー限定のアニメを視聴できます。
+        </p>
+        <div id="videos" class="video-grid"></div>
+      </div>
+    </section>
 
-  <pre id="dbg" class="hidden"></pre>
+    <!-- PICTUREBOOK -->
+    <section id="tab-book" class="tab-pane">
+      <div class="card">
+        <h2 data-i18n="book_title">デジタル絵本</h2>
+        <p class="muted" data-i18n="book_intro">
+          モリリスの世界を絵本でもお楽しみいただけます。今後、メンバー限定の絵本を追加予定です。
+        </p>
+
+        <div class="book-list">
+          <div class="book-item">
+            <div class="book-title" data-i18n="book_ep1_title">
+              Moriris Picture Book – Episode 1
+            </div>
+            <p class="muted" data-i18n="book_ep1_desc">
+              森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。
+            </p>
+            <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
+               target="_blank" rel="noopener noreferrer"
+               data-i18n="book_kindle_link">
+              Kindle ストアで見る
+            </a>
+          </div>
+          <!-- 必要に応じて他のエピソードカードを追加 -->
+        </div>
+      </div>
+    </section>
+
+    <pre id="dbg" class="hidden"></pre>
+  </main>
+
+  <footer>
+    <div class="sns-row">
+      <a class="sns-icon" href="https://www.youtube.com/@moriris_world"
+         target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+        ▶
+      </a>
+      <a class="sns-icon" href="https://www.instagram.com/moriris_world"
+         target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <span>IG</span>
+      </a>
+      <a class="sns-icon" href="https://x.com/moriris_world"
+         target="_blank" rel="noopener noreferrer" aria-label="X">
+        <span>X</span>
+      </a>
+      <a class="sns-icon" href="https://www.tiktok.com/@moriris_world"
+         target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+        <span>♪</span>
+      </a>
+    </div>
+    <div data-i18n="footer_note">
+      Follow Moriris on social media for the latest updates.
+    </div>
+  </footer>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-  // ==== Supabase ====
+  // ==== Supabase設定 ====
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU"; // すでに入れてある値でOK
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, storageKey: 'moriris-auth' }
+    auth:{ persistSession:true, autoRefreshToken:true, storageKey:"moriris-auth" }
   });
 
   const PRICE_ID_STANDARD = "price_1SQPclQt8oBthclHuQnAy8rN";
 
-  const $ = s => document.querySelector(s);
-  const show = (el, on) => el.classList.toggle('hidden', !on);
-  const debugOn = new URL(location.href).searchParams.get('debug') === '1';
-  const log = (...a)=>{ if(!debugOn) return; const el=$("#dbg"); show(el,true);
-    el.textContent += a.map(x=> typeof x==='string'?x:JSON.stringify(x,null,2)).join(' ') + "\n"; };
+  const $ = (s)=>document.querySelector(s);
+  const debugOn = new URL(location.href).searchParams.get("debug")==="1";
+  const log = (...a)=>{ if(!debugOn) return; const el=$("#dbg"); el.classList.remove("hidden");
+    el.textContent += a.map(x=>typeof x==="string"?x:JSON.stringify(x,null,2)).join(" ") + "\n"; };
 
+  // ==== i18n ====
+  const I18N = {
+    ja:{
+      brand_meta:"MEMBERS AREA",
+      logged_in_label:"ログイン中：",
+      logout:"ログアウト",
+      tab_home:"HOME",
+      tab_animation:"ANIMATION",
+      tab_book:"PICTUREBOOK",
+      home_title:"ようこそ、モリリスメンバーズへ",
+      home_intro:"メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。",
+      plan_label:"現在のプラン：",
+      plan_free:"Free",
+      plan_standard:"Standard",
+      status_checking:"ログイン状態を確認しています…",
+      status_not_logged:'未ログインです。ログイン画面に戻ってください。',
+      status_free:"ただいま有効なサブスクリプションがありません。",
+      status_loading:"動画を読み込み中…",
+      status_ready:"コンテンツをお楽しみください。",
+      status_error:"情報の取得に失敗しました。",
+      btn_subscribe:"Standardプランに登録する",
+      btn_cancel:"サブスクを解約する",
+      home_how_title:"メンバーエリアの楽しみ方",
+      home_how_1:"ANIMATIONタブからメンバー限定アニメを視聴できます。",
+      home_how_2:"PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。",
+      home_how_3:"プランの変更や解約は、HOMEタブからいつでも行えます。",
+      anim_title:"メンバー限定アニメ",
+      anim_gate:"Standardプランに登録すると、メンバー限定のアニメを視聴できます。",
+      anim_empty:"現在、視聴可能な動画がありません。",
+      book_title:"デジタル絵本",
+      book_intro:"モリリスの世界を絵本でもお楽しみいただけます。今後、メンバー限定の絵本を追加予定です。",
+      book_ep1_title:"Moriris Picture Book – Episode 1",
+      book_ep1_desc:"森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。",
+      book_kindle_link:"Kindle ストアで見る",
+      footer_note:"最新情報は各種SNSでお知らせします。"
+    },
+    en:{
+      brand_meta:"MEMBERS AREA",
+      logged_in_label:"Logged in as",
+      logout:"Logout",
+      tab_home:"HOME",
+      tab_animation:"ANIMATION",
+      tab_book:"PICTUREBOOK",
+      home_title:"Welcome to Moriris Members",
+      home_intro:"Enjoy members-only animations and digital picture books from this page.",
+      plan_label:"Current plan:",
+      plan_free:"Free",
+      plan_standard:"Standard",
+      status_checking:"Checking your login status…",
+      status_not_logged:"You are not logged in. Please go back to the login page.",
+      status_free:"You don't have an active subscription yet.",
+      status_loading:"Loading videos…",
+      status_ready:"Enjoy the content!",
+      status_error:"Failed to load your membership information.",
+      btn_subscribe:"Subscribe to Standard plan",
+      btn_cancel:"Cancel subscription",
+      home_how_title:"How to use this members area",
+      home_how_1:"Watch members-only animations from the ANIMATION tab.",
+      home_how_2:"Read digital picture books and extras from the PICTUREBOOK tab.",
+      home_how_3:"You can change or cancel your plan anytime from the HOME tab.",
+      anim_title:"Members-only Animation",
+      anim_gate:"Subscribe to the Standard plan to watch all members-only episodes.",
+      anim_empty:"There are no videos available yet.",
+      book_title:"Digital Picture Books",
+      book_intro:"Enjoy the world of Moriris as picture books. More members-only books are coming soon.",
+      book_ep1_title:"Moriris Picture Book – Episode 1",
+      book_ep1_desc:"A small adventure that begins in the forest. Also available on Kindle.",
+      book_kindle_link:"View on Kindle Store",
+      footer_note:"Follow Moriris on social media for the latest updates."
+    }
+  };
+
+  let currentLang = "ja";
+  const langKey = "moriris_lang_members";
+  const state = {
+    plan:"free",             // 'free' | 'standard' | 'unknown'
+    statusCode:"checking"    // 'checking','not_logged','free','loading','ready','error'
+  };
+
+  function applyLang(lang){
+    currentLang = lang;
+    localStorage.setItem(langKey, lang);
+    document.documentElement.lang = lang;
+
+    const t = I18N[lang];
+
+    // 単純な data-i18n
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const key = el.getAttribute("data-i18n");
+      if (t[key]) el.textContent = t[key];
+    });
+
+    // プラン表示
+    const planLabelText = $("#planLabelText");
+    if (planLabelText){
+      const planKey = state.plan === "standard" ? "plan_standard" : "plan_free";
+      planLabelText.textContent = t[planKey];
+      $("#planPill").textContent = state.plan.toUpperCase();
+    }
+
+    // ステータス
+    const statusEl = $("#statusText");
+    if (statusEl){
+      const map = {
+        checking:"status_checking",
+        not_logged:"status_not_logged",
+        free:"status_free",
+        loading:"status_loading",
+        ready:"status_ready",
+        error:"status_error"
+      };
+      const k = map[state.statusCode] || "status_error";
+      statusEl.textContent = t[k];
+    }
+
+    // ANIMATION ゲート
+    const gate = $("#animGateText");
+    if (gate) gate.textContent = t.anim_gate;
+
+    // タブのアクティブ表示
+    $("#btn-ja").classList.toggle("active", lang==="ja");
+    $("#btn-en").classList.toggle("active", lang==="en");
+  }
+
+  $("#btn-ja").onclick = ()=>applyLang("ja");
+  $("#btn-en").onclick = ()=>applyLang("en");
+
+  // ==== タブ切り替え ====
+  document.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active", b===btn));
+      document.querySelectorAll(".tab-pane").forEach(p=>{
+        p.classList.toggle("active", p.id === "tab-"+tab);
+      });
+    });
+  });
+
+  // ==== 認証処理 ====
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
   async function getUserWithRetry({tries=40, interval=150}={}){
-    try { await sb.auth.exchangeCodeForSession(window.location.href); } catch(e){ log('exchange_err', String(e)); }
-    for (let i=0;i<tries;i++){
-      const { data: { user } } = await sb.auth.getUser();
+    try{
+      await sb.auth.exchangeCodeForSession(window.location.href);
+    }catch(e){ log("exchange_err", String(e)); }
+
+    for(let i=0;i<tries;i++){
+      const { data:{ user } } = await sb.auth.getUser();
       if (user) return user;
       await sleep(interval);
     }
@@ -96,170 +628,210 @@
   }
 
   async function loadProfileOrCreate(userId){
-    let { data: prof, error } = await sb
-      .from('profiles')
-      .select('id,tier,is_active')
-      .eq('id', userId)
+    let { data:prof, error } = await sb
+      .from("profiles")
+      .select("id,tier,is_active")
+      .eq("id", userId)
       .single();
 
-    const notFound = error && (error.code === 'PGRST116' || error.details?.includes('0 rows'));
-    if (notFound) {
-      const up = await sb.from('profiles').upsert(
-        { id: userId, tier: 'free', is_active: false },
-        { onConflict: 'id' }
+    const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
+    if (notFound){
+      const up = await sb.from("profiles").upsert(
+        { id:userId, tier:"free", is_active:false },
+        { onConflict:"id" }
       );
-      if (up.error) { log('profiles upsert failed', up.error); return { data:null, error:up.error }; }
-      ({ data: prof, error } = await sb
-        .from('profiles')
-        .select('id,tier,is_active')
-        .eq('id', userId)
+      if (up.error){ log("profiles upsert failed", up.error); return { data:null, error:up.error }; }
+
+      ({ data:prof, error } = await sb
+        .from("profiles")
+        .select("id,tier,is_active")
+        .eq("id", userId)
         .single());
     }
-    return { data: prof, error };
+    return { data:prof, error };
   }
 
-  // Stripe チェックアウト
-  async function createCheckout(userId) {
-    const { data: sess } = await sb.auth.getSession();
+  async function createCheckout(userId){
+    const { data:sess } = await sb.auth.getSession();
     const token = sess?.session?.access_token;
 
     const res = await fetch(
       "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":`Bearer ${token}`
         },
-        body: JSON.stringify({
-          user_id: userId,
-          price_id: PRICE_ID_STANDARD,
-          success_url: location.href,
-          cancel_url: location.href,
-        }),
+        body:JSON.stringify({
+          user_id:userId,
+          price_id:PRICE_ID_STANDARD,
+          success_url:location.href,
+          cancel_url:location.href
+        })
       }
     );
 
-    if (!res.ok) {
+    if (!res.ok){
       const t = await res.text();
       alert("作成に失敗しました: " + t);
       return;
     }
     const data = await res.json();
-    if (!data?.url) {
+    if (!data?.url){
       alert("Checkout URLが取得できません");
       return;
     }
     location.href = data.url;
   }
 
-  async function openPortal(userId) {
-    const { data: sess } = await sb.auth.getSession();
+  async function openPortal(userId){
+    const { data:sess } = await sb.auth.getSession();
     const token = sess?.session?.access_token;
-  
+
     const res = await fetch(
       "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-portal-session",
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // verify-jwt ありなら
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":`Bearer ${token}`
         },
-        body: JSON.stringify({
-          user_id: userId,
-          return_url: location.href, // 解約後に戻ってくるURL
-        }),
+        body:JSON.stringify({
+          user_id:userId,
+          return_url:location.href
+        })
       }
     );
-  
-    if (!res.ok) {
+
+    if (!res.ok){
       const t = await res.text();
       alert("ポータルの作成に失敗しました: " + t);
       return;
     }
     const data = await res.json();
-    if (!data?.url) {
+    if (!data?.url){
       alert("ポータルURLが取得できません");
       return;
     }
     location.href = data.url;
   }
 
-  
   async function renderVideos(allowedTiers){
-    const q = await sb.from('member_videos')
-      .select('id,title,yt_id,tier')
-      .eq('published', true)
-      .in('tier', allowedTiers)
-      .order('id', { ascending:false });
+    const q = await sb
+      .from("member_videos")
+      .select("id,title,yt_id,tier")
+      .eq("published", true)
+      .in("tier", allowedTiers)
+      .order("id", { ascending:false });
 
-    if (q.error) { $("#status").textContent = "動画の読み込みに失敗しました"; log('videos error', q.error); return; }
-    const list = q.data || [];
     const wrap = $("#videos");
-    wrap.innerHTML = '';
+    wrap.innerHTML = "";
+
+    if (q.error){
+      log("videos error", q.error);
+      const p = document.createElement("p");
+      p.className = "muted";
+      p.textContent = I18N[currentLang].anim_empty;
+      wrap.appendChild(p);
+      return;
+    }
+
+    const list = q.data || [];
+    if (!list.length){
+      const p = document.createElement("p");
+      p.className = "muted";
+      p.textContent = I18N[currentLang].anim_empty;
+      wrap.appendChild(p);
+      return;
+    }
+
     for (const v of list){
-      const card = document.createElement('div');
-      card.className = 'card';
-      const src = `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1`;
+      const card = document.createElement("div");
+      card.className = "video-card";
+      const src =
+        `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1`;
       card.innerHTML = `
-        <div style="position:relative;background:#000;aspect-ratio:16/9">
+        <div style="position:relative;background:#000;aspect-ratio:16/9;">
           <iframe src="${src}" title="${v.title}" frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen loading="lazy" style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
+            allowfullscreen loading="lazy"
+            style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
         </div>
-        <div class="title">${v.title}</div>
+        <div class="video-title">${v.title}</div>
       `;
       wrap.appendChild(card);
     }
-    show($("#listWrap"), true);
   }
 
-  (async () => {
-    $("#status").textContent = "ログイン状態を確認しています…";
+  async function main(){
+    // 言語初期化（URLの ?lang= 優先）
+    const urlLang = new URL(location.href).searchParams.get("lang");
+    const storedLang = localStorage.getItem(langKey);
+    const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
+    applyLang(urlLang || storedLang || navLang);
+
+    state.statusCode = "checking";
+    applyLang(currentLang);
 
     const user = await getUserWithRetry();
-    if (!user) {
-      $("#status").innerHTML = '未ログインです。<a href="./">ログイン画面に戻る</a>';
+    if (!user){
+      state.statusCode = "not_logged";
+      applyLang(currentLang);
+      $("#userEmail").textContent = "-";
       return;
     }
-    $("#userEmail").textContent = user.email || '';
+    $("#userEmail").textContent = user.email || "";
 
     const profRes = await loadProfileOrCreate(user.id);
-    if (profRes.error || !profRes.data) {
-      $("#status").innerHTML = 'プロフィール情報が見つかりません。<a href="./">ログインへ</a>';
+    if (profRes.error || !profRes.data){
+      state.statusCode = "error";
+      applyLang(currentLang);
       return;
     }
 
     const prof = profRes.data;
-    log('profile', prof);
+    log("profile", prof);
 
-    if (!prof.is_active || (prof.tier || 'free').toLowerCase() === 'free') {
-      $("#status").textContent = "";
-      $("#planLabel").textContent = prof.tier || 'free';
-      show($("#freeGate"), true);
-      show($("#cancelGate"), false);
-      $("#btnSubscribe").onclick = () => createCheckout(user.id);
-    } else {
-      $("#status").textContent = "動画を読み込み中…";
-      show($("#freeGate"), false);
-    
-      // standard 以上
-      const allowed = (prof.tier.toLowerCase()==='standard')
-        ? ['standard']
-        : ['standard','premium','vip'];
+    const tier = (prof.tier || "free").toLowerCase();
+    const isActive = !!prof.is_active;
+
+    if (!isActive || tier==="free"){
+      state.plan = "free";
+      state.statusCode = "free";
+      applyLang(currentLang);
+
+      $("#btnSubscribe").classList.remove("hidden");
+      $("#btnCancel").classList.add("hidden");
+      $("#btnSubscribe").onclick = ()=>createCheckout(user.id);
+
+      // 無料ユーザー向け：アニメはまだ見られない（テキスト案内のみ）
+      $("#videos").innerHTML = "";
+    }else{
+      state.plan = tier==="standard" ? "standard" : "standard";
+      state.statusCode = "loading";
+      applyLang(currentLang);
+
+      $("#btnSubscribe").classList.add("hidden");
+      $("#btnCancel").classList.remove("hidden");
+      $("#btnCancel").onclick = ()=>openPortal(user.id);
+
+      const allowed = (tier==="standard")
+        ? ["standard"]
+        : ["standard","premium","vip"];
+
       await renderVideos(allowed);
-      $("#status").textContent = "";
-    
-      // 解約用ブロックを表示
-      show($("#cancelGate"), true);
-      $("#btnCancel").onclick = () => openPortal(user.id);
+      state.statusCode = "ready";
+      applyLang(currentLang);
     }
 
-    $("#logout").onclick = async () => {
-      try { await sb.auth.signOut(); } catch {}
-      location.replace('./');
+    $("#logout").onclick = async ()=>{
+      try{ await sb.auth.signOut(); }catch{}
+      location.replace("./");
     };
-  })();
+  }
+
+  main();
 </script>
 </body>
 </html>
