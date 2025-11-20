@@ -46,6 +46,14 @@
     <button id="btnSubscribe" class="btn btn-green">サブスク登録（Standard）へ</button>
   </div>
 
+  <!-- Standardユーザー向け：解約ボタン -->
+  <div id="cancelGate" class="banner hidden">
+    <p>現在のプラン：<b>standard</b></p>
+    <p class="muted">サブスクを解約すると、次回更新から料金は発生せず、Freeプランに戻ります。</p>
+    <button id="btnCancel" class="btn btn-red">サブスクを解約する</button>
+  </div>
+
+
   <!-- 非会員 or プロファイル未作成時 -->
   <div id="notMember" class="banner hidden">
     <p>会員ではありません。<a href="./">ログイン画面に戻る</a></p>
@@ -145,6 +153,39 @@
     location.href = data.url;
   }
 
+  async function openPortal(userId) {
+    const { data: sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+  
+    const res = await fetch(
+      "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-portal-session",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // verify-jwt ありなら
+        },
+        body: JSON.stringify({
+          user_id: userId,
+          return_url: location.href, // 解約後に戻ってくるURL
+        }),
+      }
+    );
+  
+    if (!res.ok) {
+      const t = await res.text();
+      alert("ポータルの作成に失敗しました: " + t);
+      return;
+    }
+    const data = await res.json();
+    if (!data?.url) {
+      alert("ポータルURLが取得できません");
+      return;
+    }
+    location.href = data.url;
+  }
+
+  
   async function renderVideos(allowedTiers){
     const q = await sb.from('member_videos')
       .select('id,title,yt_id,tier')
@@ -196,13 +237,22 @@
       $("#status").textContent = "";
       $("#planLabel").textContent = prof.tier || 'free';
       show($("#freeGate"), true);
+      show($("#cancelGate"), false);
       $("#btnSubscribe").onclick = () => createCheckout(user.id);
     } else {
       $("#status").textContent = "動画を読み込み中…";
       show($("#freeGate"), false);
-      const allowed = (prof.tier.toLowerCase()==='standard') ? ['standard'] : ['standard','premium','vip'];
+    
+      // standard 以上
+      const allowed = (prof.tier.toLowerCase()==='standard')
+        ? ['standard']
+        : ['standard','premium','vip'];
       await renderVideos(allowed);
       $("#status").textContent = "";
+    
+      // 解約用ブロックを表示
+      show($("#cancelGate"), true);
+      $("#btnCancel").onclick = () => openPortal(user.id);
     }
 
     $("#logout").onclick = async () => {
