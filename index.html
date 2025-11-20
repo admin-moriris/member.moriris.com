@@ -5,33 +5,117 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Moriris Members – Login</title>
   <style>
-    :root{--bg:#faf8f4;--panel:#fff;--ink:#1d1b16;--muted:#6b6964;--accent:#75c29c;--r:16px;--sh:0 6px 24px rgba(0,0,0,.06)}
-    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto}
-    .wrap{max-width:920px;margin:48px auto;padding:0 20px}
-    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
-    .brand{display:flex;align-items:center;gap:12px} .brand h1{font-size:22px;margin:0}
-    .lang{display:flex;gap:8px} .lang button{border:1px solid #ddd;background:#fff;border-radius:999px;padding:6px 12px;cursor:pointer}
-    .lang .active{border-color:var(--accent);color:#0b5130}
-    .card{background:var(--panel);border-radius:var(--r);box-shadow:var(--sh);padding:28px}
-    .lead{color:var(--muted);margin:6px 0 18px}
-    .row{display:flex;gap:12px;flex-wrap:wrap}
-    input,button{padding:12px 14px;font-size:16px;border-radius:12px;border:1px solid #ddd}
-    input{flex:1;min-width:260px}
-    button.primary{background:var(--accent);color:#05361f;border-color:transparent;cursor:pointer}
-    button.ghost{background:#fff;cursor:pointer}
-    #msg{margin-top:12px;color:var(--muted)}
-    footer{margin-top:28px;color:var(--muted);font-size:14px}
-    a{color:#0d6b45}
-    pre#dbg{white-space:pre-wrap;background:#f6f6f6;border:1px solid #eee;padding:12px;border-radius:8px;margin-top:14px}
+    :root{
+      --bg:#faf8f4;
+      --panel:#ffffff;
+      --ink:#1d1b16;
+      --muted:#6b6964;
+      --accent:#75c29c;
+      --r:18px;
+      --sh:0 10px 30px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box;}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:radial-gradient(circle at top,#f3ffe9 0,#faf8f4 55%);
+      color:var(--ink);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .wrap{
+      width:100%;
+      max-width:640px;
+      padding:24px 20px 40px;
+    }
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .brand img{
+      border-radius:12px;
+    }
+    .brand h1{
+      font-size:22px;
+      margin:0;
+      letter-spacing:.06em;
+    }
+    .lang{
+      display:flex;
+      gap:8px;
+    }
+    .lang button{
+      border:1px solid #ddd;
+      background:#fff;
+      border-radius:999px;
+      padding:6px 12px;
+      cursor:pointer;
+      font-size:14px;
+    }
+    .lang .active{
+      border-color:var(--accent);
+      color:#0b5130;
+      font-weight:600;
+    }
+    .card{
+      background:var(--panel);
+      border-radius:var(--r);
+      box-shadow:var(--sh);
+      padding:26px 22px 24px;
+    }
+    .lead{
+      color:var(--muted);
+      margin:4px 0 18px;
+      font-size:15px;
+      line-height:1.6;
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    input,button{
+      padding:12px 14px;
+      font-size:16px;
+      border-radius:12px;
+      border:1px solid #ddd;
+    }
+    input{
+      flex:1;
+      min-width:260px;
+    }
+    button.primary{
+      background:var(--accent);
+      color:#05361f;
+      border-color:transparent;
+      cursor:pointer;
+      font-weight:600;
+      min-width:140px;
+    }
+    footer{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    a{color:#0d6b45;}
   </style>
-  <!-- Supabase UMD (非モジュール。Pagesでもそのまま動作) -->
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
   <div class="wrap">
     <header>
       <div class="brand">
-        <img src="https://official.moriris.com/assets/favicon-192.png" alt="" width="32" height="32" style="border-radius:8px"/>
+        <img src="https://official.moriris.com/assets/favicon-192.png" alt="Moriris" width="40" height="40" />
         <h1 id="t_title">Moriris Members</h1>
       </div>
       <div class="lang">
@@ -41,101 +125,107 @@
     </header>
 
     <div class="card">
-      <p class="lead" id="t_lead">メールアドレスを入力してログイン（マジックリンク）</p>
+      <p class="lead" id="t_lead">
+        メールアドレスを入力してログイン（マジックリンク）
+      </p>
       <div class="row">
-        <input id="email" type="email" placeholder="you@example.com" aria-label="email"/>
+        <input id="email" type="email" placeholder="you@example.com" aria-label="email" />
         <button id="login" class="primary">メールを送る</button>
-        <button id="to-members" class="ghost">会員ページへ</button>
       </div>
-      <div class="row" style="margin-top:8px">
-        <button id="reset" class="ghost" title="保存済みセッションを消す">セッションをリセット</button>
-      </div>
-      <p id="msg"></p>
-      <pre id="dbg" class="hidden" style="display:none"></pre>
     </div>
 
     <footer>
-      <span id="t_note">メールが届かない場合は迷惑メールをご確認ください。</span>
+      <span id="t_note">メールが届かない場合は迷惑メールフォルダをご確認ください。</span>
     </footer>
   </div>
 
   <script>
-    // ===== ここを置換（公開して良い anon/publishable キー）=====
+    // ===== Supabase設定 =====
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
-    // =======================================================
+    const SUPABASE_ANON_KEY =
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" }
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        storageKey: "moriris-auth",
+      },
     });
 
-    // ---- i18n ----
+    // ===== i18n =====
     const I18N = {
-      ja:{ title:"Moriris Members", lead:"メールアドレスを入力してログイン（マジックリンク）", send:"メールを送る",
-           goto:"会員ページへ", reset:"セッションをリセット", hint:"メールが届かない場合は迷惑メールをご確認ください。" },
-      en:{ title:"Moriris Members", lead:"Sign in with your email (magic link).", send:"Send link",
-           goto:"Go to Members", reset:"Reset session", hint:"If you don't see the email, please check your spam folder." }
+      ja: {
+        title: "Moriris Members",
+        lead: "メールアドレスを入力してログイン（マジックリンク）",
+        send: "メールを送る",
+        hint: "メールが届かない場合は迷惑メールフォルダをご確認ください。",
+        needEmail: "メールアドレスを入力してください。",
+        sent: "ログイン用のメールを送信しました。",
+        errorPrefix: "エラー：",
+      },
+      en: {
+        title: "Moriris Members",
+        lead: "Enter your email to sign in (magic link).",
+        send: "Send link",
+        hint: "If you don't see the email, please check your spam folder.",
+        needEmail: "Please enter your email address.",
+        sent: "A login link has been sent to your email.",
+        errorPrefix: "Error: ",
+      },
     };
-    const $ = s => document.querySelector(s);
-    const langKey = "moriris_lang";
-    const dbg = (k,v)=>{ const el=$("#dbg"); el.style.display="block";
-      el.textContent += `${k}: ${typeof v==='string'?v:JSON.stringify(v,null,2)}\n`; };
 
-    function setLang(lang){
+    const langKey = "moriris_lang";
+    const $ = (s) => document.querySelector(s);
+
+    function setLang(lang) {
       localStorage.setItem(langKey, lang);
       const t = I18N[lang];
       $("#t_title").textContent = t.title;
       $("#t_lead").textContent = t.lead;
       $("#login").textContent = t.send;
-      $("#to-members").textContent = t.goto;
-      $("#reset").textContent = t.reset;
       $("#t_note").textContent = t.hint;
-      $("#btn-ja").classList.toggle("active", lang==="ja");
-      $("#btn-en").classList.toggle("active", lang==="en");
+      $("#btn-ja").classList.toggle("active", lang === "ja");
+      $("#btn-en").classList.toggle("active", lang === "en");
       document.documentElement.lang = lang;
     }
-    $("#btn-ja").onclick=()=>setLang("ja");
-    $("#btn-en").onclick=()=>setLang("en");
-    setLang(localStorage.getItem(langKey) || ((navigator.language||"ja").startsWith("ja")?"ja":"en"));
 
-    // ---- 送信 ----
+    $("#btn-ja").onclick = () => setLang("ja");
+    $("#btn-en").onclick = () => setLang("en");
+    setLang(
+      localStorage.getItem(langKey) ||
+      ((navigator.language || "ja").startsWith("ja") ? "ja" : "en")
+    );
+
+    // ===== メール送信 =====
     $("#login").onclick = async () => {
-      $("#msg").textContent = "";
-      $("#dbg").textContent = "";
+      const lang = localStorage.getItem(langKey) || "ja";
+      const t = I18N[lang];
       const email = $("#email").value.trim();
-      if (!email) { $("#msg").textContent = (document.documentElement.lang==="en")?"Please enter your email.":"メールを入力してください。"; return; }
 
-      const lang = localStorage.getItem(langKey) || "ja";
-      // ログ用
-      dbg("url", SUPABASE_URL);
-      dbg("key_prefix", SUPABASE_ANON_KEY.slice(0,16));
+      if (!email) {
+        alert(t.needEmail);
+        return;
+      }
 
-      const { data, error } = await sb.auth.signInWithOtp({
-        email,
-        options: {
-          shouldCreateUser: true,
-          emailRedirectTo: `https://member.moriris.com/members.html?lang=${lang}`
+      try {
+        const { error } = await sb.auth.signInWithOtp({
+          email,
+          options: {
+            shouldCreateUser: true,
+            emailRedirectTo:
+              `https://member.moriris.com/members.html?lang=${lang}`,
+          },
+        });
+
+        if (error) {
+          alert(t.errorPrefix + error.message);
+        } else {
+          alert(t.sent);
         }
-      });
-
-      dbg("otp_result", { data, error: error?.message||null });
-      $("#msg").textContent = error
-        ? ((document.documentElement.lang==="en") ? `Error: ${error.message}` : `エラー: ${error.message}`)
-        : ((document.documentElement.lang==="en") ? "OK" : "OK");
-    };
-
-    // ---- 会員ページへ ----
-    $("#to-members").onclick = () => {
-      const lang = localStorage.getItem(langKey) || "ja";
-      location.href = `./members.html?lang=${lang}`;
-    };
-
-    // ---- セッション消去 ----
-    $("#reset").onclick = async () => {
-      try { await sb.auth.signOut(); } catch {}
-      try { localStorage.removeItem('moriris-auth'); } catch {}
-      try { Object.keys(localStorage).forEach(k => { if (k.startsWith('sb-')) localStorage.removeItem(k); }); } catch {}
-      $("#msg").textContent = (document.documentElement.lang==="en")?"Session cleared.":"セッションをクリアしました。";
+      } catch (e) {
+        alert(t.errorPrefix + String(e));
+      }
     };
   </script>
 </body>
