@@ -12,13 +12,15 @@
       --muted:#6b6964;
       --accent:#75c29c;
       --r:18px;
-      --sh:0 10px 30px rgba(0,0,0,.08);
+      --sh:0 10px 30px rgba(0,0,0,.18);
     }
     *{box-sizing:border-box;}
     body{
       margin:0;
       min-height:100vh;
-      background:radial-gradient(circle at top,#f3ffe9 0,#faf8f4 55%);
+      background:
+        linear-gradient(to bottom, rgba(250,248,244,.9), rgba(250,248,244,.95)),
+        url("https://official.moriris.com/assets/hero-forest.png") center/cover fixed no-repeat;
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
       display:flex;
@@ -43,6 +45,7 @@
     }
     .brand img{
       border-radius:12px;
+      box-shadow:0 4px 14px rgba(0,0,0,.18);
     }
     .brand h1{
       font-size:22px;
@@ -115,7 +118,8 @@
   <div class="wrap">
     <header>
       <div class="brand">
-        <img src="https://official.moriris.com/assets/favicon-192.png" alt="Moriris" width="40" height="40" />
+        <img src="https://official.moriris.com/assets/logo-moriris.png"
+             alt="Moriris" width="120" />
         <h1 id="t_title">Moriris Members</h1>
       </div>
       <div class="lang">
