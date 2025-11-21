@@ -41,29 +41,27 @@
     .brand{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:18px;
     }
     .brand img{
-      max-width:200px;
+      max-width:220px;
       height:auto;
       display:block;
       filter:drop-shadow(0 4px 12px rgba(0,0,0,.18));
     }
     .brand-title{
       display:flex;
-      flex-direction:column;
-      justify-content:center;
+      align-items:center;
     }
-    .brand-title span:first-child{
-      font-size:13px;
+    .brand-title span{
+      font-size:20px;
+      letter-spacing:.22em;
       text-transform:uppercase;
-      letter-spacing:.18em;
-      color:var(--muted);
+      color:#666666;
+      font-weight:500;
+      white-space:nowrap;
     }
-    .brand-title span:last-child{
-      font-size:22px;
-      letter-spacing:.08em;
-    }
+
     .lang{
       display:flex;
       gap:8px;
@@ -90,6 +88,7 @@
       gap:10px;
       font-size:13px;
       color:var(--muted);
+      justify-content:flex-end;
     }
     .pill{
       border-radius:999px;
@@ -268,26 +267,25 @@
     .sns-row{
       display:flex;
       justify-content:center;
-      gap:14px;
+      gap:16px;
       margin:10px 0 6px;
     }
     .sns-icon{
-      width:32px;
-      height:32px;
+      width:40px;
+      height:40px;
       border-radius:999px;
       background:#ffffff;
       box-shadow:0 4px 12px rgba(0,0,0,.12);
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:17px;
       cursor:pointer;
       text-decoration:none;
-      color:var(--ink);
     }
-    .sns-icon span{
-      font-size:15px;
-      font-weight:600;
+    .sns-icon svg{
+      width:20px;
+      height:20px;
+      fill:#3f6f4b;
     }
 
     .hidden{display:none;}
@@ -312,7 +310,6 @@
            alt="Moriris" />
       <div class="brand-title">
         <span data-i18n="brand_meta">MEMBERS AREA</span>
-        <span>Moriris</span>
       </div>
     </div>
 
@@ -423,7 +420,6 @@
               Kindle ストアで見る
             </a>
           </div>
-          <!-- 必要に応じて他エピソードも追加 -->
         </div>
       </div>
     </section>
@@ -433,21 +429,35 @@
 
   <footer>
     <div class="sns-row">
+      <!-- YouTube -->
       <a class="sns-icon" href="https://www.youtube.com/@moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-        ▶
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4h0s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/>
+        </svg>
       </a>
+      <!-- Instagram -->
       <a class="sns-icon" href="https://www.instagram.com/moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-        <span>IG</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 7.3A4.7 4.7 0 1 0 16.7 12 4.71 4.71 0 0 0 12 7.3zm0 7.7A3 3 0 1 1 15 12a3 3 0 0 1-3 3z"/>
+          <path d="M17.2 3H6.8A3.8 3.8 0 0 0 3 6.8v10.4A3.8 3.8 0 0 0 6.8 21h10.4A3.8 3.8 0 0 0 21 17.2V6.8A3.8 3.8 0 0 0 17.2 3zm2.1 14.2a2.1 2.1 0 0 1-2.1 2.1H6.8a2.1 2.1 0 0 1-2.1-2.1V6.8a2.1 2.1 0 0 1 2.1-2.1h10.4a2.1 2.1 0 0 1 2.1 2.1z"/>
+          <circle cx="17" cy="7" r="1"/>
+        </svg>
       </a>
+      <!-- X -->
       <a class="sns-icon" href="https://x.com/moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="X">
-        <span>X</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18.9 4H16.4L12.9 8.3 10 4H5.1l5.2 7.4L5 20h2.5l3.8-4.7L14 20h4.9l-5.5-7.9L18.9 4zm-3 14-6-8.7L9.2 7h.9l6 8.7.7 1.3z"/>
+        </svg>
       </a>
+      <!-- TikTok -->
       <a class="sns-icon" href="https://www.tiktok.com/@moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-        <span>♪</span>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18.5 7.3a4.4 4.4 0 0 1-2.7-1V14a4.9 4.9 0 1 1-4.9-4.9 5 5 0 0 1 1 .1v2.1a2.8 2.8 0 0 0-1-.2 2.8 2.8 0 1 0 2.8 2.8V3.9h2.2a4.4 4.4 0 0 0 2.6 2.5z"/>
+        </svg>
       </a>
     </div>
     <div data-i18n="footer_note">
