@@ -30,6 +30,18 @@
       margin:32px auto 40px;
       padding:0 18px 32px;
     }
+
+    /* sticky header wrapper */
+    .header-wrap{
+      position:sticky;
+      top:0;
+      z-index:50;
+      padding-bottom:10px;
+      background:
+        linear-gradient(to bottom, rgba(250,248,244,1) 0%, rgba(250,248,244,.95) 70%, rgba(250,248,244,0) 100%);
+      backdrop-filter:blur(4px);
+    }
+
     /* header */
     .topbar{
       display:flex;
@@ -81,7 +93,6 @@
       font-weight:600;
     }
 
-    /* user badge */
     .user-box{
       display:flex;
       align-items:center;
@@ -122,7 +133,7 @@
 
     /* tabs */
     .tabs{
-      margin-top:18px;
+      margin-top:8px;
       background:rgba(255,255,255,.95);
       border-radius:999px;
       box-shadow:0 4px 18px rgba(0,0,0,.08);
@@ -176,7 +187,7 @@
     }
     .muted{color:var(--muted);}
 
-    /* HOME specific */
+    /* HOME */
     .home-layout{
       display:grid;
       grid-template-columns:minmax(0,2fr) minmax(0,1.4fr);
@@ -185,6 +196,8 @@
     @media (max-width:800px){
       .home-layout{grid-template-columns:1fr;}
     }
+
+    /* ACCOUNT */
     .status-box{
       background:#f5ffe9;
       border-radius:16px;
@@ -304,34 +317,37 @@
 </head>
 <body>
 <div class="page">
-  <header class="topbar">
-    <div class="brand">
-      <img src="https://member.moriris.com/assets/logo-moriris.png"
-           alt="Moriris" />
-      <div class="brand-title">
-        <span data-i18n="brand_meta">MEMBERS AREA</span>
+  <div class="header-wrap">
+    <header class="topbar">
+      <div class="brand">
+        <img src="https://member.moriris.com/assets/logo-moriris.png"
+             alt="Moriris" />
+        <div class="brand-title">
+          <span data-i18n="brand_meta">MEMBERS AREA</span>
+        </div>
       </div>
-    </div>
 
-    <div>
-      <div class="user-box">
-        <span data-i18n="logged_in_label">ログイン中：</span>
-        <span id="userEmail" class="pill"></span>
-        <button id="logout" class="btn btn-outline" data-i18n="logout">ログアウト</button>
+      <div>
+        <div class="user-box">
+          <span data-i18n="logged_in_label">ログイン中：</span>
+          <span id="userEmail" class="pill"></span>
+          <button id="logout" class="btn btn-outline" data-i18n="logout">ログアウト</button>
+        </div>
+        <div class="lang" style="margin-top:6px;justify-content:flex-end;">
+          <button id="btn-ja" class="active">日本語</button>
+          <button id="btn-en">English</button>
+        </div>
       </div>
-      <div class="lang" style="margin-top:6px;justify-content:flex-end;">
-        <button id="btn-ja" class="active">日本語</button>
-        <button id="btn-en">English</button>
-      </div>
-    </div>
-  </header>
+    </header>
 
-  <!-- Tabs -->
-  <nav class="tabs">
-    <button class="tab-btn active" data-tab="home" data-i18n="tab_home">HOME</button>
-    <button class="tab-btn" data-tab="animation" data-i18n="tab_animation">ANIMATION</button>
-    <button class="tab-btn" data-tab="book" data-i18n="tab_book">PICTUREBOOK</button>
-  </nav>
+    <!-- Tabs -->
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="home" data-i18n="tab_home">HOME</button>
+      <button class="tab-btn" data-tab="animation" data-i18n="tab_animation">ANIMATION</button>
+      <button class="tab-btn" data-tab="book" data-i18n="tab_book">PICTUREBOOK</button>
+      <button class="tab-btn" data-tab="account" data-i18n="tab_account">ACCOUNT</button>
+    </nav>
+  </div>
 
   <main>
     <!-- HOME -->
@@ -342,30 +358,6 @@
           <p class="muted" data-i18n="home_intro">
             メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。
           </p>
-
-          <div class="status-box">
-            <div>
-              <span data-i18n="plan_label">現在のプラン：</span>
-              <span class="plan-badge">
-                <span class="plan-pill" id="planPill">FREE</span>
-                <span id="planLabelText">Free</span>
-              </span>
-            </div>
-            <p id="statusText"
-               class="muted"
-               style="margin-top:6px;">
-              ログイン状態を確認しています…
-            </p>
-          </div>
-
-          <div class="cta-row">
-            <button id="btnSubscribe" class="btn btn-primary hidden" data-i18n="btn_subscribe">
-              Standardプランに登録する
-            </button>
-            <button id="btnCancel" class="btn btn-danger hidden" data-i18n="btn_cancel">
-              サブスクを解約する
-            </button>
-          </div>
         </div>
 
         <div>
@@ -380,7 +372,7 @@
               PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。
             </li>
             <li data-i18n="home_how_3">
-              プランの変更や解約は、HOMEタブからいつでも行えます。
+              プランの確認や変更は ACCOUNTタブからいつでも行えます。
             </li>
           </ul>
         </div>
@@ -424,6 +416,40 @@
       </div>
     </section>
 
+    <!-- ACCOUNT -->
+    <section id="tab-account" class="tab-pane">
+      <div class="card">
+        <h2 data-i18n="account_title">アカウント・プラン情報</h2>
+        <p class="muted" data-i18n="account_intro">
+          現在のプランやサブスクリプションの変更・解約は、このページから行えます。
+        </p>
+
+        <div class="status-box">
+          <div>
+            <span data-i18n="plan_label">現在のプラン：</span>
+            <span class="plan-badge">
+              <span class="plan-pill" id="planPill">FREE</span>
+              <span id="planLabelText">Free</span>
+            </span>
+          </div>
+          <p id="statusText"
+             class="muted"
+             style="margin-top:6px;">
+            ログイン状態を確認しています…
+          </p>
+        </div>
+
+        <div class="cta-row">
+          <button id="btnSubscribe" class="btn btn-primary hidden" data-i18n="btn_subscribe">
+            Standardプランに登録する
+          </button>
+          <button id="btnCancel" class="btn btn-danger hidden" data-i18n="btn_cancel">
+            サブスクを解約する
+          </button>
+        </div>
+      </div>
+    </section>
+
     <pre id="dbg" class="hidden"></pre>
   </main>
 
@@ -433,7 +459,7 @@
       <a class="sns-icon" href="https://www.youtube.com/@moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="YouTube">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4h0s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/>
+          <path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/>
         </svg>
       </a>
       <!-- Instagram -->
@@ -467,7 +493,6 @@
 </div>
 
 <script>
-  // ==== Supabase設定 ====
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
   const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
@@ -483,7 +508,6 @@
   const log = (...a)=>{ if(!debugOn) return; const el=$("#dbg"); el.classList.remove("hidden");
     el.textContent += a.map(x=>typeof x==="string"?x:JSON.stringify(x,null,2)).join(" ") + "\n"; };
 
-  // ==== i18n ====
   const I18N = {
     ja:{
       brand_meta:"MEMBERS AREA",
@@ -492,8 +516,15 @@
       tab_home:"HOME",
       tab_animation:"ANIMATION",
       tab_book:"PICTUREBOOK",
+      tab_account:"ACCOUNT",
       home_title:"ようこそ、モリリスメンバーズへ",
       home_intro:"メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。",
+      home_how_title:"メンバーエリアの楽しみ方",
+      home_how_1:"ANIMATIONタブからメンバー限定アニメを視聴できます。",
+      home_how_2:"PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。",
+      home_how_3:"プランの確認や変更は ACCOUNTタブからいつでも行えます。",
+      account_title:"アカウント・プラン情報",
+      account_intro:"現在のプランやサブスクリプションの変更・解約は、このページから行えます。",
       plan_label:"現在のプラン：",
       plan_free:"Free",
       plan_standard:"Standard",
@@ -505,10 +536,6 @@
       status_error:"情報の取得に失敗しました。",
       btn_subscribe:"Standardプランに登録する",
       btn_cancel:"サブスクを解約する",
-      home_how_title:"メンバーエリアの楽しみ方",
-      home_how_1:"ANIMATIONタブからメンバー限定アニメを視聴できます。",
-      home_how_2:"PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。",
-      home_how_3:"プランの変更や解約は、HOMEタブからいつでも行えます。",
       anim_title:"メンバー限定アニメ",
       anim_gate_free:"メンバー限定アニメは Standard プランでご覧いただけます。登録するとすべてのエピソードが視聴可能になります。",
       anim_gate_std:"メンバー限定アニメの一覧です。",
@@ -528,8 +555,15 @@
       tab_home:"HOME",
       tab_animation:"ANIMATION",
       tab_book:"PICTUREBOOK",
+      tab_account:"ACCOUNT",
       home_title:"Welcome to Moriris Members",
       home_intro:"Enjoy members-only animations and digital picture books from this page.",
+      home_how_title:"How to use this members area",
+      home_how_1:"Watch members-only animations from the ANIMATION tab.",
+      home_how_2:"Read digital picture books and extras from the PICTUREBOOK tab.",
+      home_how_3:"You can check or change your plan anytime from the ACCOUNT tab.",
+      account_title:"Account & Plan",
+      account_intro:"Check your current plan, subscribe, or cancel from this page.",
       plan_label:"Current plan:",
       plan_free:"Free",
       plan_standard:"Standard",
@@ -541,10 +575,6 @@
       status_error:"Failed to load your membership information.",
       btn_subscribe:"Subscribe to Standard plan",
       btn_cancel:"Cancel subscription",
-      home_how_title:"How to use this members area",
-      home_how_1:"Watch members-only animations from the ANIMATION tab.",
-      home_how_2:"Read digital picture books and extras from the PICTUREBOOK tab.",
-      home_how_3:"You can change or cancel your plan anytime from the HOME tab.",
       anim_title:"Members-only Animation",
       anim_gate_free:"Members-only animations are available with the Standard plan. Subscribe to unlock all episodes.",
       anim_gate_std:"Here are your members-only episodes.",
@@ -562,8 +592,8 @@
   let currentLang = "ja";
   const langKey = "moriris_lang_members";
   const state = {
-    plan:"free",             // 'free' | 'standard'
-    statusCode:"checking"    // 'checking','not_logged','free','loading','ready','error'
+    plan:"free",
+    statusCode:"checking"
   };
 
   function applyLang(lang){
@@ -573,13 +603,11 @@
 
     const t = I18N[lang];
 
-    // data-i18n
     document.querySelectorAll("[data-i18n]").forEach(el=>{
       const key = el.getAttribute("data-i18n");
       if (t[key]) el.textContent = t[key];
     });
 
-    // プラン表示
     const planLabelText = $("#planLabelText");
     if (planLabelText){
       const planKey = state.plan === "standard" ? "plan_standard" : "plan_free";
@@ -587,7 +615,6 @@
       $("#planPill").textContent = state.plan.toUpperCase();
     }
 
-    // ステータス表示
     const statusEl = $("#statusText");
     if (statusEl){
       const map = {
@@ -602,7 +629,6 @@
       statusEl.textContent = t[k];
     }
 
-    // ANIMATION ゲートメッセージ
     const animGate = $("#animGateText");
     if (animGate){
       animGate.textContent = state.plan === "standard"
@@ -610,7 +636,6 @@
         : t.anim_gate_free;
     }
 
-    // PICTUREBOOK 導入文
     const bookIntro = $("#bookIntro");
     if (bookIntro){
       bookIntro.textContent = state.plan === "standard"
@@ -618,7 +643,6 @@
         : t.book_intro_free;
     }
 
-    // Bookリストの表示/非表示
     const bookList = $("#bookList");
     if (bookList){
       if (state.plan === "standard"){
@@ -628,7 +652,6 @@
       }
     }
 
-    // 言語ボタン
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
   }
@@ -636,7 +659,6 @@
   $("#btn-ja").onclick = ()=>applyLang("ja");
   $("#btn-en").onclick = ()=>applyLang("en");
 
-  // ==== タブ切り替え ====
   document.querySelectorAll(".tab-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const tab = btn.dataset.tab;
@@ -647,7 +669,6 @@
     });
   });
 
-  // ==== 認証処理 ====
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
   async function getUserWithRetry({tries=40, interval=150}={}){
@@ -801,7 +822,6 @@
   }
 
   async function main(){
-    // 言語初期化（URLの ?lang= があれば優先）
     const urlLang = new URL(location.href).searchParams.get("lang");
     const storedLang = localStorage.getItem(langKey);
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
@@ -839,10 +859,8 @@
 
       $("#btnSubscribe").classList.remove("hidden");
       $("#btnCancel").classList.add("hidden");
-
       $("#btnSubscribe").onclick = ()=>createCheckout(user.id);
 
-      // Free: 動画は表示しない（導入文のみ）
       $("#videos").innerHTML = "";
     }else{
       state.plan = "standard";
