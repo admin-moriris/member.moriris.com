@@ -21,7 +21,7 @@
       min-height:100vh;
       background:
         linear-gradient(to bottom, rgba(250,248,244,.9), rgba(250,248,244,.96)),
-        url("https://member.moriris.com/assets/hero-forest.png") center/cover fixed no-repeat;
+        url("/assets/hero-forest.png") center/cover fixed no-repeat;
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
     }
@@ -31,18 +31,17 @@
       padding:0 18px 32px;
     }
 
-    /* sticky header wrapper */
+    /* ヘッダー＋タブを上部固定 */
     .header-wrap{
       position:sticky;
       top:0;
-      z-index:50;
+      z-index:100;
       padding-bottom:10px;
       background:
         linear-gradient(to bottom, rgba(250,248,244,1) 0%, rgba(250,248,244,.95) 70%, rgba(250,248,244,0) 100%);
       backdrop-filter:blur(4px);
     }
 
-    /* header */
     .topbar{
       display:flex;
       align-items:center;
@@ -121,9 +120,7 @@
       color:var(--accent-dark);
       font-weight:600;
     }
-    .btn-outline{
-      background:#fff;
-    }
+    .btn-outline{ background:#fff; }
     .btn-danger{
       background:#ffe7e3;
       border-color:#ffb3a7;
@@ -131,7 +128,6 @@
       font-weight:600;
     }
 
-    /* tabs */
     .tabs{
       margin-top:8px;
       background:rgba(255,255,255,.95);
@@ -159,9 +155,7 @@
       font-weight:600;
     }
 
-    main{
-      margin-top:18px;
-    }
+    main{ margin-top:18px; }
     .card{
       background:var(--panel);
       border-radius:var(--radius);
@@ -172,22 +166,11 @@
     .tab-pane{display:none;}
     .tab-pane.active{display:block;}
 
-    h2{
-      margin:0 0 10px;
-      font-size:20px;
-    }
-    h3{
-      margin:0 0 6px;
-      font-size:16px;
-    }
-    p{
-      margin:6px 0;
-      line-height:1.7;
-      font-size:14px;
-    }
+    h2{ margin:0 0 10px; font-size:20px; }
+    h3{ margin:0 0 6px; font-size:16px; }
+    p{ margin:6px 0; line-height:1.7; font-size:14px; }
     .muted{color:var(--muted);}
 
-    /* HOME */
     .home-layout{
       display:grid;
       grid-template-columns:minmax(0,2fr) minmax(0,1.4fr);
@@ -197,7 +180,6 @@
       .home-layout{grid-template-columns:1fr;}
     }
 
-    /* ACCOUNT */
     .status-box{
       background:#f5ffe9;
       border-radius:16px;
@@ -232,7 +214,6 @@
       margin-top:10px;
     }
 
-    /* ANIMATION grid */
     .video-grid{
       display:grid;
       grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
@@ -251,7 +232,6 @@
       font-weight:600;
     }
 
-    /* PICTUREBOOK */
     .book-list{
       display:grid;
       grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
@@ -270,7 +250,6 @@
     a{color:#0d6b45;text-decoration:none;}
     a:hover{text-decoration:underline;}
 
-    /* footer */
     footer{
       margin-top:24px;
       text-align:center;
@@ -317,11 +296,11 @@
 </head>
 <body>
 <div class="page">
+  <!-- ここが sticky で固定される -->
   <div class="header-wrap">
     <header class="topbar">
       <div class="brand">
-        <img src="https://member.moriris.com/assets/logo-moriris.png"
-             alt="Moriris" />
+        <img src="/assets/logo-moriris.png" alt="Moriris" />
         <div class="brand-title">
           <span data-i18n="brand_meta">MEMBERS AREA</span>
         </div>
@@ -340,7 +319,6 @@
       </div>
     </header>
 
-    <!-- Tabs -->
     <nav class="tabs">
       <button class="tab-btn active" data-tab="home" data-i18n="tab_home">HOME</button>
       <button class="tab-btn" data-tab="animation" data-i18n="tab_animation">ANIMATION</button>
