@@ -52,13 +52,20 @@
       gap:12px;
     }
     .brand img{
-      display:block;
-      height:72px; /* ロゴを少し大きく */
+      border-radius:12px;
+      box-shadow:0 4px 14px rgba(0,0,0,.18);
+      height:72px;
     }
     .brand h1{
-      font-size:22px;
       margin:0;
-      letter-spacing:.06em;
+      font-size:13px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:0.18em;
+      padding:4px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.9);
+      border:1px solid rgba(0,0,0,0.08);
     }
     .lang{
       display:flex;
@@ -127,7 +134,7 @@
     <header>
       <div class="brand">
         <img src="/assets/logo-moriris.png" alt="Moriris" />
-        <h1 id="t_title">メンバーエリア</h1>
+        <h1 id="t_title" class="members-title">MEMBERS AREA</h1>
       </div>
       <div class="lang">
         <button id="btn-en">EN</button>
@@ -162,7 +169,7 @@
     const I18N = {
       ja: {
         title: "メンバーエリア",
-        lead: "メールアドレスを入力してログイン（マジックリンク）",
+        lead: "メールアドレスを入力すると、メールで送られる認証リンクからログインまたはアカウント作成ができます。",
         send: "メールを送る",
         hint: "メールが届かない場合は迷惑メールフォルダをご確認ください。",
         needEmail: "メールアドレスを入力してください。",
@@ -170,8 +177,8 @@
         errorPrefix: "エラー：",
       },
       en: {
-        title: "Members Area",
-        lead: "Enter your email to sign in (magic link).",
+        title: "MEMBERS AREA",
+        lead: "Enter your email and use the verification link sent to you to log in or create a new account.",
         send: "Send link",
         hint: "If you don't see the email, please check your spam folder.",
         needEmail: "Please enter your email address.",
