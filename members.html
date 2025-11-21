@@ -179,14 +179,10 @@
     .muted{color:var(--muted);}
 
     .home-layout{
-      display:grid;
-      grid-template-columns:minmax(0,2fr) minmax(0,1.4fr);
+      display:flex;
+      flex-direction:column;
       gap:18px;
     }
-    @media (max-width:800px){
-      .home-layout{grid-template-columns:1fr;}
-    }
-
     .status-box{
       background:#f5ffe9;
       border-radius:16px;
@@ -434,10 +430,8 @@
         <div class="status-box">
           <div>
             <span data-i18n="plan_label">現在のプラン：</span>
-            <span class="plan-badge">
-              <span class="plan-pill" id="planPill">FREE</span>
-              <span id="planLabelText">Free</span>
-            </span>
+            <!-- ここだけにテキストを出す -->
+            <span id="planLabelText">Free</span>
           </div>
           <p id="statusText"
              class="muted"
@@ -616,11 +610,10 @@
     });
 
     const planLabelText = $("#planLabelText");
-    if (planLabelText){
-      const planKey = state.plan === "standard" ? "plan_standard" : "plan_free";
-      planLabelText.textContent = t[planKey];
-      $("#planPill").textContent = state.plan.toUpperCase();
-    }
+  if (planLabelText){
+    const planKey = state.plan === "standard" ? "plan_standard" : "plan_free";
+    planLabelText.textContent = t[planKey];
+  }
 
     const statusEl = $("#statusText");
     if (statusEl){
