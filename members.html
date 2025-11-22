@@ -28,7 +28,6 @@
       background-size:cover;
       background-position:center;
       background-attachment:fixed;
-
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
     }
@@ -236,6 +235,29 @@
     .video-title{
       padding:10px 12px 12px;
       font-size:14px;
+      font-weight:600;
+    }
+
+    .video-sort{
+      margin-top:6px;
+      margin-bottom:6px;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .video-sort-btn{
+      border-radius:999px;
+      border:1px solid #ccc;
+      background:#fff;
+      padding:4px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .video-sort-btn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:var(--accent-dark);
       font-weight:600;
     }
 
@@ -472,6 +494,17 @@
         <p class="muted" id="animGateText">
           Standardプランに登録すると、メンバー限定のアニメを視聴できます。
         </p>
+
+        <div class="video-sort" id="videoSortRow">
+          <span data-i18n="video_sort_label">表示順：</span>
+          <button type="button" class="video-sort-btn active" data-sort="episode" data-i18n="video_sort_episode">
+            エピソード順
+          </button>
+          <button type="button" class="video-sort-btn" data-sort="new" data-i18n="video_sort_new">
+            新着順
+          </button>
+        </div>
+
         <div id="videos" class="video-grid"></div>
       </div>
     </section>
@@ -484,7 +517,6 @@
           デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。
         </p>
 
-        <!-- 並び替えボタン -->
         <div class="book-sort hidden" id="bookSortRow">
           <span data-i18n="book_sort_label">表示順：</span>
           <button type="button" class="book-sort-btn active" data-sort="episode" data-i18n="book_sort_episode">
@@ -518,16 +550,6 @@
                 </div>
               </div>
             </div>
-            <div class="book-meta">
-              <p class="muted" data-i18n="book_ep1_desc">
-                森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。
-              </p>
-              <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
-                 target="_blank" rel="noopener noreferrer"
-                 data-i18n="book_kindle_link">
-                Kindle ストアで見る
-              </a>
-            </div>
           </div>
 
           <!-- Episode 2 -->
@@ -552,17 +574,19 @@
                 </div>
               </div>
             </div>
-            <div class="book-meta">
-              <p class="muted" data-i18n="book_ep2_desc">
-                森で続く小さな冒険の物語・第2話です。Kindle ストアでもお読みいただけます。
-              </p>
-              <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
-                 target="_blank" rel="noopener noreferrer"
-                 data-i18n="book_kindle_link">
-                Kindle ストアで見る
-              </a>
-            </div>
           </div>
+        </div>
+
+        <!-- Kindle 説明文＋リンク（共通・一箇所だけ） -->
+        <div id="bookCommonMeta" class="book-meta hidden">
+          <p class="muted" data-i18n="book_common_desc">
+            森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。
+          </p>
+          <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
+             target="_blank" rel="noopener noreferrer"
+             data-i18n="book_kindle_link">
+            Kindle ストアで見る
+          </a>
         </div>
       </div>
     </section>
@@ -684,13 +708,15 @@
       anim_gate_free:"Standard プランに登録いただくと、すべてのエピソードが視聴可能になります。",
       anim_gate_std:"メンバー限定アニメの一覧です。",
       anim_empty:"現在、視聴可能な動画がありません。",
+      video_sort_label:"表示順：",
+      video_sort_episode:"エピソード順",
+      video_sort_new:"新着順",
       book_title:"デジタル絵本",
       book_intro_free:"デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。メンバー専用の絵本を今後追加予定です。",
       book_intro_std:"モリリスの世界を絵本でもお楽しみいただけます。今後、メンバー限定の絵本を追加予定です。",
       book_ep1_title:"Moriris Picture Book – Episode 1",
-      book_ep1_desc:"森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。",
       book_ep2_title:"Moriris Picture Book – Episode 2",
-      book_ep2_desc:"森で続く小さな冒険の物語・第2話です。Kindle ストアでもお読みいただけます。",
+      book_common_desc:"森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。",
       book_kindle_link:"Kindle ストアで見る",
       book_sort_label:"表示順：",
       book_sort_episode:"エピソード順",
@@ -728,13 +754,15 @@
       anim_gate_free:"By subscribing to the Standard plan, you can watch all episodes.",
       anim_gate_std:"Here are your members-only episodes.",
       anim_empty:"There are no videos available yet.",
+      video_sort_label:"Order:",
+      video_sort_episode:"By episode",
+      video_sort_new:"Newest first",
       book_title:"Digital Picture Books",
       book_intro_free:"Digital picture books are available with the Standard plan. More members-only books are coming soon.",
       book_intro_std:"Enjoy the world of Moriris as picture books. More members-only books will be added.",
       book_ep1_title:"Moriris Picture Book – Episode 1",
-      book_ep1_desc:"A small adventure that begins in the forest. Also available on Kindle.",
       book_ep2_title:"Moriris Picture Book – Episode 2",
-      book_ep2_desc:"The second small adventure in the forest. Also available on Kindle.",
+      book_common_desc:"A small adventure that begins in the forest. Also available on Kindle.",
       book_kindle_link:"View on Kindle Store",
       book_sort_label:"Order:",
       book_sort_episode:"By episode",
@@ -750,7 +778,7 @@
     statusCode:"checking"
   };
 
-  // Episode 1 / 2 のページ画像一覧
+  // Picture book images
   const BOOK_EP1_IMAGES = [
     "/assets/book-ep1/1.png","/assets/book-ep1/2.png","/assets/book-ep1/3.png",
     "/assets/book-ep1/4.png","/assets/book-ep1/5.png","/assets/book-ep1/6.png",
@@ -796,6 +824,17 @@
     img.src = images[idx];
     indicator.textContent = (idx + 1) + " / " + images.length;
   }
+
+  // Animation episodes（ep番号で新着判定）
+  const VIDEO_EPISODES = [
+    { ep:1, title:"Episode 1", yt_id:"ypgOP92RtWk", tier:"free" },
+    { ep:2, title:"Episode 2", yt_id:"_9xwWTc_0QM", tier:"free" },
+    { ep:3, title:"Episode 3", yt_id:"ALcmDyxJiSQ", tier:"free" },
+    { ep:4, title:"Episode 4", yt_id:"EP4_DUMMY_ID", tier:"standard" },
+    { ep:5, title:"Episode 5", yt_id:"EP5_DUMMY_ID", tier:"standard" },
+    { ep:6, title:"Episode 6", yt_id:"EP6_DUMMY_ID", tier:"standard" }
+  ];
+  let videoSortMode = "episode";
 
   function applyLang(lang){
     currentLang = lang;
@@ -845,13 +884,16 @@
 
     const bookList = $("#bookList");
     const bookSortRow = $("#bookSortRow");
+    const bookCommonMeta = $("#bookCommonMeta");
     if (bookList){
       if (state.plan === "standard"){
         bookList.classList.remove("hidden");
         if (bookSortRow) bookSortRow.classList.remove("hidden");
+        if (bookCommonMeta) bookCommonMeta.classList.remove("hidden");
       }else{
         bookList.classList.add("hidden");
         if (bookSortRow) bookSortRow.classList.add("hidden");
+        if (bookCommonMeta) bookCommonMeta.classList.add("hidden");
       }
     }
 
@@ -874,32 +916,54 @@
 
   // 絵本ページ送り
   document.addEventListener("click", (e)=>{
-    const btn = e.target.closest(".book-viewer-btn");
-    if (!btn) return;
+    const viewerBtn = e.target.closest(".book-viewer-btn");
+    if (viewerBtn){
+      const dir = viewerBtn.dataset.dir;
+      const bookKey = viewerBtn.dataset.book;
+      if (!dir || !bookKey) return;
 
-    const dir = btn.dataset.dir;
-    const bookKey = btn.dataset.book;
-    if (!dir || !bookKey) return;
-
-    if (bookKey === "ep1"){
-      if (dir === "prev"){
-        bookState.ep1Index =
-          (bookState.ep1Index - 1 + BOOK_EP1_IMAGES.length) % BOOK_EP1_IMAGES.length;
-      }else{
-        bookState.ep1Index =
-          (bookState.ep1Index + 1) % BOOK_EP1_IMAGES.length;
+      if (bookKey === "ep1"){
+        if (dir === "prev"){
+          bookState.ep1Index =
+            (bookState.ep1Index - 1 + BOOK_EP1_IMAGES.length) % BOOK_EP1_IMAGES.length;
+        }else{
+          bookState.ep1Index =
+            (bookState.ep1Index + 1) % BOOK_EP1_IMAGES.length;
+        }
+      }else if (bookKey === "ep2"){
+        if (dir === "prev"){
+          bookState.ep2Index =
+            (bookState.ep2Index - 1 + BOOK_EP2_IMAGES.length) % BOOK_EP2_IMAGES.length;
+        }else{
+          bookState.ep2Index =
+            (bookState.ep2Index + 1) % BOOK_EP2_IMAGES.length;
+        }
       }
-    }else if (bookKey === "ep2"){
-      if (dir === "prev"){
-        bookState.ep2Index =
-          (bookState.ep2Index - 1 + BOOK_EP2_IMAGES.length) % BOOK_EP2_IMAGES.length;
-      }else{
-        bookState.ep2Index =
-          (bookState.ep2Index + 1) % BOOK_EP2_IMAGES.length;
-      }
+      updateBookViewer(bookKey);
+      return;
     }
 
-    updateBookViewer(bookKey);
+    // 絵本 並び替えボタン
+    const bookSortBtn = e.target.closest(".book-sort-btn");
+    if (bookSortBtn){
+      const mode = bookSortBtn.dataset.sort || "episode";
+      document.querySelectorAll(".book-sort-btn").forEach(b=>{
+        b.classList.toggle("active", b===bookSortBtn);
+      });
+      sortBookEntries(mode);
+      return;
+    }
+
+    // 動画 並び替えボタン
+    const videoSortBtn = e.target.closest(".video-sort-btn");
+    if (videoSortBtn){
+      const mode = videoSortBtn.dataset.sort || "episode";
+      document.querySelectorAll(".video-sort-btn").forEach(b=>{
+        b.classList.toggle("active", b===videoSortBtn);
+      });
+      renderVideosForPlan(state.plan, mode);
+      return;
+    }
   });
 
   // 絵本リストの並び替え
@@ -911,22 +975,12 @@
       const ea = Number(a.dataset.ep || "0");
       const eb = Number(b.dataset.ep || "0");
       if (mode === "new"){
-        return eb - ea; // 大きいエピソード番号が新着
+        return eb - ea;
       }
-      return ea - eb;   // エピソード順
+      return ea - eb;
     });
     entries.forEach(el=>list.appendChild(el));
   }
-
-  document.addEventListener("click",(e)=>{
-    const btn = e.target.closest(".book-sort-btn");
-    if (!btn) return;
-    const mode = btn.dataset.sort || "episode";
-    document.querySelectorAll(".book-sort-btn").forEach(b=>{
-      b.classList.toggle("active", b===btn);
-    });
-    sortBookEntries(mode);
-  });
 
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
@@ -950,7 +1004,7 @@
       .eq("id", userId)
       .single();
 
-    const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
+  const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
     if (notFound){
       const up = await sb.from("profiles").upsert(
         { id:userId, tier:"free", is_active:false },
@@ -1033,26 +1087,21 @@
     location.href = data.url;
   }
 
-  function renderVideosForPlan(plan){
+  function renderVideosForPlan(plan, mode = videoSortMode){
+    videoSortMode = mode;
     const wrap = $("#videos");
     wrap.innerHTML = "";
 
-    const baseEpisodes = [
-      { title: "Episode 1", yt_id: "ypgOP92RtWk" },
-      { title: "Episode 2", yt_id: "_9xwWTc_0QM" },
-      { title: "Episode 3", yt_id: "ALcmDyxJiSQ" }
-    ];
+    let episodes = VIDEO_EPISODES.filter(v =>
+      plan === "standard" ? true : v.tier === "free"
+    );
 
-    const extraEpisodesForStandard = [
-      { title: "Episode 4", yt_id: "EP4_DUMMY_ID" },
-      { title: "Episode 5", yt_id: "EP5_DUMMY_ID" },
-      { title: "Episode 6", yt_id: "EP6_DUMMY_ID" }
-    ];
-
-    const episodes =
-      plan === "standard"
-        ? baseEpisodes.concat(extraEpisodesForStandard)
-        : baseEpisodes;
+    episodes.sort((a,b)=>{
+      if (mode === "new"){
+        return b.ep - a.ep; // 新着順
+      }
+      return a.ep - b.ep;   // エピソード順
+    });
 
     if (!episodes.length){
       const p = document.createElement("p");
@@ -1124,7 +1173,7 @@
       $("#btnCancel").classList.add("hidden");
       $("#btnSubscribe").onclick = ()=>createCheckout(user.id);
 
-      renderVideosForPlan("free");
+      renderVideosForPlan("free", videoSortMode);
     }else{
       state.plan = "standard";
       state.statusCode = "loading";
@@ -1134,7 +1183,7 @@
       $("#btnCancel").classList.remove("hidden");
       $("#btnCancel").onclick = ()=>openPortal(user.id);
 
-      renderVideosForPlan("standard");
+      renderVideosForPlan("standard", videoSortMode);
 
       state.statusCode = "ready";
       applyLang(currentLang);
