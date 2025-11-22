@@ -883,16 +883,20 @@
     const bookList = $("#bookList");
     const bookSortRow = $("#bookSortRow");
     const bookCommonMeta = $("#bookCommonMeta");
+    
     if (bookList){
       if (state.plan === "standard"){
+        // 標準プラン → 絵本リスト + 並び替え + Kindle案内 全て表示
         bookList.classList.remove("hidden");
-        if (bookSortRow) bookSortRow.classList.remove("hidden");
-        if (bookCommonMeta) bookCommonMeta.classList.remove("hidden");
+        bookSortRow.classList.remove("hidden");
       }else{
+        // Free → 絵本リストと並び替えは非表示
         bookList.classList.add("hidden");
-        if (bookSortRow) bookSortRow.classList.add("hidden");
-        if (bookCommonMeta) bookCommonMeta.classList.add("hidden");
+        bookSortRow.classList.add("hidden");
       }
+    
+      // Kindleの誘導文だけは Free でも表示する
+      bookCommonMeta.classList.remove("hidden");
     }
 
     $("#btn-ja").classList.toggle("active", lang==="ja");
