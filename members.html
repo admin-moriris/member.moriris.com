@@ -495,6 +495,12 @@
           Standardプランに登録すると、メンバー限定のアニメを視聴できます。
         </p>
 
+        <button id="btnSubscribeAnim"
+                class="btn btn-primary hidden"
+                data-i18n="btn_subscribe">
+          Standardプランに登録する
+        </button>
+
         <div class="video-sort" id="videoSortRow">
           <span data-i18n="video_sort_label">表示順：</span>
           <button type="button" class="video-sort-btn active" data-sort="episode" data-i18n="video_sort_episode">
@@ -516,6 +522,12 @@
         <p class="muted" id="bookIntro">
           デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。
         </p>
+
+        <button id="btnSubscribeBook"
+                class="btn btn-primary hidden"
+                data-i18n="btn_subscribe">
+          Standardプランに登録する
+        </button>
 
         <div class="book-sort hidden" id="bookSortRow">
           <span data-i18n="book_sort_label">表示順：</span>
@@ -1170,29 +1182,54 @@
       state.plan = "free";
       state.statusCode = "free";
       applyLang(currentLang);
-
-      $("#btnSubscribe").classList.remove("hidden");
-      $("#btnCancel").classList.add("hidden");
-      $("#btnSubscribe").onclick = ()=>createCheckout(user.id);
-
+    
+      const btnSubMain  = $("#btnSubscribe");
+      const btnSubAnim  = $("#btnSubscribeAnim");
+      const btnSubBook  = $("#btnSubscribeBook");
+      const btnCancel   = $("#btnCancel");
+    
+      // Free のときは「Standardプランに登録する」ボタンを3か所で表示
+      [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
+        if (!b) return;
+        b.classList.remove("hidden");
+        b.onclick = ()=>createCheckout(user.id);
+      });
+      if (btnCancel){
+        btnCancel.classList.add("hidden");
+        btnCancel.onclick = null;
+      }
+    
       renderVideosForPlan("free", videoSortMode);
     }else{
       state.plan = "standard";
       state.statusCode = "loading";
       applyLang(currentLang);
-
-      $("#btnSubscribe").classList.add("hidden");
-      $("#btnCancel").classList.remove("hidden");
-      $("#btnCancel").onclick = ()=>openPortal(user.id);
-
+    
+      const btnSubMain  = $("#btnSubscribe");
+      const btnSubAnim  = $("#btnSubscribeAnim");
+      const btnSubBook  = $("#btnSubscribeBook");
+      const btnCancel   = $("#btnCancel");
+    
+      // Standard のときは Subscribe ボタンを隠し、Cancel だけ表示
+      [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
+        if (!b) return;
+        b.classList.add("hidden");
+        b.onclick = null;
+      });
+      if (btnCancel){
+        btnCancel.classList.remove("hidden");
+        btnCancel.onclick = ()=>openPortal(user.id);
+      }
+    
       renderVideosForPlan("standard", videoSortMode);
-
+    
       state.statusCode = "ready";
       applyLang(currentLang);
-
+    
       // デフォルトはエピソード順
       sortBookEntries("episode");
     }
+
 
     $("#logout").onclick = async ()=>{
       try{ await sb.auth.signOut(); }catch{}
