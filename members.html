@@ -220,7 +220,7 @@
     .video-grid{
       display:flex;
       flex-direction:column;
-      gap:18px;
+      gap:22px;
       margin-top:12px;
     }
     
@@ -229,8 +229,10 @@
       border-radius:16px;
       box-shadow:var(--shadow);
       overflow:hidden;
-      max-width:960px;
-      margin:0 auto;       /* 中央寄せ＆横幅を大きく */
+    
+      width:100%;          /* ← 白いエリアの幅いっぱいに */
+      max-width:none;      /* ← 中央寄せを解除 */
+      margin:0;            /* ← 中央寄せを解除 */
     }
     
     .video-title{
