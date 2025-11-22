@@ -218,17 +218,21 @@
     }
 
     .video-grid{
-      display:grid;
-      grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-      gap:16px;
+      display:flex;
+      flex-direction:column;
+      gap:18px;
       margin-top:12px;
     }
+    
     .video-card{
       background:var(--panel);
       border-radius:16px;
       box-shadow:var(--shadow);
       overflow:hidden;
+      max-width:960px;
+      margin:0 auto;       /* 中央寄せ＆横幅を大きく */
     }
+    
     .video-title{
       padding:10px 12px 12px;
       font-size:14px;
@@ -780,36 +784,37 @@
     location.href = data.url;
   }
 
-  async function renderVideos(allowedTiers){
-    const q = await sb
-      .from("member_videos")
-      .select("id,title,yt_id,tier")
-      .eq("published", true)
-      .in("tier", allowedTiers)
-      .order("id", { ascending:false });
-
+  function renderVideosForPlan(plan){
     const wrap = $("#videos");
     wrap.innerHTML = "";
-
-    if (q.error){
-      log("videos error", q.error);
+  
+    // プランに応じてエピソードを用意
+    const baseEpisodes = [
+      { title: "Episode 1", yt_id: "ypgOP92RtWk" },
+      { title: "Episode 2", yt_id: "_9xwWTc_0QM" },
+      { title: "Episode 3", yt_id: "ALcmDyxJiSQ" }
+    ];
+  
+    const extraEpisodesForStandard = [
+      { title: "Episode 4", yt_id: "EP4_DUMMY_ID" },
+      { title: "Episode 5", yt_id: "EP5_DUMMY_ID" },
+      { title: "Episode 6", yt_id: "EP6_DUMMY_ID" }
+    ];
+  
+    const episodes =
+      plan === "standard"
+        ? baseEpisodes.concat(extraEpisodesForStandard)
+        : baseEpisodes;
+  
+    if (!episodes.length){
       const p = document.createElement("p");
       p.className = "muted";
       p.textContent = I18N[currentLang].anim_empty;
       wrap.appendChild(p);
       return;
     }
-
-    const list = q.data || [];
-    if (!list.length){
-      const p = document.createElement("p");
-      p.className = "muted";
-      p.textContent = I18N[currentLang].anim_empty;
-      wrap.appendChild(p);
-      return;
-    }
-
-    for (const v of list){
+  
+    for (const v of episodes){
       const card = document.createElement("div");
       card.className = "video-card";
       const src =
@@ -862,24 +867,25 @@
       state.plan = "free";
       state.statusCode = "free";
       applyLang(currentLang);
-
+    
       $("#btnSubscribe").classList.remove("hidden");
       $("#btnCancel").classList.add("hidden");
       $("#btnSubscribe").onclick = ()=>createCheckout(user.id);
-
-      $("#videos").innerHTML = "";
+    
+      // ここで Free プラン用の動画 3本を表示
+      renderVideosForPlan("free");
     }else{
       state.plan = "standard";
       state.statusCode = "loading";
       applyLang(currentLang);
-
+    
       $("#btnSubscribe").classList.add("hidden");
       $("#btnCancel").classList.remove("hidden");
       $("#btnCancel").onclick = ()=>openPortal(user.id);
-
-      const allowed = ["standard","premium","vip"];
-      await renderVideos(allowed);
-
+    
+      // Standard プラン用の動画 6本を表示
+      renderVideosForPlan("standard");
+    
       state.statusCode = "ready";
       applyLang(currentLang);
     }
