@@ -668,7 +668,7 @@
     statusCode:"checking"
   };
 
-  // Episode 1 のページ画像一覧（実際のパスに合わせて変更）
+  // Episode 1 のページ画像一覧
   const BOOK_EP1_IMAGES = [
     "/assets/book-ep1/1.png","/assets/book-ep1/2.png","/assets/book-ep1/3.png",
     "/assets/book-ep1/4.png","/assets/book-ep1/5.png","/assets/book-ep1/6.png",
@@ -676,10 +676,22 @@
     "/assets/book-ep1/10.png","/assets/book-ep1/11.png","/assets/book-ep1/12.png",
     "/assets/book-ep1/13.png","/assets/book-ep1/14.png","/assets/book-ep1/15.png"
   ];
-  
+
   const bookState = {
     ep1Index: 0
   };
+
+  // ← グローバルに定義し直し
+  function updateBookViewerEp1(){
+    const img = document.getElementById("bookEp1Image");
+    const indicator = document.getElementById("bookEp1PageIndicator");
+    if (!img || !indicator) return;
+
+    const idx = bookState.ep1Index;
+    img.src = BOOK_EP1_IMAGES[idx];
+    indicator.textContent = (idx + 1) + " / " + BOOK_EP1_IMAGES.length;
+  }
+
   function applyLang(lang){
     currentLang = lang;
     localStorage.setItem(langKey, lang);
@@ -693,23 +705,10 @@
     });
 
     const planLabelText = $("#planLabelText");
-    
-   function updateBookViewerEp1(){
-      const img = document.getElementById("bookEp1Image");
-      const indicator = document.getElementById("bookEp1PageIndicator");
-      if (!img || !indicator) return;
-    
-      const idx = bookState.ep1Index;
-      img.src = BOOK_EP1_IMAGES[idx];
-      indicator.textContent = (idx + 1) + " / " + BOOK_EP1_IMAGES.length;
+    if (planLabelText){
+      const planKey = state.plan === "standard" ? "plan_standard" : "plan_free";
+      planLabelText.textContent = t[planKey];
     }
-
-   
-    
-  if (planLabelText){
-    const planKey = state.plan === "standard" ? "plan_standard" : "plan_free";
-    planLabelText.textContent = t[planKey];
-  }
 
     const statusEl = $("#statusText");
     if (statusEl){
@@ -743,6 +742,8 @@
     if (bookList){
       if (state.plan === "standard"){
         bookList.classList.remove("hidden");
+        // プランが standard のときにページ表示を同期
+        updateBookViewerEp1();
       }else{
         bookList.classList.add("hidden");
       }
@@ -769,10 +770,10 @@
   document.addEventListener("click", (e)=>{
     const btn = e.target.closest(".book-viewer-btn");
     if (!btn) return;
-  
+
     const dir = btn.dataset.dir;
     if (!dir || !BOOK_EP1_IMAGES.length) return;
-  
+
     if (dir === "prev"){
       bookState.ep1Index =
         (bookState.ep1Index - 1 + BOOK_EP1_IMAGES.length) % BOOK_EP1_IMAGES.length;
@@ -780,10 +781,9 @@
       bookState.ep1Index =
         (bookState.ep1Index + 1) % BOOK_EP1_IMAGES.length;
     }
-  
+
     updateBookViewerEp1();
   });
-
 
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
@@ -893,25 +893,24 @@
   function renderVideosForPlan(plan){
     const wrap = $("#videos");
     wrap.innerHTML = "";
-  
-    // プランに応じてエピソードを用意
+
     const baseEpisodes = [
       { title: "Episode 1", yt_id: "ypgOP92RtWk" },
       { title: "Episode 2", yt_id: "_9xwWTc_0QM" },
       { title: "Episode 3", yt_id: "ALcmDyxJiSQ" }
     ];
-  
+
     const extraEpisodesForStandard = [
       { title: "Episode 4", yt_id: "EP4_DUMMY_ID" },
       { title: "Episode 5", yt_id: "EP5_DUMMY_ID" },
       { title: "Episode 6", yt_id: "EP6_DUMMY_ID" }
     ];
-  
+
     const episodes =
       plan === "standard"
         ? baseEpisodes.concat(extraEpisodesForStandard)
         : baseEpisodes;
-  
+
     if (!episodes.length){
       const p = document.createElement("p");
       p.className = "muted";
@@ -919,7 +918,7 @@
       wrap.appendChild(p);
       return;
     }
-  
+
     for (const v of episodes){
       const card = document.createElement("div");
       card.className = "video-card";
@@ -944,9 +943,9 @@
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
 
-    // 絵本ビューア初期化（画像があれば1ページ目を表示）
+    // 絵本ビューア初期化
     updateBookViewerEp1();
-  
+
     state.statusCode = "checking";
     applyLang(currentLang);
 
@@ -976,25 +975,23 @@
       state.plan = "free";
       state.statusCode = "free";
       applyLang(currentLang);
-    
+
       $("#btnSubscribe").classList.remove("hidden");
       $("#btnCancel").classList.add("hidden");
       $("#btnSubscribe").onclick = ()=>createCheckout(user.id);
-    
-      // ここで Free プラン用の動画 3本を表示
+
       renderVideosForPlan("free");
     }else{
       state.plan = "standard";
       state.statusCode = "loading";
       applyLang(currentLang);
-    
+
       $("#btnSubscribe").classList.add("hidden");
       $("#btnCancel").classList.remove("hidden");
       $("#btnCancel").onclick = ()=>openPortal(user.id);
-    
-      // Standard プラン用の動画 6本を表示
+
       renderVideosForPlan("standard");
-    
+
       state.statusCode = "ready";
       applyLang(currentLang);
     }
