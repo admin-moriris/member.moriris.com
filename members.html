@@ -247,6 +247,48 @@
       gap:16px;
       margin-top:10px;
     }
+    .book-viewer{
+      margin:10px 0 10px;
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      background:#000;
+      max-width:720px;
+    }
+    
+    .book-viewer-inner img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+    
+    .book-viewer-nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:6px 12px;
+      font-size:12px;
+      background:rgba(0,0,0,.7);
+      color:#ffffff;
+    }
+    
+    .book-viewer-btn{
+      border:none;
+      background:transparent;
+      color:#ffffff;
+      font-size:18px;
+      cursor:pointer;
+      padding:4px 10px;
+    }
+    
+    .book-viewer-btn:focus{
+      outline:2px solid rgba(255,255,255,.6);
+      outline-offset:2px;
+    }
+    
+    .book-viewer-page{
+      font-size:12px;
+    }
     .book-item{
       background:#f5ffe9;
       border-radius:16px;
@@ -418,6 +460,23 @@
             <div class="book-title" data-i18n="book_ep1_title">
               Moriris Picture Book – Episode 1
             </div>
+            
+            <!-- 絵本ビューア -->
+            <div class="book-viewer" id="bookViewerEp1">
+              <div class="book-viewer-inner">
+                <img
+                  id="bookEp1Image"
+                  src="/assets/book-ep1/page1.png"
+                  alt="Moriris Picture Book Episode 1 page 1"
+                />
+              </div>
+              <div class="book-viewer-nav">
+                <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="prev">←</button>
+                <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 6</span>
+                <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="next">→</button>
+              </div>
+            </div>
+            
             <p class="muted" data-i18n="book_ep1_desc">
               森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。
             </p>
@@ -609,6 +668,18 @@
     statusCode:"checking"
   };
 
+  // Episode 1 のページ画像一覧（実際のパスに合わせて変更）
+  const BOOK_EP1_IMAGES = [
+    "/assets/book-ep1/1.png","/assets/book-ep1/2.png","/assets/book-ep1/3.png",
+    "/assets/book-ep1/4.png","/assets/book-ep1/5.png","/assets/book-ep1/6.png",
+    "/assets/book-ep1/7.png","/assets/book-ep1/8.png","/assets/book-ep1/9.png",
+    "/assets/book-ep1/10.png","/assets/book-ep1/11.png","/assets/book-ep1/12.png",
+    "/assets/book-ep1/13.png","/assets/book-ep1/14.png","/assets/book-ep1/15.png"
+  ];
+  
+  const bookState = {
+    ep1Index: 0
+  };
   function applyLang(lang){
     currentLang = lang;
     localStorage.setItem(langKey, lang);
@@ -622,6 +693,19 @@
     });
 
     const planLabelText = $("#planLabelText");
+    
+   function updateBookViewerEp1(){
+      const img = document.getElementById("bookEp1Image");
+      const indicator = document.getElementById("bookEp1PageIndicator");
+      if (!img || !indicator) return;
+    
+      const idx = bookState.ep1Index;
+      img.src = BOOK_EP1_IMAGES[idx];
+      indicator.textContent = (idx + 1) + " / " + BOOK_EP1_IMAGES.length;
+    }
+
+   
+    
   if (planLabelText){
     const planKey = state.plan === "standard" ? "plan_standard" : "plan_free";
     planLabelText.textContent = t[planKey];
@@ -680,6 +764,26 @@
       });
     });
   });
+
+  // 絵本ビューアのボタン操作（← / →）
+  document.addEventListener("click", (e)=>{
+    const btn = e.target.closest(".book-viewer-btn");
+    if (!btn) return;
+  
+    const dir = btn.dataset.dir;
+    if (!dir || !BOOK_EP1_IMAGES.length) return;
+  
+    if (dir === "prev"){
+      bookState.ep1Index =
+        (bookState.ep1Index - 1 + BOOK_EP1_IMAGES.length) % BOOK_EP1_IMAGES.length;
+    }else if (dir === "next"){
+      bookState.ep1Index =
+        (bookState.ep1Index + 1) % BOOK_EP1_IMAGES.length;
+    }
+  
+    updateBookViewerEp1();
+  });
+
 
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
@@ -840,6 +944,9 @@
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
 
+    // 絵本ビューア初期化（画像があれば1ページ目を表示）
+    updateBookViewerEp1();
+  
     state.statusCode = "checking";
     applyLang(currentLang);
 
