@@ -132,6 +132,15 @@
       color:#8b1a07;
       font-weight:600;
     }
+      .input{
+      border-radius:999px;
+      border:1px solid #ddd;
+      background:#fff;
+      padding:7px 10px;
+      font-size:13px;
+      min-width:220px;
+    }
+
 
     .tabs{
       margin-top:8px;
@@ -634,6 +643,32 @@
             サブスクを解約する
           </button>
         </div>
+
+        <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
+
+        <h3 data-i18n="email_change_title">メールアドレスの変更</h3>
+        <p class="muted" data-i18n="email_change_desc">
+          新しいメールアドレスを入力すると、確認メールを送信します。メール内のリンクから変更を完了してください。
+        </p>
+
+        <p style="font-size:13px;margin-top:8px;">
+          <span data-i18n="email_change_current">現在のメールアドレス：</span>
+          <strong id="currentEmailText"></strong>
+        </p>
+
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <input
+            id="emailNew"
+            type="email"
+            class="input"
+            placeholder="new-address@example.com"
+          />
+          <button id="btnChangeEmail" class="btn btn-outline" data-i18n="email_change_btn">
+            変更用メールを送信
+          </button>
+        </div>
+
+        <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
       </div>
     </section>
 
@@ -735,7 +770,14 @@
       book_sort_label:"表示順：",
       book_sort_episode:"エピソード順",
       book_sort_new:"新着順",
-      footer_note:"最新情報は各種SNSでお知らせします。"
+      footer_note:"最新情報は各種SNSでお知らせします。",
+      email_change_title:"メールアドレスの変更",
+      email_change_desc:"新しいメールアドレスを入力すると、確認メールを送信します。メール内のリンクから変更を完了してください。",
+      email_change_current:"現在のメールアドレス：",
+      email_change_btn:"変更用メールを送信",
+      email_change_sent:"新しいメールアドレス宛に確認メールを送信しました。メール内のリンクから変更を完了してください。",
+      email_change_invalid:"正しいメールアドレスを入力してください。",
+      email_change_error:"メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。"
     },
     en:{
       brand_meta:"MEMBERS AREA",
@@ -780,7 +822,14 @@
       book_sort_label:"Order:",
       book_sort_episode:"By episode",
       book_sort_new:"Newest first",
-      footer_note:"Follow Moriris on social media for the latest updates."
+      footer_note:"Follow Moriris on social media for the latest updates.",
+      email_change_title:"Change Email Address",
+      email_change_desc:"Enter a new email address and we will send a confirmation email. Please use the link in that email to complete the change.",
+      email_change_current:"Current email:",
+      email_change_btn:"Send confirmation email",
+      email_change_sent:"We’ve sent a confirmation email to your new address. Please follow the link in the email to complete the change.",
+      email_change_invalid:"Please enter a valid email address.",
+      email_change_error:"An error occurred while changing your email. Please try again later."
     }
   };
 
@@ -1167,6 +1216,45 @@
       return;
     }
     $("#userEmail").textContent = user.email || "";
+
+    // ACCOUNTタブ用：現在のメールアドレス表示
+    const currentEmailEl = $("#currentEmailText");
+    if (currentEmailEl){
+      currentEmailEl.textContent = user.email || "";
+    }
+
+    // メールアドレス変更ボタンの設定
+    const btnChangeEmail = $("#btnChangeEmail");
+    if (btnChangeEmail){
+      btnChangeEmail.onclick = async ()=>{
+        const input = $("#emailNew");
+        const msgEl = $("#emailChangeMsg");
+        if (!input || !msgEl) return;
+
+        const newEmail = input.value.trim();
+
+        // 簡単なバリデーション
+        if (!newEmail || !newEmail.includes("@")){
+          msgEl.textContent = I18N[currentLang].email_change_invalid;
+          return;
+        }
+
+        btnChangeEmail.disabled = true;
+        msgEl.textContent = "";
+
+        const { error } = await sb.auth.updateUser({ email: newEmail });
+
+        if (error){
+          console.error("updateUser error:", error);
+          msgEl.textContent = I18N[currentLang].email_change_error;
+        }else{
+          msgEl.textContent = I18N[currentLang].email_change_sent;
+          input.value = "";
+        }
+
+        btnChangeEmail.disabled = false;
+      };
+    }
 
     const profRes = await loadProfileOrCreate(user.id);
     if (profRes.error || !profRes.data){
