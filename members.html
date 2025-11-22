@@ -1230,40 +1230,39 @@
         const input = $("#emailNew");
         const msgEl = $("#emailChangeMsg");
         if (!input || !msgEl) return;
-
+    
         const newEmail = input.value.trim();
-
-        // 簡単なバリデーション
+    
+        // バリデーション
         if (!newEmail || !newEmail.includes("@")){
           msgEl.textContent = I18N[currentLang].email_change_invalid;
           return;
         }
-
+    
         btnChangeEmail.disabled = true;
         msgEl.textContent = "";
-
-        // ここを修正：redirect 先を明示的に指定
+    
         const { data, error } = await sb.auth.updateUser(
           { email: newEmail },
           {
-            emailRedirectTo: "https://member.moriris.com/",  // ← Supabase の Redirect URLs と一致させる
+            emailRedirectTo: "https://member.moriris.com/" 
           }
         );
-
+    
         if (error){
-          console.error("updateUser error:", error);
-          // エラー内容も画面に表示して原因を確認できるようにする
+          console.error("updateUser ERROR:", error);
+          // エラー内容を画面にそのまま出す（原因が特定できるように）
           msgEl.textContent =
-            I18N[currentLang].email_change_error + " (" + error.message + ")";
+            I18N[currentLang].email_change_error +
+            " ERROR: " + (error.message || JSON.stringify(error));
         }else{
           msgEl.textContent = I18N[currentLang].email_change_sent;
           input.value = "";
         }
-
+    
         btnChangeEmail.disabled = false;
       };
     }
-
 
     const profRes = await loadProfileOrCreate(user.id);
     if (profRes.error || !profRes.data){
