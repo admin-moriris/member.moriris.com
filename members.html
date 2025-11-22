@@ -28,7 +28,7 @@
       background-size:cover;
       background-position:center;
       background-attachment:fixed;
-    
+
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
     }
@@ -38,7 +38,6 @@
       padding:0 18px 32px;
     }
 
-    /* ヘッダー＋タブを上部固定 */
     .header-wrap{
       position:sticky;
       top:0;
@@ -223,73 +222,55 @@
       gap:22px;
       margin-top:12px;
     }
-    
+
     .video-card{
       background:var(--panel);
       border-radius:16px;
       box-shadow:var(--shadow);
       overflow:hidden;
-    
-      width:100%;          /* ← 白いエリアの幅いっぱいに */
-      max-width:none;      /* ← 中央寄せを解除 */
-      margin:0;            /* ← 中央寄せを解除 */
+      width:100%;
+      max-width:none;
+      margin:0;
     }
-    
+
     .video-title{
       padding:10px 12px 12px;
       font-size:14px;
       font-weight:600;
     }
 
+    /* 絵本まわり */
+    .book-sort{
+      margin-top:6px;
+      margin-bottom:6px;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .book-sort-btn{
+      border-radius:999px;
+      border:1px solid #ccc;
+      background:#fff;
+      padding:4px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .book-sort-btn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+
     .book-list{
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-      gap:16px;
+      display:flex;
+      flex-direction:column;
+      gap:20px;
       margin-top:10px;
     }
-    .book-viewer{
-      margin:16px 0;
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow:var(--shadow);
-      background:#000;
-    
-      /* 幅をカードの中いっぱいに */
+    .book-entry{
       width:100%;
-      max-width:none;
-    }
-    .book-viewer-inner img{
-      display:block;
-      width:100%;
-      height:auto;
-    }
-    
-    .book-viewer-nav{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:6px 12px;
-      font-size:12px;
-      background:rgba(0,0,0,.7);
-      color:#ffffff;
-    }
-    
-    .book-viewer-btn{
-      border:none;
-      background:transparent;
-      color:#ffffff;
-      font-size:18px;
-      cursor:pointer;
-      padding:4px 10px;
-    }
-    
-    .book-viewer-btn:focus{
-      outline:2px solid rgba(255,255,255,.6);
-      outline-offset:2px;
-    }
-    
-    .book-viewer-page{
-      font-size:12px;
     }
     .book-item{
       background:#f5ffe9;
@@ -300,6 +281,55 @@
       font-weight:600;
       margin-bottom:4px;
     }
+
+    .book-viewer{
+      margin:12px 0 0;
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      background:#000;
+      width:100%;
+      max-width:none;
+    }
+    .book-viewer-inner img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+
+    .book-viewer-nav{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:6px 12px;
+      font-size:12px;
+      background:rgba(0,0,0,.7);
+      color:#ffffff;
+    }
+
+    .book-viewer-btn{
+      border:none;
+      background:transparent;
+      color:#ffffff;
+      font-size:18px;
+      cursor:pointer;
+      padding:4px 10px;
+    }
+
+    .book-viewer-btn:focus{
+      outline:2px solid rgba(255,255,255,.6);
+      outline-offset:2px;
+    }
+
+    .book-viewer-page{
+      font-size:12px;
+    }
+
+    .book-meta{
+      margin-top:6px;
+      font-size:13px;
+    }
+
     a{color:#0d6b45;text-decoration:none;}
     a:hover{text-decoration:underline;}
 
@@ -344,7 +374,6 @@
       margin-top:14px;
     }
 
-    /* ヘッダーを画面上部に固定 */
     .site-header{
       position:fixed;
       top:0;
@@ -358,17 +387,15 @@
           rgba(250,248,244,0) 100%);
       backdrop-filter:blur(4px);
     }
-    
-    /* ヘッダーの高さぶん下にずらす */
+
     .main-page{
-      padding-top:180px; /* ヘッダーの高さに応じて調整。高すぎ/低すぎならここを微調整 */
+      padding-top:180px;
     }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <!-- 画面上部に固定されるヘッダー -->
   <header class="site-header">
     <div class="page header-inner">
       <div class="topbar">
@@ -411,11 +438,11 @@
           <p class="muted" data-i18n="home_intro">
             メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。
           </p>
-          
+
           <img
-          src="https://member.moriris.com/assets/home-img.png"
-          alt="Moriris members home illustration"
-          style="width:100%;max-width:720px;border-radius:16px;margin:16px 0;"
+            src="https://member.moriris.com/assets/home-img.png"
+            alt="Moriris members home illustration"
+            style="width:100%;max-width:720px;border-radius:16px;margin:16px 0;"
           />
         </div>
 
@@ -457,36 +484,84 @@
           デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。
         </p>
 
+        <!-- 並び替えボタン -->
+        <div class="book-sort hidden" id="bookSortRow">
+          <span data-i18n="book_sort_label">表示順：</span>
+          <button type="button" class="book-sort-btn active" data-sort="episode" data-i18n="book_sort_episode">
+            エピソード順
+          </button>
+          <button type="button" class="book-sort-btn" data-sort="new" data-i18n="book_sort_new">
+            新着順
+          </button>
+        </div>
+
         <div class="book-list hidden" id="bookList">
-          <div class="book-item">
-            <div class="book-title" data-i18n="book_ep1_title">
-              Moriris Picture Book – Episode 1
-            </div>
-            
-            <!-- 絵本ビューア -->
-            <div class="book-viewer" id="bookViewerEp1">
-              <div class="book-viewer-inner">
-                <img
-                  id="bookEp1Image"
-                  src="/assets/book-ep1/page1.png"
-                  alt="Moriris Picture Book Episode 1 page 1"
-                />
+          <!-- Episode 1 -->
+          <div class="book-entry" data-ep="1">
+            <div class="book-item">
+              <div class="book-title" data-i18n="book_ep1_title">
+                Moriris Picture Book – Episode 1
               </div>
-              <div class="book-viewer-nav">
-                <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="prev">←</button>
-                <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 6</span>
-                <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="next">→</button>
+
+              <div class="book-viewer" id="bookViewerEp1">
+                <div class="book-viewer-inner">
+                  <img
+                    id="bookEp1Image"
+                    src="/assets/book-ep1/1.png"
+                    alt="Moriris Picture Book Episode 1 page 1"
+                  />
+                </div>
+                <div class="book-viewer-nav">
+                  <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="prev">←</button>
+                  <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 15</span>
+                  <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="next">→</button>
+                </div>
               </div>
             </div>
-            
-            <p class="muted" data-i18n="book_ep1_desc">
-              森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。
-            </p>
-            <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
-               target="_blank" rel="noopener noreferrer"
-               data-i18n="book_kindle_link">
-              Kindle ストアで見る
-            </a>
+            <div class="book-meta">
+              <p class="muted" data-i18n="book_ep1_desc">
+                森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。
+              </p>
+              <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
+                 target="_blank" rel="noopener noreferrer"
+                 data-i18n="book_kindle_link">
+                Kindle ストアで見る
+              </a>
+            </div>
+          </div>
+
+          <!-- Episode 2 -->
+          <div class="book-entry" data-ep="2">
+            <div class="book-item">
+              <div class="book-title" data-i18n="book_ep2_title">
+                Moriris Picture Book – Episode 2
+              </div>
+
+              <div class="book-viewer" id="bookViewerEp2">
+                <div class="book-viewer-inner">
+                  <img
+                    id="bookEp2Image"
+                    src="/assets/book-ep2/1.png"
+                    alt="Moriris Picture Book Episode 2 page 1"
+                  />
+                </div>
+                <div class="book-viewer-nav">
+                  <button type="button" class="book-viewer-btn" data-book="ep2" data-dir="prev">←</button>
+                  <span class="book-viewer-page" id="bookEp2PageIndicator">1 / 14</span>
+                  <button type="button" class="book-viewer-btn" data-book="ep2" data-dir="next">→</button>
+                </div>
+              </div>
+            </div>
+            <div class="book-meta">
+              <p class="muted" data-i18n="book_ep2_desc">
+                森で続く小さな冒険の物語・第2話です。Kindle ストアでもお読みいただけます。
+              </p>
+              <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
+                 target="_blank" rel="noopener noreferrer"
+                 data-i18n="book_kindle_link">
+                Kindle ストアで見る
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -503,7 +578,6 @@
         <div class="status-box">
           <div>
             <span data-i18n="plan_label">現在のプラン：</span>
-            <!-- ここだけにテキストを出す -->
             <span id="planLabelText">Free</span>
           </div>
           <p id="statusText"
@@ -529,14 +603,12 @@
 
   <footer>
     <div class="sns-row">
-      <!-- YouTube -->
       <a class="sns-icon" href="https://www.youtube.com/@moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="YouTube">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/>
         </svg>
       </a>
-      <!-- Instagram -->
       <a class="sns-icon" href="https://www.instagram.com/moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="Instagram">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -545,14 +617,12 @@
           <circle cx="17" cy="7" r="1"/>
         </svg>
       </a>
-      <!-- X -->
       <a class="sns-icon" href="https://x.com/moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="X">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M18.9 4H16.4L12.9 8.3 10 4H5.1l5.2 7.4L5 20h2.5l3.8-4.7L14 20h4.9l-5.5-7.9L18.9 4zm-3 14-6-8.7L9.2 7h.9l6 8.7.7 1.3z"/>
         </svg>
       </a>
-      <!-- TikTok -->
       <a class="sns-icon" href="https://www.tiktok.com/@moriris_world"
          target="_blank" rel="noopener noreferrer" aria-label="TikTok">
         <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -619,7 +689,12 @@
       book_intro_std:"モリリスの世界を絵本でもお楽しみいただけます。今後、メンバー限定の絵本を追加予定です。",
       book_ep1_title:"Moriris Picture Book – Episode 1",
       book_ep1_desc:"森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。",
+      book_ep2_title:"Moriris Picture Book – Episode 2",
+      book_ep2_desc:"森で続く小さな冒険の物語・第2話です。Kindle ストアでもお読みいただけます。",
       book_kindle_link:"Kindle ストアで見る",
+      book_sort_label:"表示順：",
+      book_sort_episode:"エピソード順",
+      book_sort_new:"新着順",
       footer_note:"最新情報は各種SNSでお知らせします。"
     },
     en:{
@@ -658,7 +733,12 @@
       book_intro_std:"Enjoy the world of Moriris as picture books. More members-only books will be added.",
       book_ep1_title:"Moriris Picture Book – Episode 1",
       book_ep1_desc:"A small adventure that begins in the forest. Also available on Kindle.",
+      book_ep2_title:"Moriris Picture Book – Episode 2",
+      book_ep2_desc:"The second small adventure in the forest. Also available on Kindle.",
       book_kindle_link:"View on Kindle Store",
+      book_sort_label:"Order:",
+      book_sort_episode:"By episode",
+      book_sort_new:"Newest first",
       footer_note:"Follow Moriris on social media for the latest updates."
     }
   };
@@ -670,7 +750,7 @@
     statusCode:"checking"
   };
 
-  // Episode 1 のページ画像一覧
+  // Episode 1 / 2 のページ画像一覧
   const BOOK_EP1_IMAGES = [
     "/assets/book-ep1/1.png","/assets/book-ep1/2.png","/assets/book-ep1/3.png",
     "/assets/book-ep1/4.png","/assets/book-ep1/5.png","/assets/book-ep1/6.png",
@@ -678,20 +758,43 @@
     "/assets/book-ep1/10.png","/assets/book-ep1/11.png","/assets/book-ep1/12.png",
     "/assets/book-ep1/13.png","/assets/book-ep1/14.png","/assets/book-ep1/15.png"
   ];
+  const BOOK_EP2_IMAGES = [
+    "/assets/book-ep2/1.png","/assets/book-ep2/2.png","/assets/book-ep2/3.png",
+    "/assets/book-ep2/4.png","/assets/book-ep2/5.png","/assets/book-ep2/6.png",
+    "/assets/book-ep2/7.png","/assets/book-ep2/8.png","/assets/book-ep2/9.png",
+    "/assets/book-ep2/10.png","/assets/book-ep2/11.png","/assets/book-ep2/12.png",
+    "/assets/book-ep2/13.png","/assets/book-ep2/14.png"
+  ];
 
   const bookState = {
-    ep1Index: 0
+    ep1Index:0,
+    ep2Index:0
   };
 
-  // ← グローバルに定義し直し
-  function updateBookViewerEp1(){
-    const img = document.getElementById("bookEp1Image");
-    const indicator = document.getElementById("bookEp1PageIndicator");
+  function updateBookViewer(bookKey){
+    let images, idx, imgId, indicatorId;
+
+    if (bookKey === "ep1"){
+      images = BOOK_EP1_IMAGES;
+      idx = bookState.ep1Index;
+      imgId = "bookEp1Image";
+      indicatorId = "bookEp1PageIndicator";
+    }else if (bookKey === "ep2"){
+      images = BOOK_EP2_IMAGES;
+      idx = bookState.ep2Index;
+      imgId = "bookEp2Image";
+      indicatorId = "bookEp2PageIndicator";
+    }else{
+      return;
+    }
+    if (!images || !images.length) return;
+
+    const img = document.getElementById(imgId);
+    const indicator = document.getElementById(indicatorId);
     if (!img || !indicator) return;
 
-    const idx = bookState.ep1Index;
-    img.src = BOOK_EP1_IMAGES[idx];
-    indicator.textContent = (idx + 1) + " / " + BOOK_EP1_IMAGES.length;
+    img.src = images[idx];
+    indicator.textContent = (idx + 1) + " / " + images.length;
   }
 
   function applyLang(lang){
@@ -741,13 +844,14 @@
     }
 
     const bookList = $("#bookList");
+    const bookSortRow = $("#bookSortRow");
     if (bookList){
       if (state.plan === "standard"){
         bookList.classList.remove("hidden");
-        // プランが standard のときにページ表示を同期
-        updateBookViewerEp1();
+        if (bookSortRow) bookSortRow.classList.remove("hidden");
       }else{
         bookList.classList.add("hidden");
+        if (bookSortRow) bookSortRow.classList.add("hidden");
       }
     }
 
@@ -768,23 +872,60 @@
     });
   });
 
-  // 絵本ビューアのボタン操作（← / →）
+  // 絵本ページ送り
   document.addEventListener("click", (e)=>{
     const btn = e.target.closest(".book-viewer-btn");
     if (!btn) return;
 
     const dir = btn.dataset.dir;
-    if (!dir || !BOOK_EP1_IMAGES.length) return;
+    const bookKey = btn.dataset.book;
+    if (!dir || !bookKey) return;
 
-    if (dir === "prev"){
-      bookState.ep1Index =
-        (bookState.ep1Index - 1 + BOOK_EP1_IMAGES.length) % BOOK_EP1_IMAGES.length;
-    }else if (dir === "next"){
-      bookState.ep1Index =
-        (bookState.ep1Index + 1) % BOOK_EP1_IMAGES.length;
+    if (bookKey === "ep1"){
+      if (dir === "prev"){
+        bookState.ep1Index =
+          (bookState.ep1Index - 1 + BOOK_EP1_IMAGES.length) % BOOK_EP1_IMAGES.length;
+      }else{
+        bookState.ep1Index =
+          (bookState.ep1Index + 1) % BOOK_EP1_IMAGES.length;
+      }
+    }else if (bookKey === "ep2"){
+      if (dir === "prev"){
+        bookState.ep2Index =
+          (bookState.ep2Index - 1 + BOOK_EP2_IMAGES.length) % BOOK_EP2_IMAGES.length;
+      }else{
+        bookState.ep2Index =
+          (bookState.ep2Index + 1) % BOOK_EP2_IMAGES.length;
+      }
     }
 
-    updateBookViewerEp1();
+    updateBookViewer(bookKey);
+  });
+
+  // 絵本リストの並び替え
+  function sortBookEntries(mode){
+    const list = $("#bookList");
+    if (!list) return;
+    const entries = Array.from(list.querySelectorAll(".book-entry"));
+    entries.sort((a,b)=>{
+      const ea = Number(a.dataset.ep || "0");
+      const eb = Number(b.dataset.ep || "0");
+      if (mode === "new"){
+        return eb - ea; // 大きいエピソード番号が新着
+      }
+      return ea - eb;   // エピソード順
+    });
+    entries.forEach(el=>list.appendChild(el));
+  }
+
+  document.addEventListener("click",(e)=>{
+    const btn = e.target.closest(".book-sort-btn");
+    if (!btn) return;
+    const mode = btn.dataset.sort || "episode";
+    document.querySelectorAll(".book-sort-btn").forEach(b=>{
+      b.classList.toggle("active", b===btn);
+    });
+    sortBookEntries(mode);
   });
 
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
@@ -945,8 +1086,9 @@
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
 
-    // 絵本ビューア初期化
-    updateBookViewerEp1();
+    // 絵本ビューア初期表示
+    updateBookViewer("ep1");
+    updateBookViewer("ep2");
 
     state.statusCode = "checking";
     applyLang(currentLang);
@@ -996,6 +1138,9 @@
 
       state.statusCode = "ready";
       applyLang(currentLang);
+
+      // デフォルトはエピソード順
+      sortBookEntries("episode");
     }
 
     $("#logout").onclick = async ()=>{
