@@ -840,6 +840,8 @@
     statusCode:"checking"
   };
 
+  let currentUser = null;
+
   // Picture book images
   const BOOK_EP1_IMAGES = [
     "/assets/book-ep1/1.png","/assets/book-ep1/2.png","/assets/book-ep1/3.png",
@@ -1153,6 +1155,35 @@
     location.href = data.url;
   }
 
+  async function updateStripeEmail(userId, newEmail){
+    try{
+      const { data:sess } = await sb.auth.getSession();
+      const token = sess?.session?.access_token;
+  
+      const res = await fetch(
+        "https://sqwyfscumunyhsvsvejv.functions.supabase.co/update-stripe-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ user_id: userId, new_email: newEmail })
+        }
+      );
+  
+      if (!res.ok){
+        const t = await res.text();
+        console.error("updateStripeEmail failed:", t);
+        return;
+      }
+      const data = await res.json();
+      console.log("updateStripeEmail result:", data);
+    }catch(e){
+      console.error("updateStripeEmail error:", e);
+    }
+  }
+
   function renderVideosForPlan(plan, mode = videoSortMode){
     videoSortMode = mode;
     const wrap = $("#videos");
@@ -1215,6 +1246,7 @@
       $("#userEmail").textContent = "-";
       return;
     }
+    currentUser = user;
     $("#userEmail").textContent = user.email || "";
 
     // ACCOUNTタブ用：現在のメールアドレス表示
@@ -1233,33 +1265,42 @@
     
         const newEmail = input.value.trim();
     
-        // バリデーション
         if (!newEmail || !newEmail.includes("@")){
           msgEl.textContent = I18N[currentLang].email_change_invalid;
+          return;
+        }
+    
+        if (!currentUser){
+          msgEl.textContent = "ログイン情報を取得できませんでした。";
           return;
         }
     
         btnChangeEmail.disabled = true;
         msgEl.textContent = "";
     
+        // Supabase Auth のメールアドレスを変更（確認メール送信）
         const { data, error } = await sb.auth.updateUser(
           { email: newEmail },
           {
-            emailRedirectTo: "https://member.moriris.com/" 
+            emailRedirectTo: "https://member.moriris.com/"
           }
         );
     
         if (error){
           console.error("updateUser ERROR:", error);
-          // エラー内容を画面にそのまま出す（原因が特定できるように）
           msgEl.textContent =
             I18N[currentLang].email_change_error +
             " ERROR: " + (error.message || JSON.stringify(error));
-        }else{
-          msgEl.textContent = I18N[currentLang].email_change_sent;
-          input.value = "";
+          btnChangeEmail.disabled = false;
+          return;
         }
     
+        // ここで Stripe 側の Customer.email も同期させる
+        // （失敗しても致命的ではないのでエラーはログだけにする）
+        updateStripeEmail(currentUser.id, newEmail);
+    
+        msgEl.textContent = I18N[currentLang].email_change_sent;
+        input.value = "";
         btnChangeEmail.disabled = false;
       };
     }
