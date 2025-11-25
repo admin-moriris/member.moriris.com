@@ -1223,16 +1223,16 @@
       if (!res.ok){
         const t = await res.text().catch(()=> "");
         console.error("delete-account failed:", t || res.status);
-        alert(I18N[currentLang].delete_error);
+        alert(I18N[currentLang].delete_error +　"\n\n[デバッグ情報]\nstatus: " + res.status +　(bodyText ? ("\nbody: " + bodyText) : ""));
         return;
       }
   
       alert(I18N[currentLang].delete_done);
       await sb.auth.signOut();
-      location.href = "./"; // ログイン画面などに戻す
+      location.href = "./";
     }catch(e){
       console.error("handleDeleteAccount error:", e);
-      alert(I18N[currentLang].delete_error);
+      alert(I18N[currentLang].delete_error + "\n\n[デバッグ情報]\n" + e);
     }
   }
 
