@@ -642,6 +642,9 @@
           <button id="btnCancel" class="btn btn-danger hidden" data-i18n="btn_cancel">
             サブスクを解約する
           </button>
+          <button id="btnDeleteAccount" class="btn btn-danger hidden" data-i18n="btn_delete">
+            アカウントを削除する
+          </button>
         </div>
 
         <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
@@ -754,6 +757,7 @@
       status_error:"情報の取得に失敗しました。",
       btn_subscribe:"Standardプランに登録する",
       btn_cancel:"サブスクを解約する",
+      btn_delete:"アカウントを削除する",
       anim_title:"メンバー限定アニメ",
       anim_gate_free:"Standard プランに登録いただくと、すべてのエピソードが視聴可能になります。",
       anim_empty:"現在、視聴可能な動画がありません。",
@@ -806,6 +810,7 @@
       status_error:"Failed to load your membership information.",
       btn_subscribe:"Subscribe to Standard plan",
       btn_cancel:"Cancel subscription",
+      btn_delete:"Delete account",
       anim_title:"Members-only Animation",
       anim_gate_free:"By subscribing to the Standard plan, you can watch all episodes.",
       anim_empty:"There are no videos available yet.",
@@ -1184,6 +1189,43 @@
     }
   }
 
+  async function handleDeleteAccount(){
+    if (!currentUser) return;
+  
+    const ok = window.confirm(I18N[currentLang].delete_confirm);
+    if (!ok) return;
+  
+    try{
+      const { data:sess } = await sb.auth.getSession();
+      const token = sess?.session?.access_token;
+      if (!token) throw new Error("no access token");
+  
+      const res = await fetch(
+        "https://sqwyfscumunyhsvsvejv.functions.supabase.co/delete-account",
+        {
+          method:"POST",
+          headers:{
+            "Authorization":`Bearer ${token}`
+          }
+        }
+      );
+  
+      if (!res.ok){
+        const t = await res.text().catch(()=> "");
+        console.error("delete-account failed:", t || res.status);
+        alert(I18N[currentLang].delete_error);
+        return;
+      }
+  
+      alert(I18N[currentLang].delete_done);
+      await sb.auth.signOut();
+      location.href = "./"; // ログイン画面などに戻す
+    }catch(e){
+      console.error("handleDeleteAccount error:", e);
+      alert(I18N[currentLang].delete_error);
+    }
+  }
+
   function renderVideosForPlan(plan, mode = videoSortMode){
     videoSortMode = mode;
     const wrap = $("#videos");
@@ -1327,6 +1369,7 @@
       const btnSubAnim  = $("#btnSubscribeAnim");
       const btnSubBook  = $("#btnSubscribeBook");
       const btnCancel   = $("#btnCancel");
+      const btnDelete   = $("#btnDeleteAccount");
     
       // Free のときは「Standardプランに登録する」ボタンを3か所で表示
       [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
@@ -1337,6 +1380,10 @@
       if (btnCancel){
         btnCancel.classList.add("hidden");
         btnCancel.onclick = null;
+      }
+      if (btnDelete){
+        btnDelete.classList.remove("hidden");
+        btnDelete.onclick = handleDeleteAccount;
       }
     
       renderVideosForPlan("free", videoSortMode);
@@ -1349,6 +1396,7 @@
       const btnSubAnim  = $("#btnSubscribeAnim");
       const btnSubBook  = $("#btnSubscribeBook");
       const btnCancel   = $("#btnCancel");
+      const btnDelete   = $("#btnDeleteAccount");
     
       // Standard のときは Subscribe ボタンを隠し、Cancel だけ表示
       [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
@@ -1359,6 +1407,10 @@
       if (btnCancel){
         btnCancel.classList.remove("hidden");
         btnCancel.onclick = ()=>openPortal(user.id);
+      }
+      if (btnDelete){
+        btnDelete.classList.add("hidden");
+        btnDelete.onclick = null;
       }
     
       renderVideosForPlan("standard", videoSortMode);
