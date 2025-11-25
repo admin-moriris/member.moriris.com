@@ -758,6 +758,9 @@
       btn_subscribe:"Standardプランに登録する",
       btn_cancel:"サブスクを解約する",
       btn_delete:"アカウントを削除する",
+      delete_confirm:"本当にアカウントを削除しますか？この操作は取り消せません。",
+      delete_done:"アカウントを削除しました。ご利用ありがとうございました。",
+      delete_error:"アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。",
       anim_title:"メンバー限定アニメ",
       anim_gate_free:"Standard プランに登録いただくと、すべてのエピソードが視聴可能になります。",
       anim_empty:"現在、視聴可能な動画がありません。",
@@ -811,6 +814,9 @@
       btn_subscribe:"Subscribe to Standard plan",
       btn_cancel:"Cancel subscription",
       btn_delete:"Delete account",
+      delete_confirm:"Are you sure you want to delete your account? This action cannot be undone.",
+      delete_done:"Your account has been deleted. Thank you for using Moriris.",
+      delete_error:"An error occurred while deleting your account. Please try again later.",
       anim_title:"Members-only Animation",
       anim_gate_free:"By subscribing to the Standard plan, you can watch all episodes.",
       anim_empty:"There are no videos available yet.",
@@ -1191,8 +1197,12 @@
 
   async function handleDeleteAccount(){
     if (!currentUser) return;
+
+    const msg =
+      (I18N[currentLang] && I18N[currentLang].delete_confirm)
+        || "本当にアカウントを削除しますか？この操作は取り消せません。";
   
-    const ok = window.confirm(I18N[currentLang].delete_confirm);
+    const ok = window.confirm(msg);
     if (!ok) return;
   
     try{
