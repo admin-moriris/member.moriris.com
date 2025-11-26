@@ -19,7 +19,6 @@
       margin:0;
       height:100%;
     }
-    
     body{
       min-height:100vh;
       background-color:#faf8f4;
@@ -28,7 +27,7 @@
       background-size:cover;
       background-position:center;
       background-attachment:fixed;
-    
+
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
       display:flex;
@@ -57,7 +56,6 @@
       border-radius:0;
       box-shadow:none;
     }
-    .brand h1,
     .members-title{
       margin:0;
       font-size:24px;
@@ -83,25 +81,56 @@
       color:#0b5130;
       font-weight:600;
     }
+
     .card{
       background:var(--panel);
       border-radius:var(--r);
       box-shadow:var(--sh);
       padding:26px 22px 24px;
-      display:flex;               /* 縦並びのコンテナにする */
+
+      /* ここでカード内レイアウトを確定させる */
+      display:flex;
       flex-direction:column;
-      align-items:flex-start;     /* 子要素を左端に揃える */
-      gap:12px;                   /* 子要素間の縦の余白 */
+      align-items:stretch;      /* 子要素をカード幅いっぱいに */
+      gap:12px;
+      text-align:left;          /* 文字寄せは必ず左 */
     }
-    /* 説明文は幅いっぱい使う */
+
     .lead{
       color:var(--muted);
-      margin:4px 0 6px;
+      margin:0;
       font-size:15px;
       line-height:1.6;
       width:100%;
     }
 
+    /* ★ チェックボックス行：カード幅いっぱい＋左揃え ★ */
+    .agree-row{
+      display:flex;
+      justify-content:flex-start;
+      align-items:flex-start;
+      width:100%;
+      margin:0;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .agree-label{
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      width:100%;              /* テキストも左から始まる */
+    }
+    .agree-label input[type="checkbox"]{
+      margin-top:3px;
+      flex-shrink:0;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      width:100%;
+    }
     input,button{
       padding:12px 14px;
       font-size:16px;
@@ -125,37 +154,12 @@
       cursor:not-allowed;
     }
 
-    /* 利用規約チェック周り：左端に揃える */
-    .agree-row{
-      margin:0;
-      font-size:13px;
-      color:var(--muted);
-      width:100%;                 /* カード幅いっぱい */
-    }
-    
-    .agree-label{
-      display:flex;               /* チェックとテキストを横並び */
-      align-items:flex-start;
-      gap:8px;
-    }
-    
-    .agree-label input[type="checkbox"]{
-      margin-top:3px;             /* テキストと縦位置をそろえる調整 */
-    }
-    
-    /* メール入力＆ボタンの行も幅いっぱいで左寄せ */
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      width:100%;
-    }
-
     footer{
       margin-top:16px;
       color:var(--muted);
       font-size:13px;
       line-height:1.6;
+      text-align:left;
     }
     a{color:#0d6b45;}
   </style>
@@ -191,7 +195,7 @@
         </label>
       </div>
 
-      <div class="row" style="margin-top:16px;">
+      <div class="row">
         <input id="email" type="email" placeholder="you@example.com" aria-label="email" />
         <button id="login" class="primary" disabled>メールを送る</button>
       </div>
