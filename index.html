@@ -46,30 +46,25 @@
       justify-content:space-between;
       margin-bottom:18px;
     }
-    /* ロゴとタイトル周り */
     .brand{
       display:flex;
       align-items:center;
-      gap:20px;              /* ロゴと文字の間隔を少し広めに */
+      gap:20px;
     }
-    
-    /* ロゴ画像：枠・影なし＋サイズ調整 */
     .brand img{
       display:block;
-      height:144px;           /* 画像のようなバランス。大きくしたければ 72px 等に */
-      border-radius:0;       /* ← 枠・角丸をなくす */
-      box-shadow:none;       /* ← 影をなくす */
+      height:144px;
+      border-radius:0;
+      box-shadow:none;
     }
-    
-    /* 「MEMBERS AREA」の見た目 */
     .brand h1,
     .members-title{
       margin:0;
       font-size:24px;
       font-weight:500;
-      letter-spacing:0.22em; /* 画像のように文字を少し広げる */
+      letter-spacing:0.22em;
       text-transform:uppercase;
-      color:#666666;         /* 落ち着いたグレー */
+      color:#666666;
     }
     .lang{
       display:flex;
@@ -123,6 +118,26 @@
       font-weight:600;
       min-width:140px;
     }
+    button.primary:disabled{
+      opacity:0.5;
+      cursor:not-allowed;
+    }
+    /* 利用規約チェック周り */
+    .agree-row{
+      margin:12px 0 0;
+      font-size:13px;
+      color:var(--muted);
+    }
+    .agree-label{
+      display:flex;
+      align-items:flex-start;
+      gap:8px;
+      cursor:pointer;
+    }
+    .agree-label input[type="checkbox"]{
+      margin-top:2px;
+      cursor:pointer;
+    }
     footer{
       margin-top:16px;
       color:var(--muted);
@@ -151,9 +166,21 @@
       <p class="lead" id="t_lead">
         メールアドレスを入力すると、ログインまたは新規アカウントをメールで認証できます。
       </p>
-      <div class="row">
+
+      <!-- 利用規約・プライバシーポリシー同意のチェック -->
+      <div class="agree-row">
+        <label class="agree-label">
+          <input type="checkbox" id="agree" />
+          <span id="t_agree_text">
+            「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」および
+            「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」を読んで同意しました。
+          </span>
+        </label>
+      </div>
+
+      <div class="row" style="margin-top:16px;">
         <input id="email" type="email" placeholder="you@example.com" aria-label="email" />
-        <button id="login" class="primary">メールを送る</button>
+        <button id="login" class="primary" disabled>メールを送る</button>
       </div>
     </div>
 
@@ -179,8 +206,12 @@
         send: "メールを送る",
         hint: "メールが届かない場合は迷惑メールフォルダをご確認ください。",
         needEmail: "メールアドレスを入力してください。",
+        needAgree: "利用規約とプライバシーポリシーを読み、同意にチェックを入れてください。",
         sent: "ログイン用のメールを送信しました。",
         errorPrefix: "エラー：",
+        agreeText:
+          '「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」および' +
+          '「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」を読んで同意しました。',
         legalNote:
           'メールアドレスを送信すると、' +
           '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>および' +
@@ -192,8 +223,13 @@
         send: "Send link",
         hint: "If you don't see the email, please check your spam folder.",
         needEmail: "Please enter your email address.",
+        needAgree: "Please read and agree to the Terms of Service and Privacy Policy.",
         sent: "A login link has been sent to your email.",
         errorPrefix: "Error: ",
+        agreeText:
+          'I have read and agree to the ' +
+          '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> and ' +
+          '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.',
         legalNote:
           'By sending your email, you agree to our ' +
           '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> and ' +
@@ -204,6 +240,14 @@
     const langKey = "moriris_lang";
     const $ = (s) => document.querySelector(s);
 
+    const loginBtn = $("#login");
+    const agreeCheckbox = $("#agree");
+
+    function updateLoginDisabled() {
+      // チェックが入っていない間はボタン無効
+      loginBtn.disabled = !agreeCheckbox.checked;
+    }
+
     function setLang(lang) {
       localStorage.setItem(langKey, lang);
       const t = I18N[lang];
@@ -212,17 +256,25 @@
       $("#login").textContent = t.send;
       $("#t_note").textContent = t.hint;
       $("#legal_note").innerHTML = t.legalNote;
+      $("#t_agree_text").innerHTML = t.agreeText;
       $("#btn-ja").classList.toggle("active", lang === "ja");
       $("#btn-en").classList.toggle("active", lang === "en");
       document.documentElement.lang = lang;
+      // 言語切り替え後も、チェック状態に応じてボタン状態を維持
+      updateLoginDisabled();
     }
 
     $("#btn-ja").onclick = () => setLang("ja");
     $("#btn-en").onclick = () => setLang("en");
+
+    // 初期言語設定
     setLang(
       localStorage.getItem(langKey) ||
       ((navigator.language || "ja").startsWith("ja") ? "ja" : "en")
     );
+
+    // チェックボックス変更時にボタン有効/無効更新
+    agreeCheckbox.addEventListener("change", updateLoginDisabled);
 
     $("#login").onclick = async () => {
       const lang = localStorage.getItem(langKey) || "ja";
@@ -231,6 +283,11 @@
 
       if (!email) {
         alert(t.needEmail);
+        return;
+      }
+
+      if (!agreeCheckbox.checked) {
+        alert(t.needAgree);
         return;
       }
 
