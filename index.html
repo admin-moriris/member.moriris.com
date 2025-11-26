@@ -127,6 +127,7 @@
       margin-top:16px;
       color:var(--muted);
       font-size:13px;
+      line-height:1.6;
     }
     a{color:#0d6b45;}
   </style>
@@ -157,7 +158,8 @@
     </div>
 
     <footer>
-      <span id="t_note">メールが届かない場合は迷惑メールフォルダをご確認ください。</span>
+      <span id="t_note">メールが届かない場合は迷惑メールフォルダをご確認ください。</span><br />
+      <span id="legal_note"></span>
     </footer>
   </div>
 
@@ -179,6 +181,10 @@
         needEmail: "メールアドレスを入力してください。",
         sent: "ログイン用のメールを送信しました。",
         errorPrefix: "エラー：",
+        legalNote:
+          'メールアドレスを送信すると、' +
+          '<a href="https://official.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>および' +
+          '<a href="https://official.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>に同意したものとみなされます。'
       },
       en: {
         title: "MEMBERS AREA",
@@ -188,6 +194,10 @@
         needEmail: "Please enter your email address.",
         sent: "A login link has been sent to your email.",
         errorPrefix: "Error: ",
+        legalNote:
+          'By sending your email, you agree to our ' +
+          '<a href="https://official.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> and ' +
+          '<a href="https://official.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'
       },
     };
 
@@ -201,6 +211,7 @@
       $("#t_lead").textContent = t.lead;
       $("#login").textContent = t.send;
       $("#t_note").textContent = t.hint;
+      $("#legal_note").innerHTML = t.legalNote;
       $("#btn-ja").classList.toggle("active", lang === "ja");
       $("#btn-en").classList.toggle("active", lang === "en");
       document.documentElement.lang = lang;
