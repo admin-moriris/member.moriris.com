@@ -124,23 +124,31 @@
       cursor:not-allowed;
     }
 
-    /* 利用規約チェック周り（左寄せ） */
+    /* 利用規約チェック周り：左端に揃える */
     .agree-row{
+      width:100%;
       margin:12px 0 0;
       font-size:13px;
       color:var(--muted);
       display:flex;
+      align-items:flex-start;
       justify-content:flex-start;
+      text-align:left;
     }
+    
+    /* ラベル全体を左寄せ ＋ 適切な幅で表示 */
     .agree-label{
       display:flex;
+      flex-direction:row;
       align-items:flex-start;
       gap:8px;
-      cursor:pointer;
+      width:100%;
+      max-width:480px;   /* ← テキストが変に右に逃げないための上限幅 */
     }
+    
+    /* チェックボックス位置を調整 */
     .agree-label input[type="checkbox"]{
-      margin-top:2px;
-      cursor:pointer;
+      margin-top:3px;
     }
 
     footer{
