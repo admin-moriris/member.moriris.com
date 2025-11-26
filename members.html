@@ -710,6 +710,7 @@
     <div data-i18n="footer_note">
       最新情報は各種SNSでお知らせします。
     </div>
+    <div id="legalLinks" style="margin-top:4px;font-size:11px;"></div>
   </footer>
 </div>
 
@@ -834,6 +835,9 @@
       book_sort_episode:"By episode",
       book_sort_new:"Newest first",
       footer_note:"Follow Moriris on social media for the latest updates.",
+      legal_note:
+        '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> / ' +
+        '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>',
       email_change_title:"Change Email Address",
       email_change_desc:"Enter a new email address and we will send a confirmation email. Please use the link in that email to complete the change.",
       email_change_current:"Current email:",
@@ -922,6 +926,11 @@
       const key = el.getAttribute("data-i18n");
       if (t[key]) el.textContent = t[key];
     });
+
+    const legal = document.getElementById("legalLinks");
+    if (legal && t.legal_note){
+      legal.innerHTML = t.legal_note;
+    }
 
     const planLabelText = $("#planLabelText");
     if (planLabelText){
