@@ -88,19 +88,20 @@
       border-radius:var(--r);
       box-shadow:var(--sh);
       padding:26px 22px 24px;
-      text-align:left;
+      display:flex;               /* 縦並びのコンテナにする */
+      flex-direction:column;
+      align-items:flex-start;     /* 子要素を左端に揃える */
+      gap:12px;                   /* 子要素間の縦の余白 */
     }
+    /* 説明文は幅いっぱい使う */
     .lead{
       color:var(--muted);
-      margin:4px 0 18px;
+      margin:4px 0 6px;
       font-size:15px;
       line-height:1.6;
+      width:100%;
     }
-    .row{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-    }
+
     input,button{
       padding:12px 14px;
       font-size:16px;
@@ -126,20 +127,28 @@
 
     /* 利用規約チェック周り：左端に揃える */
     .agree-row{
-      margin:12px 0 0;
+      margin:0;
       font-size:13px;
       color:var(--muted);
-      /* ← ここでは display を指定しない（block のまま） */
+      width:100%;                 /* カード幅いっぱい */
     }
     
     .agree-label{
-      display:inline-flex;      /* ← チェックとテキストを横並び */
+      display:flex;               /* チェックとテキストを横並び */
       align-items:flex-start;
       gap:8px;
     }
     
     .agree-label input[type="checkbox"]{
-      margin-top:3px;           /* テキストと縦位置をそろえる調整 */
+      margin-top:3px;             /* テキストと縦位置をそろえる調整 */
+    }
+    
+    /* メール入力＆ボタンの行も幅いっぱいで左寄せ */
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      width:100%;
     }
 
     footer{
