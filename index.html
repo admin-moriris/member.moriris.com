@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Moriris Members Area – Login</title>
+
   <style>
     :root{
       --bg:#faf8f4;
@@ -14,11 +15,14 @@
       --r:18px;
       --sh:0 10px 30px rgba(0,0,0,.18);
     }
-    *{box-sizing:border-box;}
+
+    *{ box-sizing:border-box; }
+
     html,body{
       margin:0;
       height:100%;
     }
+
     body{
       min-height:100vh;
       background-color:#faf8f4;
@@ -34,29 +38,34 @@
       align-items:center;
       justify-content:center;
     }
+
     .wrap{
       width:100%;
       max-width:640px;
       padding:24px 20px 40px;
     }
+
     header{
       display:flex;
       align-items:center;
       justify-content:space-between;
       margin-bottom:18px;
     }
+
     .brand{
       display:flex;
       align-items:center;
       gap:20px;
     }
+
     .brand img{
       display:block;
       height:144px;
       border-radius:0;
       box-shadow:none;
     }
-    .members-title{
+
+    .brand h1{
       margin:0;
       font-size:24px;
       font-weight:500;
@@ -64,10 +73,12 @@
       text-transform:uppercase;
       color:#666666;
     }
+
     .lang{
       display:flex;
       gap:8px;
     }
+
     .lang button{
       border:1px solid #ddd;
       background:#fff;
@@ -76,50 +87,49 @@
       cursor:pointer;
       font-size:14px;
     }
+
     .lang .active{
       border-color:var(--accent);
       color:#0b5130;
       font-weight:600;
     }
 
+    /* ここは上書きされないように全て強制 left 揃え */
     .card{
       background:var(--panel);
       border-radius:var(--r);
       box-shadow:var(--sh);
       padding:26px 22px 24px;
 
-      /* ここでカード内レイアウトを確定させる */
-      display:flex;
-      flex-direction:column;
-      align-items:stretch;      /* 子要素をカード幅いっぱいに */
-      gap:12px;
-      text-align:left;          /* 文字寄せは必ず左 */
+      display:flex !important;
+      flex-direction:column !important;
+      align-items:flex-start !important;
+      gap:16px !important;
+
+      text-align:left !important;
     }
 
     .lead{
       color:var(--muted);
-      margin:0;
+      margin:0 0 6px;
       font-size:15px;
       line-height:1.6;
-      width:100%;
     }
 
-    /* ★ チェックボックス行：カード幅いっぱい＋左揃え ★ */
     .agree-row{
-      display:flex;
-      justify-content:flex-start;
-      align-items:flex-start;
       width:100%;
-      margin:0;
-      font-size:13px;
-      color:var(--muted);
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-start;
     }
+
     .agree-label{
       display:flex;
       align-items:flex-start;
       gap:8px;
-      width:100%;              /* テキストも左から始まる */
+      width:100%;
     }
+
     .agree-label input[type="checkbox"]{
       margin-top:3px;
       flex-shrink:0;
@@ -131,16 +141,19 @@
       flex-wrap:wrap;
       width:100%;
     }
+
     input,button{
       padding:12px 14px;
       font-size:16px;
       border-radius:12px;
       border:1px solid #ddd;
     }
+
     input{
       flex:1;
       min-width:260px;
     }
+
     button.primary{
       background:var(--accent);
       color:#05361f;
@@ -149,6 +162,7 @@
       font-weight:600;
       min-width:140px;
     }
+
     button.primary:disabled{
       opacity:0.5;
       cursor:not-allowed;
@@ -159,60 +173,45 @@
       color:var(--muted);
       font-size:13px;
       line-height:1.6;
-      text-align:left;
+      text-align:center;
     }
-    a{color:#0d6b45;}
+
+    a{ color:#0d6b45; }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
+
 <body>
   <div class="wrap">
+
     <header>
       <div class="brand">
         <img src="/assets/logo-moriris.png" alt="Moriris" />
-        <h1 id="t_title" class="members-title">MEMBERS AREA</h1>
+        <h1 id="t_title">MEMBERS AREA</h1>
       </div>
+
       <div class="lang">
         <button id="btn-en">EN</button>
         <button id="btn-ja" class="active">JP</button>
       </div>
     </header>
 
+    <!-- カード本体 -->
     <div class="card">
+
       <p class="lead" id="t_lead">
         メールアドレスを入力すると、ログインまたは新規アカウントをメールで認証できます。
       </p>
 
-      <div
-        class="agree-row"
-        style="
-          display:flex;
-          justify-content:flex-start;
-          align-items:flex-start;
-          width:100%;
-          margin:0;
-          font-size:13px;
-          color:#6b6964;
-        "
-      >
-        <label
-          class="agree-label"
-          style="
-            display:flex;
-            align-items:flex-start;
-            gap:8px;
-            width:100%;
-          "
-        >
-          <input
-            type="checkbox"
-            id="agree"
-            style="margin-top:3px;flex-shrink:0;"
-          />
+      <!-- ---- 左寄せで揃うチェックボックス ---- -->
+      <div class="agree-row">
+        <label class="agree-label">
+          <input type="checkbox" id="agree">
           <span id="t_agree_text">
-            「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」および
-            「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」を読んで同意しました。
+            「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および
+            「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」
+            を読んで同意しました。
           </span>
         </label>
       </div>
@@ -228,112 +227,98 @@
     </footer>
   </div>
 
+
   <script>
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: true, autoRefreshToken: true, storageKey: "moriris-auth" },
-    });
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const I18N = {
-      ja: {
-        title: "MEMBERS AREA",
-        lead: "メールアドレスを入力すると、ログインまたは新規アカウントをメールで認証できます。",
-        send: "メールを送る",
-        hint: "メールが届かない場合は迷惑メールフォルダをご確認ください。",
-        needEmail: "メールアドレスを入力してください。",
-        needAgree: "利用規約とプライバシーポリシーを読み、同意にチェックを入れてください。",
-        sent: "ログイン用のメールを送信しました。",
-        errorPrefix: "エラー：",
+      ja:{
+        title:"MEMBERS AREA",
+        lead:"メールアドレスを入力すると、ログインまたは新規アカウントをメールで認証できます。",
+        send:"メールを送る",
+        hint:"メールが届かない場合は迷惑メールフォルダをご確認ください。",
+        needEmail:"メールアドレスを入力してください。",
+        needAgree:"利用規約とプライバシーポリシーへの同意が必要です。",
+        sent:"ログイン用のメールを送信しました。",
+        errorPrefix:"エラー：",
         agreeText:
-          '「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」および' +
-          '「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」を読んで同意しました。'
+          '「<a href="https://member.moriris.com/terms.html" target="_blank">利用規約</a>」 および ' +
+          '「<a href="https://member.moriris.com/privacy.html" target="_blank">プライバシーポリシー</a>」 を読んで同意しました。'
       },
-      en: {
-        title: "MEMBERS AREA",
-        lead: "Enter your email to log in or create a new account via email verification.",
-        send: "Send link",
-        hint: "If you don't see the email, please check your spam folder.",
-        needEmail: "Please enter your email address.",
-        needAgree: "Please read and agree to the Terms of Service and Privacy Policy.",
-        sent: "A login link has been sent to your email.",
-        errorPrefix: "Error: ",
+      en:{
+        title:"MEMBERS AREA",
+        lead:"Enter your email to log in or create a new account via email verification.",
+        send:"Send link",
+        hint:"If you don't see the email, please check your spam folder.",
+        needEmail:"Please enter your email address.",
+        needAgree:"Please read and agree to the Terms of Service and Privacy Policy.",
+        sent:"A login link has been sent to your email.",
+        errorPrefix:"Error: ",
         agreeText:
-          'I have read and agree to the ' +
-          '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> and ' +
-          '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'
-      },
+          'I have read and agree to the <a href="https://member.moriris.com/terms.html" target="_blank">Terms of Service</a> ' +
+          'and <a href="https://member.moriris.com/privacy.html" target="_blank">Privacy Policy</a>.'
+      }
     };
 
-    const langKey = "moriris_lang";
-    const $ = (s) => document.querySelector(s);
-
-    const loginBtn = $("#login");
+    const $ = (s)=>document.querySelector(s);
     const agreeCheckbox = $("#agree");
+    const loginBtn = $("#login");
 
-    function updateLoginDisabled() {
+    function updateLoginDisabled(){
       loginBtn.disabled = !agreeCheckbox.checked;
     }
 
-    function setLang(lang) {
+    agreeCheckbox.addEventListener("change", updateLoginDisabled);
+
+    const langKey = "moriris_lang";
+
+    function setLang(lang){
       localStorage.setItem(langKey, lang);
       const t = I18N[lang];
+
       $("#t_title").textContent = t.title;
       $("#t_lead").textContent = t.lead;
       $("#login").textContent = t.send;
       $("#t_note").textContent = t.hint;
       $("#t_agree_text").innerHTML = t.agreeText;
-      $("#btn-ja").classList.toggle("active", lang === "ja");
-      $("#btn-en").classList.toggle("active", lang === "en");
-      document.documentElement.lang = lang;
+
+      $("#btn-ja").classList.toggle("active", lang==="ja");
+      $("#btn-en").classList.toggle("active", lang==="en");
       updateLoginDisabled();
     }
 
-    $("#btn-ja").onclick = () => setLang("ja");
-    $("#btn-en").onclick = () => setLang("en");
+    $("#btn-ja").onclick = ()=>setLang("ja");
+    $("#btn-en").onclick = ()=>setLang("en");
 
     setLang(
       localStorage.getItem(langKey) ||
-      ((navigator.language || "ja").startsWith("ja") ? "ja" : "en")
+      ((navigator.language||"ja").startsWith("ja") ? "ja":"en")
     );
 
-    agreeCheckbox.addEventListener("change", updateLoginDisabled);
-
-    $("#login").onclick = async () => {
+    $("#login").onclick = async ()=>{
       const lang = localStorage.getItem(langKey) || "ja";
       const t = I18N[lang];
       const email = $("#email").value.trim();
 
-      if (!email) {
-        alert(t.needEmail);
-        return;
-      }
+      if(!email) return alert(t.needEmail);
+      if(!agreeCheckbox.checked) return alert(t.needAgree);
 
-      if (!agreeCheckbox.checked) {
-        alert(t.needAgree);
-        return;
-      }
-
-      try {
-        const { error } = await sb.auth.signInWithOtp({
-          email,
-          options: {
-            shouldCreateUser: true,
-            emailRedirectTo: `https://member.moriris.com/members.html?lang=${lang}`,
-          },
-        });
-
-        if (error) {
-          alert(t.errorPrefix + error.message);
-        } else {
-          alert(t.sent);
+      const { error } = await sb.auth.signInWithOtp({
+        email,
+        options:{
+          shouldCreateUser:true,
+          emailRedirectTo:`https://member.moriris.com/members.html?lang=${lang}`
         }
-      } catch (e) {
-        alert(t.errorPrefix + String(e));
-      }
+      });
+
+      if(error) alert(t.errorPrefix + error.message);
+      else alert(t.sent);
     };
   </script>
+
 </body>
 </html>
