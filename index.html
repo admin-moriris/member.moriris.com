@@ -184,10 +184,32 @@
         メールアドレスを入力すると、ログインまたは新規アカウントをメールで認証できます。
       </p>
 
-      <!-- 利用規約・プライバシーポリシー同意のチェック -->
-      <div class="agree-row">
-        <label class="agree-label">
-          <input type="checkbox" id="agree" />
+      <div
+        class="agree-row"
+        style="
+          display:flex;
+          justify-content:flex-start;
+          align-items:flex-start;
+          width:100%;
+          margin:0;
+          font-size:13px;
+          color:#6b6964;
+        "
+      >
+        <label
+          class="agree-label"
+          style="
+            display:flex;
+            align-items:flex-start;
+            gap:8px;
+            width:100%;
+          "
+        >
+          <input
+            type="checkbox"
+            id="agree"
+            style="margin-top:3px;flex-shrink:0;"
+          />
           <span id="t_agree_text">
             「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」および
             「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」を読んで同意しました。
