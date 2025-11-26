@@ -122,11 +122,14 @@
       opacity:0.5;
       cursor:not-allowed;
     }
-    /* 利用規約チェック周り */
+
+    /* 利用規約チェック周り（左寄せ） */
     .agree-row{
       margin:12px 0 0;
       font-size:13px;
       color:var(--muted);
+      display:flex;
+      justify-content:flex-start;
     }
     .agree-label{
       display:flex;
@@ -138,6 +141,7 @@
       margin-top:2px;
       cursor:pointer;
     }
+
     footer{
       margin-top:16px;
       color:var(--muted);
@@ -185,8 +189,7 @@
     </div>
 
     <footer>
-      <span id="t_note">メールが届かない場合は迷惑メールフォルダをご確認ください。</span><br />
-      <span id="legal_note"></span>
+      <span id="t_note">メールが届かない場合は迷惑メールフォルダをご確認ください。</span>
     </footer>
   </div>
 
@@ -211,11 +214,7 @@
         errorPrefix: "エラー：",
         agreeText:
           '「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」および' +
-          '「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」を読んで同意しました。',
-        legalNote:
-          'メールアドレスを送信すると、' +
-          '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>および' +
-          '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>に同意したものとみなされます。'
+          '「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」を読んで同意しました。'
       },
       en: {
         title: "MEMBERS AREA",
@@ -229,10 +228,6 @@
         agreeText:
           'I have read and agree to the ' +
           '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> and ' +
-          '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.',
-        legalNote:
-          'By sending your email, you agree to our ' +
-          '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> and ' +
           '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'
       },
     };
@@ -244,7 +239,6 @@
     const agreeCheckbox = $("#agree");
 
     function updateLoginDisabled() {
-      // チェックが入っていない間はボタン無効
       loginBtn.disabled = !agreeCheckbox.checked;
     }
 
@@ -255,25 +249,21 @@
       $("#t_lead").textContent = t.lead;
       $("#login").textContent = t.send;
       $("#t_note").textContent = t.hint;
-      $("#legal_note").innerHTML = t.legalNote;
       $("#t_agree_text").innerHTML = t.agreeText;
       $("#btn-ja").classList.toggle("active", lang === "ja");
       $("#btn-en").classList.toggle("active", lang === "en");
       document.documentElement.lang = lang;
-      // 言語切り替え後も、チェック状態に応じてボタン状態を維持
       updateLoginDisabled();
     }
 
     $("#btn-ja").onclick = () => setLang("ja");
     $("#btn-en").onclick = () => setLang("en");
 
-    // 初期言語設定
     setLang(
       localStorage.getItem(langKey) ||
       ((navigator.language || "ja").startsWith("ja") ? "ja" : "en")
     );
 
-    // チェックボックス変更時にボタン有効/無効更新
     agreeCheckbox.addEventListener("change", updateLoginDisabled);
 
     $("#login").onclick = async () => {
