@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Moriris Members – 特定商取引法に基づく表記</title>
+  <meta name="description" content="Moriris Members サービスに関する特定商取引法に基づく表記です。" />
+
+  <style>
+    :root {
+      --bg: #faf8f4;
+      --panel: #ffffff;
+      --ink: #24311c;
+      --muted: #6b6964;
+      --accent: #75c29c;
+      --radius: 20px;
+      --shadow: 0 10px 32px rgba(0,0,0,.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      padding: 24px 16px 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .lang-switch {
+      width: 100%;
+      max-width: 840px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .lang-switch button {
+      border-radius: 999px;
+      border: 1px solid var(--accent);
+      padding: 4px 12px;
+      font-size: 0.85rem;
+      background: #fff;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .lang-switch button.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .legal-panel {
+      width: 100%;
+      max-width: 840px;
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px 20px 28px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      margin-top: 0;
+      margin-bottom: 16px;
+    }
+
+    h2 {
+      font-size: 1rem;
+      margin-top: 16px;
+      margin-bottom: 6px;
+    }
+
+    p {
+      margin: 0 0 4px;
+      line-height: 1.6;
+      font-size: 0.92rem;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 4px;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding-top: 40px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      p {
+        font-size: 0.95rem;
+      }
+    }
+  </style>
+</head>
+<body data-lang="ja">
+  <div class="lang-switch">
+    <button type="button" data-set-lang="ja" class="active">日本語</button>
+    <button type="button" data-set-lang="en">English</button>
+  </div>
+
+  <main class="legal-panel">
+    <h1 data-i18n="legal_title">特定商取引法に基づく表記</h1>
+
+    <p data-i18n="service_scope">
+      本ページは、Moriris Members サイト上で提供されるサブスクリプション型サービスおよびデジタル絵本などのデジタルコンテンツに適用されます。
+    </p>
+
+    <h2 data-i18n="seller_title">販売事業者名</h2>
+    <p data-i18n="seller_body">Moriris Studio</p>
+
+    <h2 data-i18n="rep_title">代表責任者</h2>
+    <p data-i18n="rep_body">請求があれば遅滞なく開示いたします。</p>
+
+    <h2 data-i18n="addr_title">所在地</h2>
+    <p data-i18n="addr_body">請求があれば遅滞なく開示いたします。</p>
+
+    <h2 data-i18n="contact_title">お問い合わせ</h2>
+    <p data-i18n="contact_body">
+      お問い合わせは以下のフォームより受け付けております。通常 2〜3 営業日以内に返信いたします。
+    </p>
+    <p>
+      <a href="https://official.moriris.com/contact.html" target="_blank" rel="noopener" data-i18n="contact_link">
+        お問い合わせフォームへ
+      </a>
+    </p>
+
+    <h2 data-i18n="tel_title">電話番号</h2>
+    <p data-i18n="tel_body">
+      請求があれば遅滞なく開示いたします。サポートは原則としてお問い合わせフォーム経由で受け付けております。
+    </p>
+
+    <h2 data-i18n="price_title">販売価格</h2>
+    <p data-i18n="price_body">
+      各商品ページおよび決済画面に表示された価格に準じます。
+    </p>
+
+    <h2 data-i18n="fees_title">商品代金以外の必要料金</h2>
+    <p data-i18n="fees_body">
+      インターネット接続に伴う通信料は、お客様のご負担となります。
+    </p>
+
+    <h2 data-i18n="pay_method_title">支払方法</h2>
+    <p data-i18n="pay_method_body">
+      クレジットカード決済（Stripe）
+    </p>
+
+    <h2 data-i18n="pay_timing_title">支払時期</h2>
+    <p data-i18n="pay_timing_body">
+      サブスクリプション：申し込み時および契約期間ごとに自動決済されます。
+    </p>
+
+    <h2 data-i18n="delivery_title">商品の引き渡し時期（提供時期）</h2>
+    <p data-i18n="delivery_body">
+      決済完了後ただちに、会員ページにログインしてコンテンツをご利用いただけます。
+    </p>
+
+    <h2 data-i18n="cancel_title">返品・キャンセルについて</h2>
+    <p data-i18n="cancel_body1">
+      デジタルコンテンツの特性上、購入完了後の返金・キャンセルは原則お受けしておりません。
+    </p>
+    <p data-i18n="cancel_body2">
+      サブスクリプションは、次回更新日までに解約手続きを行うことで、次回以降の課金を停止できます。
+    </p>
+
+    <h2 data-i18n="env_title">動作環境</h2>
+    <p data-i18n="env_body">
+      最新版の主要なウェブブラウザでのご利用を推奨します。通信状況やご利用端末によっては、コンテンツの再生に時間がかかる場合があります。
+    </p>
+
+    <p class="note" data-i18n="note_body">
+      本表示の内容は、サービス内容の変更等により予告なく更新される場合があります。
+    </p>
+  </main>
+
+  <script>
+    const translations = {
+      ja: {
+        legal_title: "特定商取引法に基づく表記",
+        service_scope: "本ページは、Moriris Members サイト上で提供されるサブスクリプション型サービスおよびデジタル絵本などのデジタルコンテンツに適用されます。",
+        seller_title: "販売事業者名",
+        seller_body: "Moriris Studio",
+        rep_title: "代表責任者",
+        rep_body: "請求があれば遅滞なく開示いたします。",
+        addr_title: "所在地",
+        addr_body: "請求があれば遅滞なく開示いたします。",
+        contact_title: "お問い合わせ",
+        contact_body: "お問い合わせは以下のフォームより受け付けております。通常 2〜3 営業日以内に返信いたします。",
+        contact_link: "お問い合わせフォームへ",
+        tel_title: "電話番号",
+        tel_body: "請求があれば遅滞なく開示いたします。サポートは原則としてお問い合わせフォーム経由で受け付けております。",
+        price_title: "販売価格",
+        price_body: "各商品ページおよび決済画面に表示された価格に準じます。",
+        fees_title: "商品代金以外の必要料金",
+        fees_body: "インターネット接続に伴う通信料は、お客様のご負担となります。",
+        pay_method_title: "支払方法",
+        pay_method_body: "クレジットカード決済（Stripe）",
+        pay_timing_title: "支払時期",
+        pay_timing_body: "サブスクリプション：申し込み時および契約期間ごとに自動決済されます。",
+        delivery_title: "商品の引き渡し時期（提供時期）",
+        delivery_body: "決済完了後ただちに、会員ページにログインしてコンテンツをご利用いただけます。",
+        cancel_title: "返品・キャンセルについて",
+        cancel_body1: "デジタルコンテンツの特性上、購入完了後の返金・キャンセルは原則お受けしておりません。",
+        cancel_body2: "サブスクリプションは、次回更新日までに解約手続きを行うことで、次回以降の課金を停止できます。",
+        env_title: "動作環境",
+        env_body: "最新版の主要なウェブブラウザでのご利用を推奨します。通信状況やご利用端末によっては、コンテンツの再生に時間がかかる場合があります。",
+        note_body: "本表示の内容は、サービス内容の変更等により予告なく更新される場合があります。"
+      },
+      en: {
+        legal_title: "Legal Notice (Specified Commercial Transactions Act – Japan)",
+        service_scope: "This page applies to the subscription services and digital picture books provided on the Moriris Members site.",
+        seller_title: "Seller",
+        seller_body: "Moriris Studio",
+        rep_title: "Responsible Person",
+        rep_body: "We will disclose this information without delay upon request.",
+        addr_title: "Address",
+        addr_body: "We will disclose our address without delay upon request.",
+        contact_title: "Contact",
+        contact_body: "For inquiries, please use the contact form below. We usually respond within 2–3 business days.",
+        contact_link: "Go to contact form",
+        tel_title: "Telephone Number",
+        tel_body: "We will disclose our telephone number without delay upon request. Support is basically provided via the contact form.",
+        price_title: "Price",
+        price_body: "Prices are shown on each product page and on the checkout screen.",
+        fees_title: "Additional Fees",
+        fees_body: "Internet connection and data communication fees are borne by the customer.",
+        pay_method_title: "Payment Method",
+        pay_method_body: "Credit card payment (via Stripe)",
+        pay_timing_title: "Payment Timing",
+        pay_timing_body: "For subscriptions, your card will be charged at the time of sign-up and automatically on each renewal date.",
+        delivery_title: "Delivery (Availability of Service)",
+        delivery_body: "Content becomes available immediately after your payment is successfully completed and you log in to the Members site.",
+        cancel_title: "Cancellations and Refunds",
+        cancel_body1: "Due to the nature of digital content, we generally do not accept cancellations or refunds after purchase is completed.",
+        cancel_body2: "You can stop future subscription charges by canceling your plan before the next renewal date.",
+        env_title: "System Requirements",
+        env_body: "We recommend using the latest version of a modern web browser. Depending on your device and network conditions, content playback may take some time.",
+        note_body: "This legal notice may be updated without prior notice if our services change."
+      }
+    };
+
+    function setLanguage(lang) {
+      const dict = translations[lang];
+      if (!dict) return;
+
+      document.documentElement.lang = lang;
+      document.body.setAttribute("data-lang", lang);
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (dict[key]) {
+          el.textContent = dict[key];
+        }
+      });
+
+      document.querySelectorAll("[data-set-lang]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
+      });
+    }
+
+    document.querySelectorAll("[data-set-lang]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const lang = btn.getAttribute("data-set-lang");
+        setLanguage(lang);
+      });
+    });
+
+    // 初期表示：日本語
+    setLanguage("ja");
+  </script>
+</body>
+</html>
