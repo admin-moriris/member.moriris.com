@@ -363,6 +363,24 @@
       margin-top:6px;
       font-size:13px;
     }
+    .book-full-btn{
+      border:none;
+      background:transparent;
+      color:#ffffff;
+      font-size:16px;
+      cursor:pointer;
+      padding:4px 8px;
+    }
+
+    /* フルスクリーン時の見え方調整 */
+    .book-viewer:fullscreen{
+      border-radius:0;
+    }
+    .book-viewer:fullscreen .book-viewer-inner img{
+      width:100%;
+      height:100%;
+      object-fit:contain; /* 画像全体が収まる */
+    }
 
     a{color:#0d6b45;text-decoration:none;}
     a:hover{text-decoration:underline;}
@@ -570,6 +588,10 @@
                 <div class="book-viewer-nav">
                   <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="prev">←</button>
                   <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 15</span>
+                  <button type="button"
+                          class="book-full-btn"
+                          data-viewer="bookViewerEp1"
+                          aria-label="Fullscreen">⤢</button>
                   <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="next">→</button>
                 </div>
               </div>
@@ -594,6 +616,10 @@
                 <div class="book-viewer-nav">
                   <button type="button" class="book-viewer-btn" data-book="ep2" data-dir="prev">←</button>
                   <span class="book-viewer-page" id="bookEp2PageIndicator">1 / 14</span>
+                  <button type="button"
+                          class="book-full-btn"
+                          data-viewer="bookViewerEp2"
+                          aria-label="Fullscreen">⤢</button>
                   <button type="button" class="book-viewer-btn" data-book="ep2" data-dir="next">→</button>
                 </div>
               </div>
@@ -1036,6 +1062,15 @@
       return;
     }
 
+    const fullBtn = e.target.closest(".book-full-btn");
+    if (fullBtn){
+      const viewerId = fullBtn.dataset.viewer;
+      if (viewerId){
+        toggleBookFullscreen(viewerId);
+      }
+      return;
+    }
+
     // 絵本 並び替えボタン
     const bookSortBtn = e.target.closest(".book-sort-btn");
     if (bookSortBtn){
@@ -1075,6 +1110,28 @@
     entries.forEach(el=>list.appendChild(el));
   }
 
+  function toggleBookFullscreen(viewerId){
+    const el = document.getElementById(viewerId);
+    if (!el) return;
+
+    // すでにこの要素がフルスクリーンなら抜ける
+    if (document.fullscreenElement === el){
+      if (document.exitFullscreen){
+        document.exitFullscreen();
+      }
+      return;
+    }
+
+    // フルスクリーンに入る
+    if (el.requestFullscreen){
+      el.requestFullscreen();
+    }else if (el.webkitRequestFullscreen){ // Safari 対応（あれば）
+      el.webkitRequestFullscreen();
+    }else{
+      alert("お使いのブラウザでは全画面表示に対応していません。");
+    }
+  }
+  
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
   async function getUserWithRetry({tries=40, interval=150}={}){
