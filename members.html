@@ -1294,44 +1294,66 @@
     }
   }
 
-  async function handleDeleteAccount(){
+  async function handleDeleteAccount() {
     if (!currentUser) return;
-
+  
+    const i18n = I18N[currentLang] || I18N["ja"] || {};
+  
     const msg =
-      (I18N[currentLang] && I18N[currentLang].delete_confirm)
-        || "本当にアカウントを削除しますか？この操作は取り消せません。";
+      i18n.delete_confirm ||
+      "本当にアカウントを削除しますか？この操作は取り消せません。";
   
     const ok = window.confirm(msg);
     if (!ok) return;
   
-    try{
-      const { data:sess } = await sb.auth.getSession();
+    try {
+      // アクセストークン取得
+      const { data: sess } = await sb.auth.getSession();
       const token = sess?.session?.access_token;
       if (!token) throw new Error("no access token");
   
       const res = await fetch(
         "https://sqwyfscumunyhsvsvejv.functions.supabase.co/delete-account",
         {
-          method:"POST",
-          headers:{
-            "Authorization":`Bearer ${token}`
-          }
-        }
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       );
   
-      if (!res.ok){
-        const t = await res.text().catch(()=> "");
-        console.error("delete-account failed:", t || res.status);
-        alert(I18N[currentLang].delete_error + "\n\n[デバッグ情報]\nstatus: " + res.status + (t ? ("\nbody: " + t) : ""));
+      if (!res.ok) {
+        // レスポンスボディを文字列で取得（なければ空文字）
+        const bodyText = await res.text().catch(() => "");
+        console.error("delete-account failed:", bodyText || res.status);
+  
+        const baseMsg =
+          i18n.delete_error ||
+          "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
+  
+        alert(
+          baseMsg +
+            "\n\n[デバッグ情報]\nstatus: " +
+            res.status +
+            (bodyText ? "\nbody: " + bodyText : ""),
+        );
         return;
       }
   
-      alert(I18N[currentLang].delete_done);
+      const doneMsg =
+        i18n.delete_done || "アカウントを削除しました。トップページに戻ります。";
+  
+      alert(doneMsg);
       await sb.auth.signOut();
       location.href = "./";
-    }catch(e){
+    } catch (e) {
       console.error("handleDeleteAccount error:", e);
-      alert(I18N[currentLang].delete_error + "\n\n[デバッグ情報]\n" + e);
+  
+      const baseMsg =
+        i18n.delete_error ||
+        "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
+  
+      alert(baseMsg + "\n\n[デバッグ情報]\n" + String(e));
     }
   }
 
