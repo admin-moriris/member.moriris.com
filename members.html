@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Moriris Members</title>
+  <title>MORIRIS MEMBERSHIP</title>
   <style>
     :root{
       --bg:#faf8f4;
@@ -797,6 +797,7 @@
       delete_error:"アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。",
       anim_title:"メンバー限定アニメ",
       anim_gate_free:"Standard プランに登録いただくと、すべてのエピソードが視聴可能になります。",
+      anim_gate_std:"メンバー限定アニメをお楽しみいただけます。",
       anim_empty:"現在、視聴可能な動画がありません。",
       video_sort_label:"表示順：",
       video_sort_episode:"エピソード順",
@@ -822,7 +823,9 @@
       email_change_btn:"変更用メールを送信",
       email_change_sent:"新しいメールアドレス宛に確認メールを送信しました。メール内のリンクから変更を完了してください。",
       email_change_invalid:"正しいメールアドレスを入力してください。",
-      email_change_error:"メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。"
+      email_change_error:"メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。",
+      checkout_error:"お手続き中にエラーが発生しました。時間をおいて再度お試しください。",
+      portal_error:"サブスクリプション管理ページを開けませんでした。時間をおいて再度お試しください。"
     },
     en:{
       brand_meta:"MEMBERSHIP",
@@ -857,6 +860,7 @@
       delete_error:"An error occurred while deleting your account. Please try again later.",
       anim_title:"Members-only Animation",
       anim_gate_free:"By subscribing to the Standard plan, you can watch all episodes.",
+      anim_gate_std:"You can now watch all members-only episodes.",
       anim_empty:"There are no videos available yet.",
       video_sort_label:"Order:",
       video_sort_episode:"By episode",
@@ -882,7 +886,9 @@
       email_change_btn:"Send confirmation email",
       email_change_sent:"We’ve sent a confirmation email to your new address. Please follow the link in the email to complete the change.",
       email_change_invalid:"Please enter a valid email address.",
-      email_change_error:"An error occurred while changing your email. Please try again later."
+      email_change_error:"An error occurred while changing your email. Please try again later.",
+      checkout_error:"Something went wrong while processing your request. Please try again later.",
+      portal_error:"We couldn’t open the subscription management page. Please try again later."
     }
   };
 
@@ -942,7 +948,7 @@
     indicator.textContent = (idx + 1) + " / " + images.length;
   }
 
-  // Animation episodes（ep番号で新着判定）
+  // Animation episodes
   const VIDEO_EPISODES = [
     { ep:1, title:"Episode 1", yt_id:"ypgOP92RtWk", tier:"free" },
     { ep:2, title:"Episode 2", yt_id:"_9xwWTc_0QM", tier:"free" },
@@ -1010,16 +1016,13 @@
     
     if (bookList){
       if (state.plan === "standard"){
-        // 標準プラン → 絵本リスト + 並び替え + Kindle案内 全て表示
         bookList.classList.remove("hidden");
         bookSortRow.classList.remove("hidden");
       }else{
-        // Free → 絵本リストと並び替えは非表示
         bookList.classList.add("hidden");
         bookSortRow.classList.add("hidden");
       }
-    
-      // Kindleの誘導文だけは Free でも表示する
+      // Kindle案内は常に表示
       bookCommonMeta.classList.remove("hidden");
     }
 
@@ -1202,6 +1205,7 @@
   async function createCheckout(userId){
     const { data:sess } = await sb.auth.getSession();
     const token = sess?.session?.access_token;
+    const i18n = I18N[currentLang] || I18N["ja"] || {};
 
     const res = await fetch(
       "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
@@ -1221,13 +1225,15 @@
     );
 
     if (!res.ok){
-      const t = await res.text();
-      alert("作成に失敗しました: " + t);
+      const bodyText = await res.text().catch(()=> "");
+      console.error("createCheckout failed:", res.status, bodyText);
+      alert(i18n.checkout_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
       return;
     }
     const data = await res.json();
     if (!data?.url){
-      alert("Checkout URLが取得できません");
+      console.error("createCheckout: url missing", data);
+      alert(i18n.checkout_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
       return;
     }
     location.href = data.url;
@@ -1236,6 +1242,7 @@
   async function openPortal(userId){
     const { data:sess } = await sb.auth.getSession();
     const token = sess?.session?.access_token;
+    const i18n = I18N[currentLang] || I18N["ja"] || {};
 
     const res = await fetch(
       "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-portal-session",
@@ -1253,13 +1260,15 @@
     );
 
     if (!res.ok){
-      const t = await res.text();
-      alert("ポータルの作成に失敗しました: " + t);
+      const bodyText = await res.text().catch(()=> "");
+      console.error("openPortal failed:", res.status, bodyText);
+      alert(i18n.portal_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
       return;
     }
     const data = await res.json();
     if (!data?.url){
-      alert("ポータルURLが取得できません");
+      console.error("openPortal: url missing", data);
+      alert(i18n.portal_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
       return;
     }
     location.href = data.url;
@@ -1283,8 +1292,8 @@
       );
   
       if (!res.ok){
-        const t = await res.text();
-        console.error("updateStripeEmail failed:", t);
+        const t = await res.text().catch(()=> "");
+        console.error("updateStripeEmail failed:", res.status, t);
         return;
       }
       const data = await res.json();
@@ -1307,7 +1316,6 @@
     if (!ok) return;
   
     try {
-      // アクセストークン取得
       const { data: sess } = await sb.auth.getSession();
       const token = sess?.session?.access_token;
       if (!token) throw new Error("no access token");
@@ -1323,20 +1331,14 @@
       );
   
       if (!res.ok) {
-        // レスポンスボディを文字列で取得（なければ空文字）
         const bodyText = await res.text().catch(() => "");
-        console.error("delete-account failed:", bodyText || res.status);
+        console.error("delete-account failed:", res.status, bodyText);
   
         const baseMsg =
           i18n.delete_error ||
           "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
   
-        alert(
-          baseMsg +
-            "\n\n[デバッグ情報]\nstatus: " +
-            res.status +
-            (bodyText ? "\nbody: " + bodyText : ""),
-        );
+        alert(baseMsg);
         return;
       }
   
@@ -1353,7 +1355,7 @@
         i18n.delete_error ||
         "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
   
-      alert(baseMsg + "\n\n[デバッグ情報]\n" + String(e));
+      alert(baseMsg);
     }
   }
 
@@ -1368,9 +1370,9 @@
 
     episodes.sort((a,b)=>{
       if (mode === "new"){
-        return b.ep - a.ep; // 新着順
+        return b.ep - a.ep;
       }
-      return a.ep - b.ep;   // エピソード順
+      return a.ep - b.ep;
     });
 
     if (!episodes.length){
@@ -1462,8 +1464,8 @@
         if (error){
           console.error("updateUser ERROR:", error);
           msgEl.textContent =
-            I18N[currentLang].email_change_error +
-            " ERROR: " + (error.message || JSON.stringify(error));
+            I18N[currentLang].email_change_error ||
+            "メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。";
           btnChangeEmail.disabled = false;
           return;
         }
