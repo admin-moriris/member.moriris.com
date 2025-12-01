@@ -834,6 +834,7 @@
       email_change_sent:"新しいメールアドレス宛に確認メールを送信しました。メール内のリンクから変更を完了してください。",
       email_change_invalid:"正しいメールアドレスを入力してください。",
       email_change_error:"メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。",
+      email_change_same:"現在登録されているメールアドレスと同じです。別のメールアドレスを入力してください。",
       checkout_error:"お手続き中にエラーが発生しました。時間をおいて再度お試しください。",
       portal_error:"サブスクリプション管理ページを開けませんでした。時間をおいて再度お試しください。"
     },
@@ -897,6 +898,7 @@
       email_change_sent:"We’ve sent a confirmation email to your new address. Please follow the link in the email to complete the change.",
       email_change_invalid:"Please enter a valid email address.",
       email_change_error:"An error occurred while changing your email. Please try again later.",
+      email_change_same:"This is the same as your current email. Please enter a different address.",
       checkout_error:"Something went wrong while processing your request. Please try again later.",
       portal_error:"We couldn’t open the subscription management page. Please try again later."
     }
@@ -1441,55 +1443,87 @@
       currentEmailEl.textContent = user.email || "";
     }
 
-    // メールアドレス変更ボタンの設定（形式チェック付き）
+    // メールアドレス変更ボタンの設定（形式チェック＋同一アドレスチェック付き）
     const btnChangeEmail = $("#btnChangeEmail");
     if (btnChangeEmail){
       btnChangeEmail.onclick = async ()=>{
         const input = $("#emailNew");
         const msgEl = $("#emailChangeMsg");
         if (!input || !msgEl) return;
-      
+    
+        // メッセージ色を一旦リセット（グレー）
+        msgEl.style.color = "#6b6964";
+        const t = I18N[currentLang] || I18N["ja"];
+    
         const newEmail = input.value.trim();
-      
-        // メールアドレス形式チェック
+        const currentEmail = currentUser?.email || "";
+    
+        // 未入力
+        if (!newEmail){
+          msgEl.textContent = t.email_change_invalid;
+          msgEl.style.color = "#b00020";  // 赤でエラー強調
+          return;
+        }
+    
+        // 形式チェック
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(newEmail)){
-          msgEl.textContent = I18N[currentLang].email_change_invalid;
+          msgEl.textContent = t.email_change_invalid;
+          msgEl.style.color = "#b00020";  // 赤でエラー強調
           return;
         }
-      
+    
+        // 現在のメールアドレスと同じ場合は送信しない
+        if (newEmail.toLowerCase() === currentEmail.toLowerCase()){
+          msgEl.textContent = t.email_change_same;
+          msgEl.style.color = "#b00020";  // 赤でエラー強調
+          return;
+        }
+    
         if (!currentUser){
           msgEl.textContent = "ログイン情報を取得できませんでした。";
+          msgEl.style.color = "#b00020";
           return;
         }
-      
+    
         btnChangeEmail.disabled = true;
         msgEl.textContent = "";
-      
-        const { data, error } = await sb.auth.updateUser(
-          { email: newEmail },
-          {
-            emailRedirectTo: "https://member.moriris.com/"
+    
+        try{
+          const { data, error } = await sb.auth.updateUser(
+            { email: newEmail },
+            {
+              emailRedirectTo: "https://member.moriris.com/"
+            }
+          );
+    
+          if (error){
+            console.error("updateUser ERROR:", error);
+            msgEl.textContent =
+              t.email_change_error ||
+              "メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。";
+            msgEl.style.color = "#b00020";
+            return;
           }
-        );
-      
-        if (error){
-          console.error("updateUser ERROR:", error);
+    
+          // Stripe のメールアドレスも同期
+          updateStripeEmail(currentUser.id, newEmail);
+    
+          msgEl.textContent = t.email_change_sent;
+          msgEl.style.color = "#6b6964";  // 通常色
+          input.value = "";
+        }catch(e){
+          console.error("updateUser exception:", e);
           msgEl.textContent =
-            I18N[currentLang].email_change_error ||
+            t.email_change_error ||
             "メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。";
+          msgEl.style.color = "#b00020";
+        }finally{
           btnChangeEmail.disabled = false;
-          return;
         }
-      
-        updateStripeEmail(currentUser.id, newEmail);
-      
-        msgEl.textContent = I18N[currentLang].email_change_sent;
-        input.value = "";
-        btnChangeEmail.disabled = false;
       };
     }
-
+    
     const profRes = await loadProfileOrCreate(user.id);
     if (profRes.error || !profRes.data){
       state.statusCode = "error";
