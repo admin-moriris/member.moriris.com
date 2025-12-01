@@ -1441,7 +1441,7 @@
       currentEmailEl.textContent = user.email || "";
     }
 
-    // メールアドレス変更ボタンの設定
+    // メールアドレス変更ボタンの設定（形式チェック付き）
     const btnChangeEmail = $("#btnChangeEmail");
     if (btnChangeEmail){
       btnChangeEmail.onclick = async ()=>{
@@ -1451,13 +1451,12 @@
       
         const newEmail = input.value.trim();
       
-        // ▼ここを形式チェックに変更
+        // メールアドレス形式チェック
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(newEmail)){
           msgEl.textContent = I18N[currentLang].email_change_invalid;
           return;
         }
-        // ▲ここまで
       
         if (!currentUser){
           msgEl.textContent = "ログイン情報を取得できませんでした。";
@@ -1489,6 +1488,7 @@
         input.value = "";
         btnChangeEmail.disabled = false;
       };
+    }
 
     const profRes = await loadProfileOrCreate(user.id);
     if (profRes.error || !profRes.data){
