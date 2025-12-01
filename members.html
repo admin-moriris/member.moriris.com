@@ -377,14 +377,20 @@
     .book-full-btn{
       border:none;
       background:transparent;
-      color:#ffffff;
-      font-size:18px;
       cursor:pointer;
       padding:4px 8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
     .book-full-btn:focus{
       outline:2px solid rgba(255,255,255,.6);
       outline-offset:2px;
+    }
+    .book-full-btn img{
+      width:18px;
+      height:18px;
+      display:block;
     }
 
     /* フルスクリーン時の見え方調整 */
@@ -603,12 +609,15 @@
                 <div class="book-viewer-nav">
                   <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="prev">←</button>
                   <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 15</span>
+                  <button
+                    type="button"
+                    class="book-full-btn"
+                    data-viewer="bookViewerEp1"
+                    title="Full screen"
+                    aria-label="Full screen">
+                    <img src="/assets/expansion_icon.png" alt="Full screen">
+                  </button>
                   <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="next">→</button>
-                  <button type="button"
-                          class="book-full-btn"
-                          data-viewer="bookViewerEp1"
-                          title="Full Screen"
-                          aria-label="Full Screen">⤢</button>
                 </div>
               </div>
             </div>
@@ -632,12 +641,15 @@
                 <div class="book-viewer-nav">
                   <button type="button" class="book-viewer-btn" data-book="ep2" data-dir="prev">←</button>
                   <span class="book-viewer-page" id="bookEp2PageIndicator">1 / 14</span>
+                  <button
+                    type="button"
+                    class="book-full-btn"
+                    data-viewer="bookViewerEp2"
+                    title="Full screen"
+                    aria-label="Full screen">
+                    <img src="/assets/expansion_icon.png" alt="Full screen">
+                  </button>
                   <button type="button" class="book-viewer-btn" data-book="ep2" data-dir="next">→</button>
-                  <button type="button"
-                          class="book-full-btn"
-                          data-viewer="bookViewerEp2"
-                          title="Full Screen"
-                          aria-label="Full Screen">⤢</button>
                 </div>
               </div>
             </div>
@@ -1040,6 +1052,9 @@
 
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
+
+    // 言語変更時にフルスクリーンボタンのラベルも更新
+    updateFullscreenButtons();
   }
 
   $("#btn-ja").onclick = ()=>applyLang("ja");
@@ -1152,7 +1167,10 @@
     }else if (el.webkitRequestFullscreen){
       el.webkitRequestFullscreen();
     }else{
-      alert("Fullscreen is not supported in this browser.");
+      const msg = currentLang === "ja"
+        ? "お使いのブラウザは全画面表示に対応していません。"
+        : "Fullscreen is not supported in this browser.";
+      alert(msg);
     }
   }
 
@@ -1161,14 +1179,19 @@
     const current = document.fullscreenElement;
     document.querySelectorAll(".book-full-btn").forEach(btn=>{
       const viewerId = btn.dataset.viewer;
+      const img = btn.querySelector("img");
+      if (!img) return;
+
       if (current && current.id === viewerId){
-        btn.textContent = "⤡";
-        btn.title = "Exit Full Screen";
-        btn.setAttribute("aria-label", "Exit Full Screen");
+        img.src = "/assets/reduction_icon.png";
+        const label = currentLang === "ja" ? "縮小する" : "Exit full screen";
+        btn.title = label;
+        btn.setAttribute("aria-label", label);
       }else{
-        btn.textContent = "⤢";
-        btn.title = "Full Screen";
-        btn.setAttribute("aria-label", "Full Screen");
+        img.src = "/assets/expansion_icon.png";
+        const label = currentLang === "ja" ? "全画面表示にする" : "Full screen";
+        btn.title = label;
+        btn.setAttribute("aria-label", label);
       }
     });
   }
@@ -1461,7 +1484,7 @@
         // 未入力
         if (!newEmail){
           msgEl.textContent = t.email_change_invalid;
-          msgEl.style.color = "#b00020";  // 赤でエラー強調
+          msgEl.style.color = "#b00020";
           return;
         }
     
@@ -1469,14 +1492,14 @@
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(newEmail)){
           msgEl.textContent = t.email_change_invalid;
-          msgEl.style.color = "#b00020";  // 赤でエラー強調
+          msgEl.style.color = "#b00020";
           return;
         }
     
         // 現在のメールアドレスと同じ場合は送信しない
         if (newEmail.toLowerCase() === currentEmail.toLowerCase()){
           msgEl.textContent = t.email_change_same;
-          msgEl.style.color = "#b00020";  // 赤でエラー強調
+          msgEl.style.color = "#b00020";
           return;
         }
     
@@ -1510,7 +1533,7 @@
           updateStripeEmail(currentUser.id, newEmail);
     
           msgEl.textContent = t.email_change_sent;
-          msgEl.style.color = "#6b6964";  // 通常色
+          msgEl.style.color = "#6b6964";
           input.value = "";
         }catch(e){
           console.error("updateUser exception:", e);
