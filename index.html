@@ -262,6 +262,7 @@
         hint:"メールが届かない場合は迷惑メールフォルダをご確認ください。",
         needEmail:"メールアドレスを入力してください。",
         needAgree:"利用規約とプライバシーポリシーへの同意が必要です。",
+        invalidEmail:"メールアドレスの形式が正しくありません。",   // 追加
         sent:"ログイン用のメールを送信しました。",
         errorPrefix:"エラー：",
         agreeText:
@@ -275,6 +276,7 @@
         hint:"If you don't see the email, please check your spam folder.",
         needEmail:"Please enter your email address.",
         needAgree:"Please read and agree to the Terms of Service and Privacy Policy.",
+        invalidEmail:"The email format is invalid.",   // 追加
         sent:"A login link has been sent to your email.",
         errorPrefix:"Error: ",
         agreeText:
@@ -324,6 +326,13 @@
       const email = $("#email").value.trim();
 
       if(!email) return alert(t.needEmail);
+
+      // ここでメールアドレス形式チェックを追加
+      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if(!emailPattern.test(email)){
+        return alert(t.invalidEmail);
+      }
+
       if(!agreeCheckbox.checked) return alert(t.needAgree);
 
       const { error } = await sb.auth.signInWithOtp({
