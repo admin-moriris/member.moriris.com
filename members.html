@@ -977,6 +977,28 @@
     ep2Index:0
   };
 
+  // ▼ ここから動画JSON関連の設定
+  const VIDEO_JSON_URL = "/data/video.json";
+  let VIDEO_EPISODES = [];
+  let videoSortMode = "episode";
+
+  async function loadVideoEpisodes(){
+    try{
+      const res = await fetch(VIDEO_JSON_URL);
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      // 配列で、visible が false でないものだけ採用
+      VIDEO_EPISODES = Array.isArray(data)
+        ? data.filter(ep => !Object.prototype.hasOwnProperty.call(ep, "visible") || ep.visible !== false)
+        : [];
+      log("video json loaded", VIDEO_EPISODES);
+    }catch(e){
+      console.error("video json load error", e);
+      VIDEO_EPISODES = [];
+    }
+  }
+  // ▲ 動画JSONの読み込みここまで
+
   function updateBookViewer(bookKey){
     let images, idx, imgId, indicatorId;
 
@@ -1002,17 +1024,6 @@
     img.src = images[idx];
     indicator.textContent = (idx + 1) + " / " + images.length;
   }
-
-  // Animation episodes
-  const VIDEO_EPISODES = [
-    { ep:1, title:"Episode 1", yt_id:"ypgOP92RtWk", tier:"free" },
-    { ep:2, title:"Episode 2", yt_id:"_9xwWTc_0QM", tier:"free" },
-    { ep:3, title:"Episode 3", yt_id:"ALcmDyxJiSQ", tier:"free" },
-    { ep:4, title:"Episode 4", yt_id:"EP4_DUMMY_ID", tier:"standard" },
-    { ep:5, title:"Episode 5", yt_id:"EP5_DUMMY_ID", tier:"standard" },
-    { ep:6, title:"Episode 6", yt_id:"EP6_DUMMY_ID", tier:"standard" }
-  ];
-  let videoSortMode = "episode";
 
   function applyLang(lang){
     currentLang = lang;
@@ -1468,6 +1479,9 @@
     updateBookViewer("ep1");
     updateBookViewer("ep2");
     updateFullscreenButtons();
+
+    // 動画JSONを先に読み込む
+    await loadVideoEpisodes();
 
     state.statusCode = "checking";
     applyLang(currentLang);
