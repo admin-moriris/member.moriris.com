@@ -1448,29 +1448,32 @@
         const input = $("#emailNew");
         const msgEl = $("#emailChangeMsg");
         if (!input || !msgEl) return;
-    
+      
         const newEmail = input.value.trim();
-    
-        if (!newEmail || !newEmail.includes("@")){
+      
+        // ▼ここを形式チェックに変更
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(newEmail)){
           msgEl.textContent = I18N[currentLang].email_change_invalid;
           return;
         }
-    
+        // ▲ここまで
+      
         if (!currentUser){
           msgEl.textContent = "ログイン情報を取得できませんでした。";
           return;
         }
-    
+      
         btnChangeEmail.disabled = true;
         msgEl.textContent = "";
-    
+      
         const { data, error } = await sb.auth.updateUser(
           { email: newEmail },
           {
             emailRedirectTo: "https://member.moriris.com/"
           }
         );
-    
+      
         if (error){
           console.error("updateUser ERROR:", error);
           msgEl.textContent =
@@ -1479,14 +1482,13 @@
           btnChangeEmail.disabled = false;
           return;
         }
-    
+      
         updateStripeEmail(currentUser.id, newEmail);
-    
+      
         msgEl.textContent = I18N[currentLang].email_change_sent;
         input.value = "";
         btnChangeEmail.disabled = false;
       };
-    }
 
     const profRes = await loadProfileOrCreate(user.id);
     if (profRes.error || !profRes.data){
