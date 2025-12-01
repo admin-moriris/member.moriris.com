@@ -342,13 +342,22 @@
 
     .book-viewer-nav{
       display:flex;
-      justify-content:space-between;
       align-items:center;
       padding:6px 12px;
       font-size:12px;
       background:rgba(0,0,0,.7);
       color:#ffffff;
-      column-gap:12px;
+    }
+    .book-viewer-nav-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .book-viewer-nav-right{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:12px; /* 「→」と全画面アイコンの間 */
     }
 
     .book-viewer-btn{
@@ -387,9 +396,9 @@
       outline:2px solid rgba(255,255,255,.6);
       outline-offset:2px;
     }
-    .book-full-btn img{
-      width:18px;
-      height:18px;
+    .book-full-icon{
+      width:20px;
+      height:20px;
       display:block;
     }
 
@@ -607,17 +616,26 @@
                   />
                 </div>
                 <div class="book-viewer-nav">
-                  <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="prev">←</button>
-                  <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 15</span>
-                  <button
-                    type="button"
-                    class="book-full-btn"
-                    data-viewer="bookViewerEp1"
-                    title="Full screen"
-                    aria-label="Full screen">
-                    <img src="/assets/expansion_icon.png" alt="Full screen">
-                  </button>
-                  <button type="button" class="book-viewer-btn" data-book="ep1" data-dir="next">→</button>
+                  <div class="book-viewer-nav-left">
+                    <button type="button"
+                            class="book-viewer-btn"
+                            data-book="ep1"
+                            data-dir="prev">←</button>
+                    <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 15</span>
+                  </div>
+                  <div class="book-viewer-nav-right">
+                    <button type="button"
+                            class="book-viewer-btn"
+                            data-book="ep1"
+                            data-dir="next">→</button>
+                    <button type="button"
+                            class="book-full-btn"
+                            data-viewer="bookViewerEp1"
+                            title="Full Screen"
+                            aria-label="Full Screen">
+                      <img src="/assets/expansion_icon.png" alt="" class="book-full-icon">
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -639,17 +657,26 @@
                   />
                 </div>
                 <div class="book-viewer-nav">
-                  <button type="button" class="book-viewer-btn" data-book="ep2" data-dir="prev">←</button>
-                  <span class="book-viewer-page" id="bookEp2PageIndicator">1 / 14</span>
-                  <button
-                    type="button"
-                    class="book-full-btn"
-                    data-viewer="bookViewerEp2"
-                    title="Full screen"
-                    aria-label="Full screen">
-                    <img src="/assets/expansion_icon.png" alt="Full screen">
-                  </button>
-                  <button type="button" class="book-viewer-btn" data-book="ep2" data-dir="next">→</button>
+                  <div class="book-viewer-nav-left">
+                    <button type="button"
+                            class="book-viewer-btn"
+                            data-book="ep2"
+                            data-dir="prev">←</button>
+                    <span class="book-viewer-page" id="bookEp2PageIndicator">1 / 14</span>
+                  </div>
+                  <div class="book-viewer-nav-right">
+                    <button type="button"
+                            class="book-viewer-btn"
+                            data-book="ep2"
+                            data-dir="next">→</button>
+                    <button type="button"
+                            class="book-full-btn"
+                            data-viewer="bookViewerEp2"
+                            title="Full Screen"
+                            aria-label="Full Screen">
+                      <img src="/assets/expansion_icon.png" alt="" class="book-full-icon">
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1052,9 +1079,6 @@
 
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
-
-    // 言語変更時にフルスクリーンボタンのラベルも更新
-    updateFullscreenButtons();
   }
 
   $("#btn-ja").onclick = ()=>applyLang("ja");
@@ -1167,10 +1191,7 @@
     }else if (el.webkitRequestFullscreen){
       el.webkitRequestFullscreen();
     }else{
-      const msg = currentLang === "ja"
-        ? "お使いのブラウザは全画面表示に対応していません。"
-        : "Fullscreen is not supported in this browser.";
-      alert(msg);
+      alert("Fullscreen is not supported in this browser.");
     }
   }
 
@@ -1179,19 +1200,16 @@
     const current = document.fullscreenElement;
     document.querySelectorAll(".book-full-btn").forEach(btn=>{
       const viewerId = btn.dataset.viewer;
-      const img = btn.querySelector("img");
+      const img = btn.querySelector("img.book-full-icon");
       if (!img) return;
-
       if (current && current.id === viewerId){
         img.src = "/assets/reduction_icon.png";
-        const label = currentLang === "ja" ? "縮小する" : "Exit full screen";
-        btn.title = label;
-        btn.setAttribute("aria-label", label);
+        btn.title = "Exit Full Screen";
+        btn.setAttribute("aria-label", "Exit Full Screen");
       }else{
         img.src = "/assets/expansion_icon.png";
-        const label = currentLang === "ja" ? "全画面表示にする" : "Full screen";
-        btn.title = label;
-        btn.setAttribute("aria-label", label);
+        btn.title = "Full Screen";
+        btn.setAttribute("aria-label", "Full Screen");
       }
     });
   }
@@ -1474,21 +1492,18 @@
         const msgEl = $("#emailChangeMsg");
         if (!input || !msgEl) return;
     
-        // メッセージ色を一旦リセット（グレー）
         msgEl.style.color = "#6b6964";
         const t = I18N[currentLang] || I18N["ja"];
     
         const newEmail = input.value.trim();
         const currentEmail = currentUser?.email || "";
     
-        // 未入力
         if (!newEmail){
           msgEl.textContent = t.email_change_invalid;
           msgEl.style.color = "#b00020";
           return;
         }
     
-        // 形式チェック
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(newEmail)){
           msgEl.textContent = t.email_change_invalid;
@@ -1496,7 +1511,6 @@
           return;
         }
     
-        // 現在のメールアドレスと同じ場合は送信しない
         if (newEmail.toLowerCase() === currentEmail.toLowerCase()){
           msgEl.textContent = t.email_change_same;
           msgEl.style.color = "#b00020";
@@ -1529,7 +1543,6 @@
             return;
           }
     
-          // Stripe のメールアドレスも同期
           updateStripeEmail(currentUser.id, newEmail);
     
           msgEl.textContent = t.email_change_sent;
