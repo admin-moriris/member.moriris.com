@@ -1153,6 +1153,18 @@
     }
   }
 
+  function togglePwOverlay(){
+    const overlay = document.getElementById("pwOverlay");
+    if (!overlay) return;
+  
+    if (state.hasPassword){
+      overlay.classList.add("hidden");
+    }else{
+      overlay.classList.remove("hidden");
+    }
+  }
+
+  
   function updateBookViewer(bookKey){
     let images, idx, imgId, indicatorId;
 
@@ -1748,6 +1760,7 @@
     log("profile", prof);
 
     state.hasPassword = !!prof.has_password;
+    togglePwOverlay();  
 
     // 初回ログイン時: パスワード設定オーバーレイを表示
     const pwForm = document.getElementById("pwForm");
@@ -1799,10 +1812,10 @@
     
         try {
           // 1) Supabase Auth のパスワード更新
-          const { error: updateErr } = await sb.auth.updateUser({ password: p1 });
-          if (updateErr) {
+          const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
+          if (updateErr){
             console.error("updateUser(password) error:", updateErr);
-            if (pwMsg) {
+            if (pwMsg){
               pwMsg.textContent = t.pw_setup_error || "パスワード設定中にエラーが発生しました。";
               pwMsg.style.color = "#b00020";
             }
@@ -1810,23 +1823,31 @@
           }
     
           // 2) profiles.has_password を true に更新
-          const { error: profErr } = await sb
+          const { error:profErr } = await sb
             .from("profiles")
-            .update({ has_password: true })
+            .update({ has_password:true })
             .eq("id", currentUser.id);
-    
-          if (profErr) {
+          
+          if (profErr){
             console.error("profiles update(has_password) error:", profErr);
-            // ここでユーザーには成功扱いにしてしまってもOK
+            // ここはログだけでOK（ユーザーには成功扱い）
           }
     
           // 3) ローカル状態 & UI 更新
           state.hasPassword = true;
-    
-          if (pwMsg) {
-            pwMsg.textContent = t.pw_setup_success || "パスワードを設定しました。";
+          togglePwOverlay();   // ← モーダルを閉じる
+          
+          if (pwMsg){
+            pwMsg.textContent =
+              t.pw_setup_success ||
+              "パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。";
             pwMsg.style.color = "#6b6964";
           }
+
+          // 念のため、少し待ってからページを再読み込み（セッションは維持されます）
+          setTimeout(() => {
+            location.reload();
+          }, 800);
     
           const pwOverlay = document.getElementById("pwOverlay");
           if (pwOverlay) {
