@@ -45,8 +45,9 @@
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
       display:flex;
-      align-items:center;
+      align-items:flex-start;        /* ロゴが欠けないよう上寄せに変更 */
       justify-content:center;
+      padding:24px 0 40px;          /* 画面上部に余白を追加 */
     }
 
     .wrap{
@@ -136,6 +137,43 @@
       font-size:14px;
       color:var(--muted);
       line-height:1.5;
+    }
+
+    /* タブ */
+    .tabs{
+      width:100%;
+      display:flex;
+      gap:8px;
+      margin:8px 0 8px;
+      border-bottom:1px solid #e3e0d7;
+    }
+
+    .tabs button{
+      flex:1;
+      padding:10px 12px;
+      border-radius:999px 999px 0 0;
+      border:1px solid transparent;
+      background:#f4f1e7;
+      font-size:15px;
+      cursor:pointer;
+      color:#555;
+    }
+
+    .tabs button.active{
+      background:#ffffff;
+      border-color:#d7d3c5;
+      color:#0b5130;
+      font-weight:600;
+      box-shadow:0 -1px 0 #ffffff inset;
+    }
+
+    .tab-panel{
+      width:100%;
+      display:none;
+    }
+
+    .tab-panel.active{
+      display:block;
     }
 
     .agree-row{
@@ -251,46 +289,54 @@
         初めての方やパスワード未設定の方は、その下の「メール認証」からアカウントを登録してください。
       </p>
 
-      <!-- 1. パスワードログイン -->
-      <h2 class="section-title" id="t_pw_title">パスワードでログイン</h2>
-      <p class="section-note" id="t_pw_desc">
-        すでにパスワードを設定済みの方はこちらからログインしてください。
-      </p>
-
-      <div class="row">
-        <input id="pw-email" type="email" placeholder="you@example.com" aria-label="email" />
-        <input id="pw-password" type="password" placeholder="Password" aria-label="password" />
-      </div>
-      <div class="row">
-        <button id="btn-login-pw" class="primary">ログイン</button>
+      <!-- タブ -->
+      <div class="tabs" role="tablist">
+        <button id="tab-pw" class="active" data-tab="pw" type="button">パスワードでログイン</button>
+        <button id="tab-magic" data-tab="magic" type="button">初めての方 / パスワード未設定の方</button>
       </div>
 
-      <p class="section-note" id="t_pw_reset_note">
-        パスワードをお忘れの場合は、下の「メール認証」からパスワード再設定用のメールを受け取ってください。
-      </p>
+      <!-- 1. パスワードログイン（タブパネル） -->
+      <div id="panel-pw" class="tab-panel active" role="tabpanel" aria-labelledby="tab-pw">
+        <h2 class="section-title" id="t_pw_title">パスワードでログイン</h2>
+        <p class="section-note" id="t_pw_desc">
+          すでにパスワードを設定済みの方はこちらからログインしてください。
+        </p>
 
-      <hr />
+        <div class="row">
+          <input id="pw-email" type="email" placeholder="you@example.com" aria-label="email" />
+          <input id="pw-password" type="password" placeholder="Password" aria-label="password" />
+        </div>
+        <div class="row">
+          <button id="btn-login-pw" class="primary">ログイン</button>
+        </div>
 
-      <!-- 2. 初回登録 / パスワード未設定 / PWリセット用：メール認証（マジックリンク） -->
-      <h2 class="section-title" id="t_magic_title">初めての方 / パスワード未設定の方</h2>
-      <p class="section-note" id="t_magic_desc">
-        メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。
-      </p>
-
-      <div class="agree-row">
-        <label class="agree-label">
-          <input type="checkbox" id="agree">
-          <span id="t_agree_text">
-            「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および
-            「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」
-            を読んで同意しました。
-          </span>
-        </label>
+        <p class="section-note" id="t_pw_reset_note">
+          パスワードをお忘れの場合は、下の「メール認証」からパスワード再設定用のメールを受け取ってください。
+        </p>
       </div>
 
-      <div class="row">
-        <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
-        <button id="btn-magic" class="primary" disabled>メールを送る</button>
+      <!-- 2. 初回登録 / パスワード未設定 / PWリセット用：メール認証（タブパネル） -->
+      <div id="panel-magic" class="tab-panel" role="tabpanel" aria-labelledby="tab-magic">
+        <h2 class="section-title" id="t_magic_title">初めての方 / パスワード未設定の方</h2>
+        <p class="section-note" id="t_magic_desc">
+          メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。
+        </p>
+
+        <div class="agree-row">
+          <label class="agree-label">
+            <input type="checkbox" id="agree">
+            <span id="t_agree_text">
+              「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および
+              「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」
+              を読んで同意しました。
+            </span>
+          </label>
+        </div>
+
+        <div class="row">
+          <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
+          <button id="btn-magic" class="primary" disabled>メールを送る</button>
+        </div>
       </div>
     </div>
 
@@ -310,11 +356,11 @@
     const I18N = {
       ja:{
         title:"MEMBERSHIP",
-        lead:"すでにパスワードを設定済みの方は、下のフォームからログインできます。初めての方やパスワード未設定の方は、その下の「メール認証」からアカウントを登録してください。",
+        lead:"すでにパスワードを設定済みの方は、下のフォームからログインできます。初めての方やパスワード未設定の方は、上のタブから「初めての方 / パスワード未設定の方」を選び、メール認証でアカウントを登録してください。",
         pwTitle:"パスワードでログイン",
         pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
         pwButton:"ログイン",
-        pwResetNote:"パスワードをお忘れの場合は、下の「メール認証」からパスワード再設定用のメールを受け取ってください。",
+        pwResetNote:"パスワードをお忘れの場合は、「初めての方 / パスワード未設定の方」タブの「メール認証」からパスワード再設定用のメールを受け取ってください。",
         magicTitle:"初めての方 / パスワード未設定の方",
         magicDesc:"メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
         magicButton:"メールを送る",
@@ -332,11 +378,11 @@
       },
       en:{
         title:"MEMBERSHIP",
-        lead:"If you have already set your password, log in using the form below. If you are new or have not set a password yet, please use the email verification section to register your account.",
+        lead:"If you have already set your password, use the form below to log in. If you are new or have not set a password yet, switch to the “New here / No password yet” tab above and register via email verification.",
         pwTitle:"Log in with password",
         pwDesc:"If you have already set a password, you can log in here.",
         pwButton:"Log in",
-        pwResetNote:"If you forgot your password, use the email verification section below to receive a password reset link.",
+        pwResetNote:"If you forgot your password, switch to the “New here / No password yet” tab and use email verification to receive a password reset link.",
         magicTitle:"New here / No password yet",
         magicDesc:"Verify your email to create an account. If you already have an account, you can also reset your password using this link.",
         magicButton:"Send email",
@@ -355,14 +401,37 @@
     };
 
     const $ = (s)=>document.querySelector(s);
+
     const agreeCheckbox = $("#agree");
     const magicBtn = $("#btn-magic");
     const pwLoginBtn = $("#btn-login-pw");
 
+    // タブ切り替え
+    const tabPw = $("#tab-pw");
+    const tabMagic = $("#tab-magic");
+    const panelPw = $("#panel-pw");
+    const panelMagic = $("#panel-magic");
+    const tabKey = "moriris_login_tab";
+
+    function setActiveTab(name){
+      const isPw = name === "pw";
+
+      tabPw.classList.toggle("active", isPw);
+      tabMagic.classList.toggle("active", !isPw);
+
+      panelPw.classList.toggle("active", isPw);
+      panelMagic.classList.toggle("active", !isPw);
+
+      localStorage.setItem(tabKey, name);
+    }
+
+    tabPw.addEventListener("click", ()=>setActiveTab("pw"));
+    tabMagic.addEventListener("click", ()=>setActiveTab("magic"));
+
+    // 規約同意チェック → メール送信ボタンの有効/無効
     function updateMagicDisabled(){
       magicBtn.disabled = !agreeCheckbox.checked;
     }
-
     agreeCheckbox.addEventListener("change", updateMagicDisabled);
 
     const langKey = "moriris_lang";
@@ -383,6 +452,10 @@
       $("#t_note").textContent = t.hint;
       $("#t_agree_text").innerHTML = t.agreeText;
 
+      // タブラベル
+      $("#tab-pw").textContent = t.pwTitle;
+      $("#tab-magic").textContent = t.magicTitle;
+
       $("#btn-ja").classList.toggle("active", lang==="ja");
       $("#btn-en").classList.toggle("active", lang==="en");
 
@@ -392,10 +465,14 @@
     $("#btn-ja").onclick = ()=>setLang("ja");
     $("#btn-en").onclick = ()=>setLang("en");
 
+    // 初期言語
     setLang(
       localStorage.getItem(langKey) ||
       ((navigator.language||"ja").startsWith("ja") ? "ja":"en")
     );
+
+    // 前回開いたタブを復元（なければパスワードタブ）
+    setActiveTab(localStorage.getItem(tabKey) || "pw");
 
     // 共通：メール形式チェック
     function validateEmail(email){
