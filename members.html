@@ -1869,6 +1869,107 @@
     const pwChangeForm = document.getElementById("pwChangeForm");
     const pwChangeMsg  = document.getElementById("pwChangeMsg");
 
+    const pwForm = document.getElementById("pwForm");
+    const pwMsg  = document.getElementById("pwMsg");
+
+    if (pwForm){
+      pwForm.onsubmit = async (e)=>{
+        e.preventDefault();
+        if (!currentUser) return;
+
+        const t = I18N[currentLang] || I18N["ja"];
+
+        if (pwMsg){
+          pwMsg.textContent = "";
+          pwMsg.style.color = "#6b6964";
+        }
+
+        const p1 = (document.getElementById("pwNew")?.value || "").trim();
+        const p2 = (document.getElementById("pwNew2")?.value || "").trim();
+
+        if (!p1){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_need_password;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (!p2){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_need_confirm;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (p1.length < 8){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_short;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (p1 !== p2){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_mismatch;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+
+        const btn = document.getElementById("pwSubmit");
+        if (btn) btn.disabled = true;
+
+        try{
+          // Supabase Auth のパスワード更新
+          const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
+          if (updateErr){
+            console.error("updateUser(set password) error:", updateErr);
+            if (pwMsg){
+              pwMsg.textContent = t.pw_setup_error;
+              pwMsg.style.color = "#b00020";
+            }
+            return;
+          }
+
+          // profiles.has_password を true に更新（失敗しても致命的ではない）
+          try{
+            await sb
+              .from("profiles")
+              .update({ has_password:true })
+              .eq("id", currentUser.id);
+          }catch(e2){
+            console.warn("profiles.has_password update error:", e2);
+          }
+
+          state.hasPassword = true;
+
+          // UI を「設定済み」状態へ切り替え
+          if (pwSection)       pwSection.classList.add("hidden");
+          if (pwChangeSection) pwChangeSection.classList.remove("hidden");
+          if (pwHomeNotice)    pwHomeNotice.classList.add("hidden");
+          if (pwBanner)        pwBanner.classList.add("hidden");
+
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_success;
+            pwMsg.style.color = "#6b6964";
+          }
+
+          const input1 = document.getElementById("pwNew");
+          const input2 = document.getElementById("pwNew2");
+          if (input1) input1.value = "";
+          if (input2) input2.value = "";
+        }catch(e){
+          console.error("pw setup exception:", e);
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_error;
+            pwMsg.style.color = "#b00020";
+          }
+        }finally{
+          if (btn) btn.disabled = false;
+        }
+      };
+    }
+
     if (pwChangeForm){
       pwChangeForm.onsubmit = async (e)=>{
         e.preventDefault();
