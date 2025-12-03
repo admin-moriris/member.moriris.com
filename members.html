@@ -926,12 +926,6 @@
     }
   );
 
-  async function debugSession() {
-    const { data, error } = await sb.auth.getSession();
-    console.log("members.html session:", data, error);
-  }
-  debugSession();
-
   const PRICE_ID_STANDARD = "price_1SZ4pbJBnnPY5Sg2uplAWUVc";
 
   const $ = (s)=>document.querySelector(s);
