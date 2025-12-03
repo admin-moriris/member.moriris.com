@@ -571,8 +571,17 @@
   <main>
     <!-- 未ログイン時に表示する案内 -->
     <div id="notLoggedAlert" class="card hidden" style="background:#fff7e0;border:1px solid #f3d38a;">
-      <p id="notLoggedText" class="muted" style="font-size:14px;margin-bottom:8px;"></p>
-      <a id="notLoggedLink" href="./" style="font-size:14px;">ログイン画面に戻る</a>
+      <p id="notLoggedText"
+         class="muted"
+         style="font-size:14px;margin-bottom:8px;"
+         data-i18n="status_not_logged"></p>
+    
+      <a id="notLoggedLink"
+         href="./"
+         style="font-size:14px;"
+         data-i18n="not_logged_back_link">
+        ログイン画面に戻る
+      </a>
     </div>
 
     <!-- HOME -->
@@ -925,6 +934,8 @@
       tab_animation:"ANIMATION",
       tab_book:"PICTUREBOOK",
       tab_account:"ACCOUNT",
+      status_not_logged:"未ログインか、ブラウザが変わったためログイン情報を確認できませんでした。もう一度ログインを行ってください。",
+      not_logged_back_link:"ログイン画面に戻る",
       pw_banner_text:"パスワードをまだ設定していません。ACCOUNTタブから設定してください。",
       home_title:"ようこそ、モリリスメンバーズへ",
       home_intro:"メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。",
@@ -1006,6 +1017,8 @@
       tab_animation:"ANIMATION",
       tab_book:"PICTUREBOOK",
       tab_account:"ACCOUNT",
+      status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
+      not_logged_back_link:"Back to login page",
       pw_banner_text:"You haven't set a password yet. Please set it from the ACCOUNT tab.",
       home_title:"Welcome to MORIRIS MEMBERSHIP",
       home_intro:"Enjoy members-only animations and digital picture books from this page.",
