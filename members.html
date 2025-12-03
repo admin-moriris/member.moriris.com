@@ -1395,21 +1395,24 @@
   async function loadProfileOrCreate(userId){
     let { data:prof, error } = await sb
       .from("profiles")
-      .select("id,tier,is_active,has_password")  // has_password を取得
+      .select("id,tier,is_active,has_password")   // ← has_password を取得
       .eq("id", userId)
       .single();
-
+  
     const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
     if (notFound){
       const up = await sb.from("profiles").upsert(
-        { id:userId, tier:"free", is_active:false, has_password:false },
+        { id:userId, tier:"free", is_active:false, has_password:false }, // ← has_password 初期値
         { onConflict:"id" }
       );
-      if (up.error){ log("profiles upsert failed", up.error); return { data:null, error:up.error }; }
-
+      if (up.error){
+        log("profiles upsert failed", up.error);
+        return { data:null, error:up.error };
+      }
+  
       ({ data:prof, error } = await sb
         .from("profiles")
-        .select("id,tier,is_active,has_password")
+        .select("id,tier,is_active,has_password")  // ← 同じく has_password
         .eq("id", userId)
         .single());
     }
@@ -1765,16 +1768,16 @@
       pwForm.onsubmit = async (e)=>{
         e.preventDefault();
         if (!currentUser) return;
-
+    
         const t = I18N[currentLang] || I18N["ja"];
         if (pwMsg){
           pwMsg.textContent = "";
           pwMsg.style.color = "#6b6964";
         }
-
+    
         const p1 = $("#pwNew")?.value || "";
         const p2 = $("#pwNew2")?.value || "";
-
+        
         if (!p1){
           if (pwMsg){
             pwMsg.textContent = t.pw_setup_need_password;
@@ -1805,25 +1808,28 @@
         }
 
         const btn = pwForm.querySelector("button[type='submit']");
-        if (btn) btn.disabled = true;
-
-        try{
-          const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
-          if (updateErr){
-            console.error("updateUser(password) error:", updateErr);
-            if (pwMsg){
-              pwMsg.textContent = t.pw_setup_error;
-              pwMsg.style.color = "#b00020";
+          if (btn) btn.disabled = true;
+      
+          try{
+            // 1) Supabase Auth のパスワード更新
+            const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
+            if (updateErr){
+              console.error("updateUser(password) error:", updateErr);
+              if (pwMsg){
+                pwMsg.textContent = t.pw_setup_error;
+                pwMsg.style.color = "#b00020";
+              }
+              return;
             }
-            return;
-          }
 
+          const { error:profErr } = await sb
           const { error:profErr } = await sb
             .from("profiles")
             .update({ has_password:true })
             .eq("id", currentUser.id);
+    
           if (profErr){
-            console.error("profiles update has_password error:", profErr);
+            console.error("profiles update(has_password) error:", profErr);
           }
 
           state.hasPassword = true;
@@ -1831,16 +1837,12 @@
             pwMsg.textContent = t.pw_setup_success;
             pwMsg.style.color = "#6b6964";
           }
-          const pwNewEl = $("#pwNew");
-          const pwNew2El = $("#pwNew2");
-          if (pwNewEl) pwNewEl.value = "";
-          if (pwNew2El) pwNew2El.value = "";
-
+          const pwOverlay = $("#pwOverlay");
           if (pwOverlay){
-            setTimeout(()=>pwOverlay.classList.add("hidden"), 800);
+            pwOverlay.classList.add("hidden");
           }
-        }catch(err){
-          console.error("password setup exception:", err);
+        }catch(e){
+          console.error("pw setup exception:", e);
           if (pwMsg){
             pwMsg.textContent = t.pw_setup_error;
             pwMsg.style.color = "#b00020";
