@@ -914,9 +914,17 @@
 
   const SITE_TOP_URL = "https://member.moriris.com/";
 
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    auth:{ persistSession:true, autoRefreshToken:true, storageKey:"moriris-auth" }
-  });
+  const sb = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    {
+      auth: {
+        persistSession: true,        // セッションを localStorage に保存
+        autoRefreshToken: true,      // トークン自動更新
+        detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
+      },
+    }
+  );
 
   const PRICE_ID_STANDARD = "price_1SZ4pbJBnnPY5Sg2uplAWUVc";
 
