@@ -944,6 +944,9 @@
   const log = (...a)=>{ if(!debugOn) return; const el=$("#dbg"); el.classList.remove("hidden");
     el.textContent += a.map(x=>typeof x==="string"?x:JSON.stringify(x,null,2)).join(" ") + "\n"; };
 
+  // ★ パスワード設定済みフラグ（ブラウザ側）
+  const pwLocalKeyBase = "moriris_pw_done_";
+
   const I18N = {
     ja:{
       brand_meta:"MEMBERSHIP",
@@ -1692,6 +1695,10 @@
       currentEmailEl.textContent = user.email || "";
     }
 
+    // ★ ブラウザ側フラグ
+    const localPwDone =
+      localStorage.getItem(pwLocalKeyBase + user.id) === "1";
+
     const btnChangeEmail = $("#btnChangeEmail");
     if (btnChangeEmail){
       btnChangeEmail.onclick = async ()=>{
@@ -1777,7 +1784,8 @@
     const prof = profRes.data;
     log("profile", prof);
 
-    state.hasPassword = prof.has_password === true;
+    // ★ Supabase＋ブラウザの両方を見て判定
+    state.hasPassword = (prof.has_password === true) || localPwDone;
 
     const pwOverlay = $("#pwOverlay");
     const pwForm = $("#pwForm");
@@ -1856,6 +1864,8 @@
             console.error("profiles update has_password error:", profErr);
           }
 
+          // ★ ブラウザ側フラグも立てる
+          localStorage.setItem(pwLocalKeyBase + currentUser.id, "1");
           state.hasPassword = true;
 
           if (pwMsg){
