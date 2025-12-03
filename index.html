@@ -109,87 +109,35 @@
       background:var(--panel);
       border-radius:var(--r);
       box-shadow:var(--sh);
-      padding:0 0 32px;
+      padding:28px 32px 32px;
+    }
+
+    .form-block{
+      max-width:520px;
+      margin:0 auto;
     }
 
     .section-title{
-      margin:12px 0 4px;
-      font-size:18px;
+      margin:0 0 16px;
+      font-size:20px;
       font-weight:600;
+      text-align:center;
     }
 
     .section-note{
-      margin:0 0 8px;
+      margin:0 0 12px;
       font-size:14px;
       color:var(--muted);
       line-height:1.5;
-    }
-
-    /* タブ */
-    .tabs{
-      width:100%;
-      display:flex;
-      border-bottom:1px solid #e3e0d7;
-      margin:0;                 /* ← 余白ゼロ */
-      padding:0;                /* ← 内側余白なし */
-    }
-
-    .tabs button{
-      flex:1;
-      padding:14px 12px;
-      border:1px solid #d9d5cd;
-      border-bottom:none;       /* ← 下線を消す（白枠とつなげる） */
-      border-radius:16px 16px 0 0;
-      background:#f4f1e7;
-      font-size:16px;
-      cursor:pointer;
-      color:#555;
-      margin:0;                 /* ← タブ間のスキマ完全ゼロ */
-    }
-
-    .tabs button.active{
-      background:#ffffff;
-      color:#0b5130;
-      font-weight:600;
-      border:1px solid #d9d5cd;
-      border-bottom:none;       /* ← 白枠上端にぴったり */
-      margin-bottom:-1px;       /* ← 高さズレ防止のため */
-    }
-
-    .tab-panel{
-      width:100%;
-      display:none;
-    }
-
-    .tab-panel.active{
-      display:block;
-    }
-
-    .agree-row{
-      width:100%;
-      display:flex;
-      align-items:flex-start;
-      justify-content:flex-start;
-      margin-bottom:16px;        /* 利用規約文の下の余白 */
-    }
-
-    .agree-label span{
-      font-size:13px;
-      color:#8a8a8a;
-      line-height:1.5;
-    }
-
-    .agree-label input[type="checkbox"]{
-      margin-top:3px;
-      flex-shrink:0;
+      text-align:center;
     }
 
     .row{
       display:flex;
+      flex-direction:column;
       gap:10px;
-      flex-wrap:wrap;
       width:100%;
-      margin-bottom:12px;        /* 入力行の下の余白 → ログインボタン上にも効く */
+      margin-bottom:16px;
     }
 
     input,button{
@@ -200,26 +148,23 @@
     }
 
     input{
-      flex:1;
-      min-width:260px;
+      width:100%;
     }
 
     input[type="checkbox"]{
-      flex:0 0 auto;
-      min-width:auto;
       width:auto;
       padding:0;
-      margin:0 4px 0 0;
+      margin:0 6px 0 0;
       border:none;
     }
 
     button.primary{
+      width:100%;
       background:var(--accent);
       color:#05361f;
       border-color:transparent;
       cursor:pointer;
       font-weight:600;
-      min-width:140px;
     }
 
     button.primary:disabled{
@@ -230,17 +175,63 @@
     button.outline{
       background:#fff;
       color:var(--ink);
-      border-color:#ccc;
+      border-color:#aaa;
       cursor:pointer;
       font-weight:500;
-      min-width:140px;
+    }
+
+    .small-link{
+      font-size:14px;
+      text-align:center;
+      margin:0 0 16px;
+      color:var(--muted);
+    }
+
+    .small-link a{
+      color:#0d6b45;
+      text-decoration:underline;
     }
 
     hr{
       width:100%;
       border:none;
       border-top:1px solid #e3e0d7;
-      margin:16px 0;
+      margin:24px 0;
+    }
+
+    .agree-row{
+      width:100%;
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-start;
+      margin-bottom:16px;
+      font-size:13px;
+      color:#8a8a8a;
+      line-height:1.5;
+    }
+
+    .agree-label{
+      display:flex;
+      align-items:flex-start;
+    }
+
+    .agree-label span{
+      font-size:13px;
+      color:#8a8a8a;
+      line-height:1.5;
+    }
+
+    .signup-box{
+      margin-top:24px;
+      text-align:center;
+    }
+
+    .signup-box button{
+      max-width:260px;
+      width:100%;
+      border-radius:999px;
+      padding:10px 18px;
+      font-size:15px;
     }
 
     footer{
@@ -275,14 +266,8 @@
     <!-- カード本体 -->
     <div class="card">
 
-      <!-- タブ -->
-      <div class="tabs" role="tablist">
-        <button id="tab-pw" class="active" data-tab="pw" type="button">パスワードでログイン</button>
-        <button id="tab-magic" data-tab="magic" type="button">初めての方 / パスワード未設定の方</button>
-      </div>
-
-      <!-- 1. パスワードログイン（タブパネル） -->
-      <div id="panel-pw" class="tab-panel active" role="tabpanel" aria-labelledby="tab-pw">
+      <!-- 1. パスワードログイン -->
+      <section class="form-block" aria-label="password login">
         <h2 class="section-title" id="t_pw_title">パスワードでログイン</h2>
         <p class="section-note" id="t_pw_desc">
           すでにパスワードを設定済みの方はこちらからログインしてください。
@@ -296,14 +281,17 @@
           <button id="btn-login-pw" class="primary">ログイン</button>
         </div>
 
-        <p class="section-note" id="t_pw_reset_note">
-          パスワードをお忘れの場合は、「初めての方 / パスワード未設定の方」タブの「メール認証」からパスワード再設定用のメールを受け取ってください。
+        <p class="small-link">
+          <span id="t_pw_reset_prefix">パスワードを忘れた方は</span>
+          <a href="#" id="link-reset">こちら</a>
         </p>
-      </div>
+      </section>
 
-      <!-- 2. 初回登録 / パスワード未設定 / PWリセット用：メール認証（タブパネル） -->
-      <div id="panel-magic" class="tab-panel" role="tabpanel" aria-labelledby="tab-magic">
-        <h2 class="section-title" id="t_magic_title">初めての方 / パスワード未設定の方</h2>
+      <hr />
+
+      <!-- 2. 新規会員登録 / パスワード再設定（メール認証） -->
+      <section id="magic-block" class="form-block" aria-label="signup and reset">
+        <h2 class="section-title" id="t_magic_title">新規会員登録 / パスワード再設定</h2>
         <p class="section-note" id="t_magic_desc">
           メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。
         </p>
@@ -323,6 +311,11 @@
           <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
           <button id="btn-magic" class="primary" disabled>メールを送る</button>
         </div>
+      </section>
+
+      <!-- 3. 大きめの新規登録ボタン（メール認証エリアへスクロール） -->
+      <div class="signup-box">
+        <button id="btn-scroll-signup" class="outline">新規会員登録</button>
       </div>
     </div>
 
@@ -347,8 +340,9 @@
         pwTitle:"パスワードでログイン",
         pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
         pwButton:"ログイン",
-        pwResetNote:"パスワードをお忘れの場合は、「初めての方 / パスワード未設定の方」タブの「メール認証」からパスワード再設定用のメールを受け取ってください。",
-        magicTitle:"初めての方 / パスワード未設定の方",
+        pwResetPrefix:"パスワードを忘れた方は",
+        pwResetLink:"こちら",
+        magicTitle:"新規会員登録 / パスワード再設定",
         magicDesc:"メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
         magicButton:"メールを送る",
         hint:"メールが届かない場合は迷惑メールフォルダをご確認ください。",
@@ -368,9 +362,10 @@
         pwTitle:"Log in with password",
         pwDesc:"If you have already set a password, you can log in here.",
         pwButton:"Log in",
-        pwResetNote:"If you forgot your password, switch to the “New here / No password yet” tab and use email verification to receive a password reset link.",
-        magicTitle:"New here / No password yet",
-        magicDesc:"Verify your email to create an account. If you already have an account, you can also reset your password using this link.",
+        pwResetPrefix:"If you forgot your password,",
+        pwResetLink:"click here",
+        magicTitle:"Sign up / Reset password",
+        magicDesc:"Verify your email address to create an account. If you already have one, you can also reset your password using this link.",
         magicButton:"Send email",
         hint:"If you don't see the email, please check your spam folder.",
         needEmail:"Please enter your email address.",
@@ -392,37 +387,17 @@
     const agreeCheckbox = $("#agree");
     const magicBtn = $("#btn-magic");
     const pwLoginBtn = $("#btn-login-pw");
+    const resetLink = $("#link-reset");
+    const btnScrollSignup = $("#btn-scroll-signup");
+    const magicBlock = $("#magic-block");
 
-    const tabPw = $("#tab-pw");
-    const tabMagic = $("#tab-magic");
-    const panelPw = $("#panel-pw");
-    const panelMagic = $("#panel-magic");
-
-    /***** 4. タブ切り替え関連 *****/
-    const tabKey = "moriris_login_tab";
-
-    function setActiveTab(name){
-      const isPw = name === "pw";
-
-      tabPw.classList.toggle("active", isPw);
-      tabMagic.classList.toggle("active", !isPw);
-
-      panelPw.classList.toggle("active", isPw);
-      panelMagic.classList.toggle("active", !isPw);
-
-      localStorage.setItem(tabKey, name);
-    }
-
-    tabPw.addEventListener("click", ()=>setActiveTab("pw"));
-    tabMagic.addEventListener("click", ()=>setActiveTab("magic"));
-
-    /***** 5. 利用規約チェックボックス制御 *****/
+    /***** 4. 利用規約チェックボックス制御 *****/
     function updateMagicDisabled(){
       magicBtn.disabled = !agreeCheckbox.checked;
     }
     agreeCheckbox.addEventListener("change", updateMagicDisabled);
 
-    /***** 6. 言語切り替え関連 *****/
+    /***** 5. 言語切り替え関連 *****/
     const langKey = "moriris_lang";
 
     function setLang(lang){
@@ -432,17 +407,14 @@
       $("#t_title").textContent = t.title;
       $("#t_pw_title").textContent = t.pwTitle;
       $("#t_pw_desc").textContent = t.pwDesc;
-      $("#t_pw_reset_note").textContent = t.pwResetNote;
+      $("#btn-login-pw").textContent = t.pwButton;
+      $("#t_pw_reset_prefix").textContent = t.pwResetPrefix;
+      $("#link-reset").textContent = t.pwResetLink;
       $("#t_magic_title").textContent = t.magicTitle;
       $("#t_magic_desc").textContent = t.magicDesc;
-      $("#btn-login-pw").textContent = t.pwButton;
       $("#btn-magic").textContent = t.magicButton;
       $("#t_note").textContent = t.hint;
       $("#t_agree_text").innerHTML = t.agreeText;
-
-      // タブラベル
-      $("#tab-pw").textContent = t.pwTitle;
-      $("#tab-magic").textContent = t.magicTitle;
 
       $("#btn-ja").classList.toggle("active", lang==="ja");
       $("#btn-en").classList.toggle("active", lang==="en");
@@ -459,10 +431,7 @@
       ((navigator.language||"ja").startsWith("ja") ? "ja":"en")
     );
 
-    // 前回開いたタブを復元（なければパスワードタブ）
-    setActiveTab(localStorage.getItem(tabKey) || "pw");
-
-    /***** 7. 共通バリデーション *****/
+    /***** 6. 共通バリデーション *****/
     function validateEmail(email){
       const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return pattern.test(email);
@@ -473,7 +442,7 @@
       return I18N[lang];
     }
 
-    /***** 8. パスワードログイン処理 *****/
+    /***** 7. パスワードログイン処理 *****/
     pwLoginBtn.onclick = async ()=>{
       const t = currentText();
       const lang = localStorage.getItem(langKey) || "ja";
@@ -498,7 +467,7 @@
       window.location.href = `/members.html?lang=${lang}`;
     };
 
-    /***** 9. メール認証（初回登録／PWリセット）処理 *****/
+    /***** 8. メール認証（初回登録／PWリセット）処理 *****/
     magicBtn.onclick = async ()=>{
       const t = currentText();
       const lang = localStorage.getItem(langKey) || "ja";
@@ -519,6 +488,15 @@
       if(error) alert(t.errorPrefix + error.message);
       else alert(t.sent);
     };
+
+    /***** 9. スクロール系の導線 *****/
+    function scrollToMagic(e){
+      e.preventDefault();
+      magicBlock.scrollIntoView({ behavior:"smooth", block:"start" });
+    }
+
+    resetLink.addEventListener("click", scrollToMagic);
+    btnScrollSignup.addEventListener("click", scrollToMagic);
   </script>
 
 </body>
