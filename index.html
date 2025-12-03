@@ -92,26 +92,20 @@
     }
 
     .lang button{
+      border:1px solid #ddd;
+      background:#f0f0f0;
       border-radius:999px;
       padding:6px 14px;
       cursor:pointer;
       font-size:14px;
-      border:1px solid transparent;
-      background:rgba(255,255,255,.6);
-      color:var(--muted);
-      transition:background .15s,border-color .15s,color .15s,transform .1s;
-    }
-
-    .lang button:hover{
-      transform:translateY(-1px);
+      color:#222;
     }
 
     .lang button.active{
-      background:var(--accent);
-      color:#ffffff;
-      border-color:var(--accent-dark);
+      border-color:var(--accent);
+      background:#ffffff;
+      color:var(--accent-dark);
       font-weight:600;
-      box-shadow:0 0 0 1px rgba(0,0,0,.02);
     }
 
     .card{
@@ -139,6 +133,7 @@
       color:var(--muted);
       line-height:1.5;
       text-align:center;
+      white-space:pre-line; /* \n を改行として表示 */
     }
 
     .row{
@@ -179,14 +174,6 @@
     button.primary:disabled{
       opacity:0.5;
       cursor:not-allowed;
-    }
-
-    button.outline{
-      background:#fff;
-      color:var(--ink);
-      border-color:#aaa;
-      cursor:pointer;
-      font-weight:500;
     }
 
     .small-link{
@@ -289,7 +276,8 @@
       <section id="magic-block" class="form-block" aria-label="signup and reset">
         <h2 class="section-title" id="t_magic_title">新規会員登録 / パスワード再設定</h2>
         <p class="section-note" id="t_magic_desc">
-          メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。
+          メールアドレスを認証してアカウントを作成します。
+すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。
         </p>
 
         <div class="agree-row">
@@ -334,7 +322,7 @@
         pwResetPrefix:"パスワードを忘れた方は",
         pwResetLink:"こちら",
         magicTitle:"新規会員登録 / パスワード再設定",
-        magicDesc:"メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
+        magicDesc:"メールアドレスを認証してアカウントを作成します。\nすでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
         magicButton:"メールを送る",
         hint:"メールが届かない場合は迷惑メールフォルダをご確認ください。",
         needEmail:"メールアドレスを入力してください。",
@@ -356,7 +344,7 @@
         pwResetPrefix:"If you forgot your password,",
         pwResetLink:"click here",
         magicTitle:"Sign up / Reset password",
-        magicDesc:"Verify your email address to create an account. If you already have one, you can also reset your password using this link.",
+        magicDesc:"Verify your email address to create an account.\nIf you already have an account, you can also reset your password using this link.",
         magicButton:"Send email",
         hint:"If you don't see the email, please check your spam folder.",
         needEmail:"Please enter your email address.",
