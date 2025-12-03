@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
 
   <!-- Google tag (gtag.js)  -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
+  <script async src="https://www.googletmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -805,6 +805,36 @@
         </div>
 
         <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+
+        <!-- ★ パスワード設定セクション（has_password=false のユーザーにだけ表示） -->
+        <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
+
+        <div id="pwSection" class="hidden">
+          <h3 data-i18n="pw_setup_title">パスワードの設定</h3>
+          <p class="muted" data-i18n="pw_setup_desc">
+            初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
+          </p>
+
+          <form id="pwForm" style="margin-top:8px;display:flex;flex-direction:column;gap:8px;max-width:420px;">
+            <input
+              id="pwNew"
+              type="password"
+              class="input"
+              placeholder="新しいパスワード（8文字以上）"
+            />
+            <input
+              id="pwNew2"
+              type="password"
+              class="input"
+              placeholder="確認のため、同じパスワードをもう一度"
+            />
+            <button type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
+              パスワードを設定する
+            </button>
+          </form>
+
+          <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+        </div>
       </div>
     </section>
 
@@ -928,7 +958,18 @@
       email_change_error:"メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。",
       email_change_same:"現在登録されているメールアドレスと同じです。別のメールアドレスを入力してください。",
       checkout_error:"お手続き中にエラーが発生しました。時間をおいて再度お試しください。",
-      portal_error:"サブスクリプション管理ページを開けませんでした。時間をおいて再度お試しください。"
+      portal_error:"サブスクリプション管理ページを開けませんでした。時間をおいて再度お試しください。",
+
+      /* パスワード設定まわり */
+      pw_setup_title:"パスワードの設定",
+      pw_setup_desc:"初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。",
+      pw_setup_btn:"パスワードを設定する",
+      pw_setup_need_password:"パスワードを入力してください。",
+      pw_setup_need_confirm:"確認用パスワードを入力してください。",
+      pw_setup_mismatch:"パスワードが一致しません。",
+      pw_setup_short:"パスワードは8文字以上にしてください。",
+      pw_setup_success:"パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。",
+      pw_setup_error:"パスワードの設定中にエラーが発生しました。時間をおいて再度お試しください。"
     },
     en:{
       brand_meta:"MEMBERSHIP",
@@ -992,7 +1033,18 @@
       email_change_error:"An error occurred while changing your email. Please try again later.",
       email_change_same:"This is the same as your current email. Please enter a different address.",
       checkout_error:"Something went wrong while processing your request. Please try again later.",
-      portal_error:"We couldn’t open the subscription management page. Please try again later."
+      portal_error:"We couldn’t open the subscription management page. Please try again later.",
+
+      /* password setup */
+      pw_setup_title:"Set your password",
+      pw_setup_desc:"You initially registered with email verification only. To log in with your email and password from now on, please set a password here.",
+      pw_setup_btn:"Set password",
+      pw_setup_need_password:"Please enter a password.",
+      pw_setup_need_confirm:"Please enter the confirmation password.",
+      pw_setup_mismatch:"The passwords do not match.",
+      pw_setup_short:"Please use at least 8 characters for the password.",
+      pw_setup_success:"Your password has been set. Next time, log in using your email and password on the login page.",
+      pw_setup_error:"An error occurred while setting your password. Please try again later."
     }
   };
 
@@ -1000,7 +1052,8 @@
   const langKey = "moriris_lang_members";
   const state = {
     plan:"free",
-    statusCode:"checking"
+    statusCode:"checking",
+    hasPassword:false
   };
 
   let currentUser = null;
@@ -1286,21 +1339,21 @@
   async function loadProfileOrCreate(userId){
     let { data:prof, error } = await sb
       .from("profiles")
-      .select("id,tier,is_active")
+      .select("id,tier,is_active,has_password")  // ★ 追加
       .eq("id", userId)
       .single();
 
     const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
     if (notFound){
       const up = await sb.from("profiles").upsert(
-        { id:userId, tier:"free", is_active:false },
+        { id:userId, tier:"free", is_active:false, has_password:false }, // ★ 初期値
         { onConflict:"id" }
       );
       if (up.error){ log("profiles upsert failed", up.error); return { data:null, error:up.error }; }
 
       ({ data:prof, error } = await sb
         .from("profiles")
-        .select("id,tier,is_active")
+        .select("id,tier,is_active,has_password")
         .eq("id", userId)
         .single());
     }
@@ -1634,6 +1687,109 @@
 
     const prof = profRes.data;
     log("profile", prof);
+
+    state.hasPassword = !!prof.has_password;
+
+    // パスワード設定セクションの表示制御
+    const pwSection = $("#pwSection");
+    const pwForm = $("#pwForm");
+    const pwMsg = $("#pwMsg");
+    if (pwSection){
+      if (state.hasPassword){
+        pwSection.classList.add("hidden");
+      }else{
+        pwSection.classList.remove("hidden");
+      }
+    }
+
+    if (pwForm){
+      pwForm.onsubmit = async (e)=>{
+        e.preventDefault();
+        if (!currentUser) return;
+
+        const t = I18N[currentLang] || I18N["ja"];
+        if (pwMsg){
+          pwMsg.textContent = "";
+          pwMsg.style.color = "#6b6964";
+        }
+
+        const p1 = $("#pwNew")?.value || "";
+        const p2 = $("#pwNew2")?.value || "";
+
+        if (!p1){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_need_password;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (!p2){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_need_confirm;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (p1 !== p2){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_mismatch;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (p1.length < 8){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_short;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+
+        // ボタン無効化
+        const btn = pwForm.querySelector("button[type='submit']");
+        if (btn) btn.disabled = true;
+
+        try{
+          // Auth のパスワード更新
+          const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
+          if (updateErr){
+            console.error("updateUser(password) error:", updateErr);
+            if (pwMsg){
+              pwMsg.textContent = t.pw_setup_error;
+              pwMsg.style.color = "#b00020";
+            }
+            return;
+          }
+
+          // profiles.has_password を true に更新
+          const { error:profErr } = await sb
+            .from("profiles")
+            .update({ has_password:true })
+            .eq("id", currentUser.id);
+          if (profErr){
+            console.error("profiles update has_password error:", profErr);
+            // ここで失敗しても Auth 側は更新済みなので、フォームは非表示にしてよい
+          }
+
+          state.hasPassword = true;
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_success;
+            pwMsg.style.color = "#6b6964";
+          }
+          if (pwSection){
+            setTimeout(()=>pwSection.classList.add("hidden"), 1000);
+          }
+        }catch(err){
+          console.error("password setup exception:", err);
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_error;
+            pwMsg.style.color = "#b00020";
+          }
+        }finally{
+          if (btn) btn.disabled = false;
+        }
+      };
+    }
 
     const tier = (prof.tier || "free").toLowerCase();
     const isActive = !!prof.is_active;
