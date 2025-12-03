@@ -104,7 +104,6 @@
       font-weight:600;
     }
 
-    /* ここは上書きされないように全て強制 left 揃え */
     .card{
       background:var(--panel);
       border-radius:var(--r);
@@ -126,6 +125,19 @@
       line-height:1.6;
     }
 
+    .section-title{
+      margin:12px 0 4px;
+      font-size:18px;
+      font-weight:600;
+    }
+
+    .section-note{
+      margin:0 0 8px;
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.5;
+    }
+
     .agree-row{
       width:100%;
       display:flex;
@@ -135,7 +147,7 @@
 
     .agree-label span{
       font-size:13px;
-      color:#8a8a8a;   /* 既存より薄いグレー */
+      color:#8a8a8a;
       line-height:1.5;
     }
 
@@ -163,14 +175,13 @@
       min-width:260px;
     }
 
-    /* チェックボックスはテキスト入力用の flex 設定を無効化する */
     input[type="checkbox"]{
       flex:0 0 auto;
       min-width:auto;
       width:auto;
       padding:0;
-      margin:0 4px 0 0;  /* お好みで調整可 */
-      border:none;       /* ボーダーも不要なら */
+      margin:0 4px 0 0;
+      border:none;
     }
 
     button.primary{
@@ -185,6 +196,22 @@
     button.primary:disabled{
       opacity:0.5;
       cursor:not-allowed;
+    }
+
+    button.outline{
+      background:#fff;
+      color:var(--ink);
+      border-color:#ccc;
+      cursor:pointer;
+      font-weight:500;
+      min-width:140px;
+    }
+
+    hr{
+      width:100%;
+      border:none;
+      border-top:1px solid #e3e0d7;
+      margin:16px 0;
     }
 
     footer{
@@ -220,10 +247,36 @@
     <div class="card">
 
       <p class="lead" id="t_lead">
-        メールアドレスを入力すると、ログインまたは新規アカウントをメールで認証できます。
+        すでにパスワードを設定済みの方は、下のフォームからログインできます。
+        初めての方やパスワード未設定の方は、その下の「メール認証」からアカウントを登録してください。
       </p>
 
-      <!-- ---- 左寄せで揃うチェックボックス ---- -->
+      <!-- 1. パスワードログイン -->
+      <h2 class="section-title" id="t_pw_title">パスワードでログイン</h2>
+      <p class="section-note" id="t_pw_desc">
+        すでにパスワードを設定済みの方はこちらからログインしてください。
+      </p>
+
+      <div class="row">
+        <input id="pw-email" type="email" placeholder="you@example.com" aria-label="email" />
+        <input id="pw-password" type="password" placeholder="Password" aria-label="password" />
+      </div>
+      <div class="row">
+        <button id="btn-login-pw" class="primary">ログイン</button>
+      </div>
+
+      <p class="section-note" id="t_pw_reset_note">
+        パスワードをお忘れの場合は、下の「メール認証」からパスワード再設定用のメールを受け取ってください。
+      </p>
+
+      <hr />
+
+      <!-- 2. 初回登録 / パスワード未設定 / PWリセット用：メール認証（マジックリンク） -->
+      <h2 class="section-title" id="t_magic_title">初めての方 / パスワード未設定の方</h2>
+      <p class="section-note" id="t_magic_desc">
+        メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。
+      </p>
+
       <div class="agree-row">
         <label class="agree-label">
           <input type="checkbox" id="agree">
@@ -236,8 +289,8 @@
       </div>
 
       <div class="row">
-        <input id="email" type="email" placeholder="you@example.com" aria-label="email" />
-        <button id="login" class="primary" disabled>メールを送る</button>
+        <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
+        <button id="btn-magic" class="primary" disabled>メールを送る</button>
       </div>
     </div>
 
@@ -257,43 +310,60 @@
     const I18N = {
       ja:{
         title:"MEMBERSHIP",
-        lead:"メールアドレスを入力すると、ログインまたは新規アカウントをメールで認証できます。",
-        send:"メールを送る",
+        lead:"すでにパスワードを設定済みの方は、下のフォームからログインできます。初めての方やパスワード未設定の方は、その下の「メール認証」からアカウントを登録してください。",
+        pwTitle:"パスワードでログイン",
+        pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
+        pwButton:"ログイン",
+        pwResetNote:"パスワードをお忘れの場合は、下の「メール認証」からパスワード再設定用のメールを受け取ってください。",
+        magicTitle:"初めての方 / パスワード未設定の方",
+        magicDesc:"メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
+        magicButton:"メールを送る",
         hint:"メールが届かない場合は迷惑メールフォルダをご確認ください。",
         needEmail:"メールアドレスを入力してください。",
+        needPassword:"パスワードを入力してください。",
         needAgree:"利用規約とプライバシーポリシーへの同意が必要です。",
-        invalidEmail:"メールアドレスの形式が正しくありません。",   // 追加
-        sent:"ログイン用のメールを送信しました。",
+        invalidEmail:"メールアドレスの形式が正しくありません。",
+        sent:"認証メールを送信しました。",
+        pwLoginFailed:"ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。",
         errorPrefix:"エラー：",
         agreeText:
-          '「<a href="https://member.moriris.com/terms.html" target="_blank">利用規約</a>」 および ' +
-          '「<a href="https://member.moriris.com/privacy.html" target="_blank">プライバシーポリシー</a>」 を読んで同意しました。'
+          '「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および ' +
+          '「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」 を読んで同意しました。'
       },
       en:{
         title:"MEMBERSHIP",
-        lead:"Enter your email to log in or create a new account via email verification.",
-        send:"Send link",
+        lead:"If you have already set your password, log in using the form below. If you are new or have not set a password yet, please use the email verification section to register your account.",
+        pwTitle:"Log in with password",
+        pwDesc:"If you have already set a password, you can log in here.",
+        pwButton:"Log in",
+        pwResetNote:"If you forgot your password, use the email verification section below to receive a password reset link.",
+        magicTitle:"New here / No password yet",
+        magicDesc:"Verify your email to create an account. If you already have an account, you can also reset your password using this link.",
+        magicButton:"Send email",
         hint:"If you don't see the email, please check your spam folder.",
         needEmail:"Please enter your email address.",
+        needPassword:"Please enter your password.",
         needAgree:"Please read and agree to the Terms of Service and Privacy Policy.",
-        invalidEmail:"The email format is invalid.",   // 追加
-        sent:"A login link has been sent to your email.",
+        invalidEmail:"The email format is invalid.",
+        sent:"A verification email has been sent.",
+        pwLoginFailed:"Login failed. Please check your email and password.",
         errorPrefix:"Error: ",
         agreeText:
-          'I have read and agree to the <a href="https://member.moriris.com/terms.html" target="_blank">Terms of Service</a> ' +
-          'and <a href="https://member.moriris.com/privacy.html" target="_blank">Privacy Policy</a>.'
+          'I have read and agree to the <a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> ' +
+          'and <a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'
       }
     };
 
     const $ = (s)=>document.querySelector(s);
     const agreeCheckbox = $("#agree");
-    const loginBtn = $("#login");
+    const magicBtn = $("#btn-magic");
+    const pwLoginBtn = $("#btn-login-pw");
 
-    function updateLoginDisabled(){
-      loginBtn.disabled = !agreeCheckbox.checked;
+    function updateMagicDisabled(){
+      magicBtn.disabled = !agreeCheckbox.checked;
     }
 
-    agreeCheckbox.addEventListener("change", updateLoginDisabled);
+    agreeCheckbox.addEventListener("change", updateMagicDisabled);
 
     const langKey = "moriris_lang";
 
@@ -303,13 +373,20 @@
 
       $("#t_title").textContent = t.title;
       $("#t_lead").textContent = t.lead;
-      $("#login").textContent = t.send;
+      $("#t_pw_title").textContent = t.pwTitle;
+      $("#t_pw_desc").textContent = t.pwDesc;
+      $("#t_pw_reset_note").textContent = t.pwResetNote;
+      $("#t_magic_title").textContent = t.magicTitle;
+      $("#t_magic_desc").textContent = t.magicDesc;
+      $("#btn-login-pw").textContent = t.pwButton;
+      $("#btn-magic").textContent = t.magicButton;
       $("#t_note").textContent = t.hint;
       $("#t_agree_text").innerHTML = t.agreeText;
 
       $("#btn-ja").classList.toggle("active", lang==="ja");
       $("#btn-en").classList.toggle("active", lang==="en");
-      updateLoginDisabled();
+
+      updateMagicDisabled();
     }
 
     $("#btn-ja").onclick = ()=>setLang("ja");
@@ -320,25 +397,52 @@
       ((navigator.language||"ja").startsWith("ja") ? "ja":"en")
     );
 
-    $("#login").onclick = async ()=>{
+    // 共通：メール形式チェック
+    function validateEmail(email){
+      const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return pattern.test(email);
+    }
+
+    // 1. パスワードログイン
+    pwLoginBtn.onclick = async ()=>{
       const lang = localStorage.getItem(langKey) || "ja";
       const t = I18N[lang];
-      const email = $("#email").value.trim();
+      const email = $("#pw-email").value.trim();
+      const password = $("#pw-password").value;
 
       if(!email) return alert(t.needEmail);
+      if(!validateEmail(email)) return alert(t.invalidEmail);
+      if(!password) return alert(t.needPassword);
 
-      // ここでメールアドレス形式チェックを追加
-      const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if(!emailPattern.test(email)){
-        return alert(t.invalidEmail);
+      const { data, error } = await sb.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if(error){
+        alert(t.pwLoginFailed + "\n\n" + t.errorPrefix + error.message);
+        return;
       }
 
+      // ログイン成功 → メンバーエリアへ
+      window.location.href = `/members.html?lang=${lang}`;
+    };
+
+    // 2. メール認証（初回登録／パスワード未設定／PWリセット）
+    magicBtn.onclick = async ()=>{
+      const lang = localStorage.getItem(langKey) || "ja";
+      const t = I18N[lang];
+      const email = $("#magic-email").value.trim();
+
+      if(!email) return alert(t.needEmail);
+      if(!validateEmail(email)) return alert(t.invalidEmail);
       if(!agreeCheckbox.checked) return alert(t.needAgree);
 
       const { error } = await sb.auth.signInWithOtp({
         email,
         options:{
           shouldCreateUser:true,
+          // 認証後にメンバーエリアへ遷移（ここからパスワード設定画面へ誘導する運用を想定）
           emailRedirectTo:`https://member.moriris.com/members.html?lang=${lang}`
         }
       });
