@@ -46,9 +46,9 @@
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
       display:flex;
-      align-items:flex-start;      /* ロゴが欠けないよう上寄せ */
+      align-items:flex-start;
       justify-content:center;
-      padding:24px 0 40px;        /* 画面上部に余白 */
+      padding:24px 0 40px;
     }
 
     .wrap{
@@ -133,7 +133,7 @@
       color:var(--muted);
       line-height:1.5;
       text-align:center;
-      white-space:pre-line; /* \n を改行として表示 */
+      white-space:pre-line;
     }
 
     .row{
@@ -174,18 +174,6 @@
     button.primary:disabled{
       opacity:0.5;
       cursor:not-allowed;
-    }
-
-    .small-link{
-      font-size:14px;
-      text-align:center;
-      margin:0 0 16px;
-      color:var(--muted);
-    }
-
-    .small-link a{
-      color:#0d6b45;
-      text-decoration:underline;
     }
 
     hr{
@@ -267,7 +255,7 @@
 
       <hr />
 
-      <!-- 2. 新規会員登録 / パスワード再設定（メール認証） -->
+      <!-- 2. 新規会員登録 / パスワード再設定 -->
       <section id="magic-block" class="form-block" aria-label="signup and reset">
         <h2 class="section-title" id="t_magic_title">新規会員登録 / パスワード再設定</h2>
         <p class="section-note" id="t_magic_desc">
@@ -300,14 +288,14 @@
 
 
   <script>
-    /***** 1. Supabase クライアント設定 *****/
+    /***** Supabase クライアント *****/
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    /***** 2. 多言語テキスト定義 *****/
+    /***** 多言語テキスト *****/
     const I18N = {
       ja:{
         title:"MEMBERSHIP",
@@ -351,25 +339,23 @@
       }
     };
 
-    /***** 3. DOM ショートカット *****/
+    /***** DOM 取得 *****/
     const $ = (s)=>document.querySelector(s);
 
     const agreeCheckbox = $("#agree");
     const magicBtn = $("#btn-magic");
     const pwLoginBtn = $("#btn-login-pw");
-    const resetLink = $("#link-reset");
-    const magicBlock = $("#magic-block");
 
     const btnJa = $("#btn-ja");
     const btnEn = $("#btn-en");
 
-    /***** 4. 利用規約チェックボックス制御 *****/
+    /***** 利用規約チェック制御 *****/
     function updateMagicDisabled(){
       magicBtn.disabled = !agreeCheckbox.checked;
     }
     agreeCheckbox.addEventListener("change", updateMagicDisabled);
 
-    /***** 5. 言語切り替え関連 *****/
+    /***** 言語切り替え *****/
     const langKey = "moriris_lang";
 
     function setLang(lang){
@@ -380,15 +366,12 @@
       $("#t_pw_title").textContent = t.pwTitle;
       $("#t_pw_desc").textContent = t.pwDesc;
       $("#btn-login-pw").textContent = t.pwButton;
-      $("#t_pw_reset_prefix").textContent = t.pwResetPrefix;
-      $("#link-reset").textContent = t.pwResetLink;
       $("#t_magic_title").textContent = t.magicTitle;
       $("#t_magic_desc").textContent = t.magicDesc;
       $("#btn-magic").textContent = t.magicButton;
       $("#t_note").textContent = t.hint;
       $("#t_agree_text").innerHTML = t.agreeText;
 
-      // アクティブ状態の更新
       btnJa.classList.toggle("active", lang === "ja");
       btnEn.classList.toggle("active", lang === "en");
 
@@ -398,24 +381,21 @@
     btnJa.onclick = ()=>setLang("ja");
     btnEn.onclick = ()=>setLang("en");
 
-    // 初期言語
     setLang(
       localStorage.getItem(langKey) ||
       ((navigator.language||"ja").startsWith("ja") ? "ja":"en")
     );
 
-    /***** 6. 共通バリデーション *****/
+    /***** メール形式チェック *****/
     function validateEmail(email){
-      const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return pattern.test(email);
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
 
     function currentText(){
-      const lang = localStorage.getItem(langKey) || "ja";
-      return I18N[lang];
+      return I18N[localStorage.getItem(langKey) || "ja"];
     }
 
-    /***** 7. パスワードログイン処理 *****/
+    /***** パスワードログイン *****/
     pwLoginBtn.onclick = async ()=>{
       const t = currentText();
       const lang = localStorage.getItem(langKey) || "ja";
@@ -426,21 +406,16 @@
       if(!validateEmail(email)) return alert(t.invalidEmail);
       if(!password) return alert(t.needPassword);
 
-      const { data, error } = await sb.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { error } = await sb.auth.signInWithPassword({ email, password });
       if(error){
         alert(t.pwLoginFailed + "\n\n" + t.errorPrefix + error.message);
         return;
       }
 
-      // ログイン成功 → メンバーエリアへ
       window.location.href = `/members.html?lang=${lang}`;
     };
 
-    /***** 8. メール認証（初回登録／PWリセット）処理 *****/
+    /***** メール認証（新規 / PWリセット） *****/
     magicBtn.onclick = async ()=>{
       const t = currentText();
       const lang = localStorage.getItem(langKey) || "ja";
@@ -461,12 +436,6 @@
       if(error) alert(t.errorPrefix + error.message);
       else alert(t.sent);
     };
-
-    /***** 9. パスワードを忘れた方リンク → メール認証エリアへスクロール *****/
-    resetLink.addEventListener("click", (e)=>{
-      e.preventDefault();
-      magicBlock.scrollIntoView({ behavior:"smooth", block:"start" });
-    });
   </script>
 
 </body>
