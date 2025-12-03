@@ -45,9 +45,9 @@
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
       display:flex;
-      align-items:flex-start;        /* ロゴが欠けないよう上寄せに変更 */
+      align-items:flex-start;      /* ロゴが欠けないよう上寄せ */
       justify-content:center;
-      padding:24px 0 40px;          /* 画面上部に余白を追加 */
+      padding:24px 0 40px;        /* 画面上部に余白 */
     }
 
     .wrap{
@@ -119,13 +119,6 @@
       text-align:left !important;
     }
 
-    .lead{
-      color:var(--muted);
-      margin:0 0 6px;
-      font-size:18px;
-      line-height:1.6;
-    }
-
     .section-title{
       margin:12px 0 4px;
       font-size:18px;
@@ -144,7 +137,7 @@
       width:100%;
       display:flex;
       gap:8px;
-      margin:8px 0 8px;
+      margin:4px 0 8px;
       border-bottom:1px solid #e3e0d7;
     }
 
@@ -181,6 +174,7 @@
       display:flex;
       align-items:flex-start;
       justify-content:flex-start;
+      margin-bottom:16px;        /* 利用規約文の下の余白 */
     }
 
     .agree-label span{
@@ -199,6 +193,7 @@
       gap:10px;
       flex-wrap:wrap;
       width:100%;
+      margin-bottom:12px;        /* 入力行の下の余白 → ログインボタン上にも効く */
     }
 
     input,button{
@@ -284,11 +279,6 @@
     <!-- カード本体 -->
     <div class="card">
 
-      <p class="lead" id="t_lead">
-        すでにパスワードを設定済みの方は、下のフォームからログインできます。
-        初めての方やパスワード未設定の方は、その下の「メール認証」からアカウントを登録してください。
-      </p>
-
       <!-- タブ -->
       <div class="tabs" role="tablist">
         <button id="tab-pw" class="active" data-tab="pw" type="button">パスワードでログイン</button>
@@ -311,7 +301,7 @@
         </div>
 
         <p class="section-note" id="t_pw_reset_note">
-          パスワードをお忘れの場合は、下の「メール認証」からパスワード再設定用のメールを受け取ってください。
+          パスワードをお忘れの場合は、「初めての方 / パスワード未設定の方」タブの「メール認証」からパスワード再設定用のメールを受け取ってください。
         </p>
       </div>
 
@@ -347,16 +337,17 @@
 
 
   <script>
+    /***** 1. Supabase クライアント設定 *****/
     const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
     const SUPABASE_ANON_KEY =
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    /***** 2. 多言語テキスト定義 *****/
     const I18N = {
       ja:{
         title:"MEMBERSHIP",
-        lead:"すでにパスワードを設定済みの方は、下のフォームからログインできます。初めての方やパスワード未設定の方は、上のタブから「初めての方 / パスワード未設定の方」を選び、メール認証でアカウントを登録してください。",
         pwTitle:"パスワードでログイン",
         pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
         pwButton:"ログイン",
@@ -378,7 +369,6 @@
       },
       en:{
         title:"MEMBERSHIP",
-        lead:"If you have already set your password, use the form below to log in. If you are new or have not set a password yet, switch to the “New here / No password yet” tab above and register via email verification.",
         pwTitle:"Log in with password",
         pwDesc:"If you have already set a password, you can log in here.",
         pwButton:"Log in",
@@ -400,17 +390,19 @@
       }
     };
 
+    /***** 3. DOM ショートカット *****/
     const $ = (s)=>document.querySelector(s);
 
     const agreeCheckbox = $("#agree");
     const magicBtn = $("#btn-magic");
     const pwLoginBtn = $("#btn-login-pw");
 
-    // タブ切り替え
     const tabPw = $("#tab-pw");
     const tabMagic = $("#tab-magic");
     const panelPw = $("#panel-pw");
     const panelMagic = $("#panel-magic");
+
+    /***** 4. タブ切り替え関連 *****/
     const tabKey = "moriris_login_tab";
 
     function setActiveTab(name){
@@ -428,12 +420,13 @@
     tabPw.addEventListener("click", ()=>setActiveTab("pw"));
     tabMagic.addEventListener("click", ()=>setActiveTab("magic"));
 
-    // 規約同意チェック → メール送信ボタンの有効/無効
+    /***** 5. 利用規約チェックボックス制御 *****/
     function updateMagicDisabled(){
       magicBtn.disabled = !agreeCheckbox.checked;
     }
     agreeCheckbox.addEventListener("change", updateMagicDisabled);
 
+    /***** 6. 言語切り替え関連 *****/
     const langKey = "moriris_lang";
 
     function setLang(lang){
@@ -441,7 +434,6 @@
       const t = I18N[lang];
 
       $("#t_title").textContent = t.title;
-      $("#t_lead").textContent = t.lead;
       $("#t_pw_title").textContent = t.pwTitle;
       $("#t_pw_desc").textContent = t.pwDesc;
       $("#t_pw_reset_note").textContent = t.pwResetNote;
@@ -474,16 +466,21 @@
     // 前回開いたタブを復元（なければパスワードタブ）
     setActiveTab(localStorage.getItem(tabKey) || "pw");
 
-    // 共通：メール形式チェック
+    /***** 7. 共通バリデーション *****/
     function validateEmail(email){
       const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return pattern.test(email);
     }
 
-    // 1. パスワードログイン
-    pwLoginBtn.onclick = async ()=>{
+    function currentText(){
       const lang = localStorage.getItem(langKey) || "ja";
-      const t = I18N[lang];
+      return I18N[lang];
+    }
+
+    /***** 8. パスワードログイン処理 *****/
+    pwLoginBtn.onclick = async ()=>{
+      const t = currentText();
+      const lang = localStorage.getItem(langKey) || "ja";
       const email = $("#pw-email").value.trim();
       const password = $("#pw-password").value;
 
@@ -505,10 +502,10 @@
       window.location.href = `/members.html?lang=${lang}`;
     };
 
-    // 2. メール認証（初回登録／パスワード未設定／PWリセット）
+    /***** 9. メール認証（初回登録／PWリセット）処理 *****/
     magicBtn.onclick = async ()=>{
+      const t = currentText();
       const lang = localStorage.getItem(langKey) || "ja";
-      const t = I18N[lang];
       const email = $("#magic-email").value.trim();
 
       if(!email) return alert(t.needEmail);
@@ -519,7 +516,6 @@
         email,
         options:{
           shouldCreateUser:true,
-          // 認証後にメンバーエリアへ遷移（ここからパスワード設定画面へ誘導する運用を想定）
           emailRedirectTo:`https://member.moriris.com/members.html?lang=${lang}`
         }
       });
