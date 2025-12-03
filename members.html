@@ -181,7 +181,7 @@
       margin-bottom: 20px;
     }
 
-    main{ margin-top:40px; }
+    main{ margin-top:40px; } /* タブと白枠の間隔 */
     .card{
       background:var(--panel);
       border-radius:var(--radius);
@@ -922,7 +922,7 @@
           class="input"
           placeholder="確認のため、同じパスワードをもう一度"
         />
-        <button type="submit" id="pwSubmit" class="btn btn-outline" data-i18n="pw_setup_btn">
+        <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
           パスワードを設定する
         </button>
       </form>
@@ -1020,7 +1020,7 @@
       pw_setup_note:"セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。",
       pw_setup_btn:"パスワードを設定する",
       pw_setup_need_password:"パスワードを入力してください。",
-      pw_setup_need_confirm:"確認用のパスワードを入力してください。",
+      pw_setup_need_confirm:"確認用パスワードを入力してください。",
       pw_setup_mismatch:"パスワードが一致しません。",
       pw_setup_short:"パスワードは8文字以上にしてください。",
       pw_setup_success:"パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。",
@@ -1106,10 +1106,10 @@
 
   let currentLang = "ja";
   const langKey = "moriris_lang_members";
+
   const state = {
-    plan:"free",
-    statusCode:"checking",
-    hasPassword:false
+    plan: "free",
+    statusCode: "checking"
   };
 
   let currentUser = null;
@@ -1153,15 +1153,14 @@
     }
   }
 
-  // hasPassword を引数で受けて制御できるように変更
-  function togglePwOverlay(forceHasPassword){
+  // オーバーレイの表示/非表示を has_password にだけ基づいて行う
+  function showPwOverlay(shouldShow) {
     const overlay = document.getElementById("pwOverlay");
     if (!overlay) return;
-    const hasPw = (typeof forceHasPassword === "boolean") ? forceHasPassword : state.hasPassword;
-    if (hasPw){
-      overlay.classList.add("hidden");
-    }else{
+    if (shouldShow) {
       overlay.classList.remove("hidden");
+    } else {
+      overlay.classList.add("hidden");
     }
   }
 
@@ -1759,11 +1758,17 @@
     const prof = profRes.data;
     log("profile", prof);
 
-    // プロフィールの has_password を状態に反映し、それに応じてオーバーレイを制御
-    state.hasPassword = !!prof.has_password;
-    togglePwOverlay(state.hasPassword);
+    // has_password の値をデバッグ表示（不要になればこの3行は削除OK）
+    const dbg = document.getElementById("dbg");
+    if (dbg) {
+      dbg.classList.remove("hidden");
+      dbg.textContent += "\nprofile.has_password = " + String(prof.has_password) + "\n";
+    }
 
-    // パスワード設定フォームの処理
+    // has_password が true ならオーバーレイを閉じる / false なら表示
+    showPwOverlay(!prof.has_password);
+
+    // パスワード設定フォーム
     const pwForm = document.getElementById("pwForm");
     const pwMsg  = document.getElementById("pwMsg");
     
@@ -1834,13 +1839,17 @@
             console.error("profiles update(has_password) error:", profErr);
           }
     
-          state.hasPassword = true;
-          togglePwOverlay(true);  // オーバーレイを閉じる
-    
+          showPwOverlay(false);
+          
           if (pwMsg){
             pwMsg.textContent = t.pw_setup_success;
             pwMsg.style.color = "#6b6964";
           }
+
+          setTimeout(() => {
+            location.reload();
+          }, 800);
+    
         } catch (e) {
           console.error("pw setup exception:", e);
           if (pwMsg) {
