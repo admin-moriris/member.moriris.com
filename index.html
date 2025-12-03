@@ -109,14 +109,7 @@
       background:var(--panel);
       border-radius:var(--r);
       box-shadow:var(--sh);
-      padding:0 28px 32px;
-
-      display:flex !important;
-      flex-direction:column !important;
-      align-items:flex-start !important;
-      gap:16px !important;
-
-      text-align:left !important;
+      padding:0 0 32px;
     }
 
     .section-title{
@@ -136,28 +129,31 @@
     .tabs{
       width:100%;
       display:flex;
-      gap:8px;
-      margin:0 -28px 8px;
       border-bottom:1px solid #e3e0d7;
+      margin:0;                 /* ← 余白ゼロ */
+      padding:0;                /* ← 内側余白なし */
     }
 
     .tabs button{
       flex:1;
-      padding:10px 12px;
-      border-radius:12px 12px 0 0;
-      border:1px solid transparent;
+      padding:14px 12px;
+      border:1px solid #d9d5cd;
+      border-bottom:none;       /* ← 下線を消す（白枠とつなげる） */
+      border-radius:16px 16px 0 0;
       background:#f4f1e7;
-      font-size:15px;
+      font-size:16px;
       cursor:pointer;
       color:#555;
+      margin:0;                 /* ← タブ間のスキマ完全ゼロ */
     }
 
     .tabs button.active{
       background:#ffffff;
-      border-color:#d7d3c5;
       color:#0b5130;
       font-weight:600;
-      box-shadow:0 -1px 0 #ffffff inset;
+      border:1px solid #d9d5cd;
+      border-bottom:none;       /* ← 白枠上端にぴったり */
+      margin-bottom:-1px;       /* ← 高さズレ防止のため */
     }
 
     .tab-panel{
