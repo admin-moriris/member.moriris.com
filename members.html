@@ -1634,22 +1634,14 @@
       state.statusCode = "not_logged";
       applyLang(currentLang);
       $("#userEmail").textContent = "-";
-
+    
       const alertBox = $("#notLoggedAlert");
       if (alertBox){
         alertBox.classList.remove("hidden");
-        const t = I18N[currentLang] || I18N["ja"];
-        const msgEl = $("#notLoggedText");
-        const linkEl = $("#notLoggedLink");
-        if (msgEl) msgEl.textContent = t.status_not_logged;
-        if (linkEl){
-          linkEl.textContent = currentLang === "ja"
-            ? "ログイン画面に戻る"
-            : "Back to login page";
-        }
       }
       return;
     }
+
     currentUser = user;
     $("#userEmail").textContent = user.email || "";
 
