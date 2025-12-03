@@ -4,7 +4,7 @@
   <meta charset="utf-8"/>
 
   <!-- Google tag (gtag.js)  -->
-  <script async src="https://www.googletmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
@@ -518,6 +518,7 @@
         padding-top:210px;
       }
     }
+
     /* パスワード設定オーバーレイ */
     .pw-overlay{
       position:fixed;
@@ -536,6 +537,22 @@
       border-radius:var(--radius);
       box-shadow:var(--shadow);
       padding:20px 20px 24px;
+    }
+    .pw-input-wrap{
+      position:relative;
+      display:flex;
+      align-items:center;
+    }
+    .pw-eye-btn{
+      position:absolute;
+      right:10px;
+      top:50%;
+      transform:translateY(-50%);
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      font-size:16px;
+      padding:2px 4px;
     }
     @media (max-width: 768px){
       .pw-card{
@@ -829,6 +846,7 @@
         </div>
 
         <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+      </div>
     </section>
 
     <pre id="dbg" class="hidden"></pre>
@@ -869,6 +887,7 @@
     <div id="legalLinks" style="margin-top:4px;font-size:11px;"></div>
   </footer>
 </div>
+
 <!-- 初回ログイン時用 パスワード設定オーバーレイ -->
 <div id="pwOverlay" class="pw-overlay hidden">
   <div class="pw-card">
@@ -878,18 +897,26 @@
     </p>
 
     <form id="pwForm" style="margin-top:8px;display:flex;flex-direction:column;gap:8px;max-width:420px;">
-      <input
-        id="pwNew"
-        type="password"
-        class="input"
-        placeholder="新しいパスワード（8文字以上）"
-      />
-      <input
-        id="pwNew2"
-        type="password"
-        class="input"
-        placeholder="確認のため、同じパスワードをもう一度"
-      />
+      <div class="pw-input-wrap">
+        <input
+          id="pwNew"
+          type="password"
+          class="input"
+          placeholder="新しいパスワード（8文字以上）"
+          data-i18n-placeholder="pw_placeholder_new"
+        />
+        <button type="button" id="pwNewToggle" class="pw-eye-btn" aria-label="Toggle password">👁</button>
+      </div>
+      <div class="pw-input-wrap">
+        <input
+          id="pwNew2"
+          type="password"
+          class="input"
+          placeholder="確認のため、同じパスワードをもう一度"
+          data-i18n-placeholder="pw_placeholder_confirm"
+        />
+        <button type="button" id="pwNew2Toggle" class="pw-eye-btn" aria-label="Toggle password">👁</button>
+      </div>
       <button type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
         パスワードを設定する
       </button>
@@ -991,7 +1018,9 @@
       pw_setup_mismatch:"パスワードが一致しません。",
       pw_setup_short:"パスワードは8文字以上にしてください。",
       pw_setup_success:"パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。",
-      pw_setup_error:"パスワードの設定中にエラーが発生しました。時間をおいて再度お試しください。"
+      pw_setup_error:"パスワードの設定中にエラーが発生しました。時間をおいて再度お試しください。",
+      pw_placeholder_new:"新しいパスワード（8文字以上）",
+      pw_placeholder_confirm:"確認のため、同じパスワードをもう一度"
     },
     en:{
       brand_meta:"MEMBERSHIP",
@@ -1066,7 +1095,9 @@
       pw_setup_mismatch:"The passwords do not match.",
       pw_setup_short:"Please use at least 8 characters for the password.",
       pw_setup_success:"Your password has been set. Next time, log in using your email and password on the login page.",
-      pw_setup_error:"An error occurred while setting your password. Please try again later."
+      pw_setup_error:"An error occurred while setting your password. Please try again later.",
+      pw_placeholder_new:"New password (8+ characters)",
+      pw_placeholder_confirm:"Re-enter the same password"
     }
   };
 
@@ -1155,6 +1186,11 @@
     document.querySelectorAll("[data-i18n]").forEach(el=>{
       const key = el.getAttribute("data-i18n");
       if (t[key]) el.textContent = t[key];
+    });
+
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (t[key]) el.placeholder = t[key];
     });
 
     const legal = document.getElementById("legalLinks");
@@ -1361,14 +1397,14 @@
   async function loadProfileOrCreate(userId){
     let { data:prof, error } = await sb
       .from("profiles")
-      .select("id,tier,is_active,has_password")  // ★ 追加
+      .select("id,tier,is_active,has_password")
       .eq("id", userId)
       .single();
 
     const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
     if (notFound){
       const up = await sb.from("profiles").upsert(
-        { id:userId, tier:"free", is_active:false, has_password:false }, // ★ 初期値
+        { id:userId, tier:"free", is_active:false, has_password:false },
         { onConflict:"id" }
       );
       if (up.error){ log("profiles upsert failed", up.error); return { data:null, error:up.error }; }
@@ -1581,6 +1617,36 @@
     }
   }
 
+  function setupPwEyeToggle(){
+    const pw1 = $("#pwNew");
+    const pw2 = $("#pwNew2");
+    const t1 = $("#pwNewToggle");
+    const t2 = $("#pwNew2Toggle");
+
+    if (t1 && pw1){
+      t1.onclick = ()=>{
+        if (pw1.type === "password"){
+          pw1.type = "text";
+          t1.textContent = "🙈";
+        }else{
+          pw1.type = "password";
+          t1.textContent = "👁";
+        }
+      };
+    }
+    if (t2 && pw2){
+      t2.onclick = ()=>{
+        if (pw2.type === "password"){
+          pw2.type = "text";
+          t2.textContent = "🙈";
+        }else{
+          pw2.type = "password";
+          t2.textContent = "👁";
+        }
+      };
+    }
+  }
+
   async function main(){
     const urlLang = new URL(location.href).searchParams.get("lang");
     const storedLang = localStorage.getItem(langKey);
@@ -1590,6 +1656,7 @@
     updateBookViewer("ep1");
     updateBookViewer("ep2");
     updateFullscreenButtons();
+    setupPwEyeToggle();
 
     await loadVideoEpisodes();
 
@@ -1710,19 +1777,16 @@
     const prof = profRes.data;
     log("profile", prof);
 
-    state.hasPassword = !!prof.has_password;
+    state.hasPassword = prof.has_password === true;
 
-    // ★ 初回ログイン時：パスワード設定オーバーレイを表示
     const pwOverlay = $("#pwOverlay");
     const pwForm = $("#pwForm");
     const pwMsg = $("#pwMsg");
 
     if (pwOverlay){
       if (state.hasPassword){
-        // すでにパスワード設定済みならオーバーレイは非表示
         pwOverlay.classList.add("hidden");
       }else{
-        // パスワード未設定の場合はオーバーレイでブロック
         pwOverlay.classList.remove("hidden");
       }
     }
@@ -1774,7 +1838,6 @@
         if (btn) btn.disabled = true;
 
         try{
-          // Auth のパスワード更新
           const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
           if (updateErr){
             console.error("updateUser(password) error:", updateErr);
@@ -1785,7 +1848,6 @@
             return;
           }
 
-          // profiles.has_password を true に更新
           const { error:profErr } = await sb
             .from("profiles")
             .update({ has_password:true })
@@ -1801,7 +1863,6 @@
             pwMsg.style.color = "#6b6964";
           }
 
-          // すこし待ってからオーバーレイを閉じる
           if (pwOverlay){
             setTimeout(()=>pwOverlay.classList.add("hidden"), 800);
           }
