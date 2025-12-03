@@ -565,6 +565,18 @@
 
     <!-- HOME -->
     <section id="tab-home" class="tab-pane active">
+      <div id="pwBanner" class="hidden" style="
+      background:#d93c3c;
+      color:#fff;
+      padding:14px 18px;
+      border-radius:8px;
+      margin-bottom:20px;
+      font-size:16px;
+      font-weight:600;
+      cursor:pointer;
+    ">
+      パスワードをまだ設定していません。こちらをクリックして設定してください。
+    </div>
       <div class="card home-layout">
         <div>
           <h2 data-i18n="home_title">ようこそ、モリリス メンバーシップへ</h2>
@@ -594,16 +606,6 @@
               プランの確認や変更は ACCOUNTタブからいつでも行うことができます。
             </li>
           </ul>
-
-          <!-- has_password=FALSE のときだけ表示するお知らせ -->
-          <div id="pwHomeNotice" class="status-box hidden">
-            <p style="font-weight:600;" data-i18n="pw_home_notice_title">
-              パスワードの設定をお願いします
-            </p>
-            <p class="muted" style="margin-top:4px;" data-i18n="pw_home_notice_body">
-              初回登録ではメール認証のみでした。ACCOUNTタブの「パスワードの設定」から、今後ログインに使うパスワードを登録してください。
-            </p>
-          </div>
         </div>
       </div>
     </section>
@@ -1742,6 +1744,44 @@
       }
     }
 
+    // ★ パスワード未設定バナー
+    const pwBanner = $("#pwBanner");
+    
+    // パスワード未設定なら表示
+    if (!state.hasPassword) {
+      if (pwBanner) {
+        pwBanner.classList.remove("hidden");
+    
+        const t = I18N[currentLang];
+        pwBanner.textContent = 
+          currentLang === "ja"
+            ? "パスワードをまだ設定していません。こちらをクリックして設定してください。"
+            : "You haven't set a password yet. Click here to set one.";
+    
+        // ★ クリックで ACCOUNT タブへ強制的に移動
+        pwBanner.onclick = ()=>{
+          // タブ切り替え
+          document.querySelectorAll(".tab-btn").forEach(btn=>{
+            btn.classList.toggle("active", btn.dataset.tab === "account");
+          });
+          document.querySelectorAll(".tab-pane").forEach(pane=>{
+            pane.classList.toggle("active", pane.id === "tab-account");
+          });
+    
+          // 必要ならパスワード設定エリアへスクロール
+          const pwOverlay = $("#pwOverlay");
+          if (pwOverlay){
+            pwOverlay.scrollIntoView({ behavior:"smooth", block:"center" });
+          }
+        };
+      }
+    } else {
+      // ★ PW設定済ならバナー非表示
+      if (pwBanner){
+        pwBanner.classList.add("hidden");
+      }
+    }
+    
     // パスワード設定フォーム
     const pwForm = document.getElementById("pwForm");
     const pwMsg  = document.getElementById("pwMsg");
