@@ -477,54 +477,6 @@
       padding-top:180px;
     }
 
-    /* パスワード設定オーバーレイ */
-    .pw-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.45);
-      z-index:200;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-    }
-    .pw-dialog{
-      width:100%;
-      max-width:480px;
-      background:var(--panel);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:20px 20px 24px;
-    }
-    .pw-dialog h2{
-      margin-top:0;
-      margin-bottom:8px;
-      font-size:18px;
-    }
-    .pw-dialog p{
-      font-size:13px;
-      line-height:1.7;
-    }
-    .pw-dialog form{
-      margin-top:12px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .pw-dialog .input{
-      min-width:0;
-      width:100%;
-    }
-    .pw-dialog .btn{
-      align-self:flex-start;
-    }
-    .pw-dialog small{
-      display:block;
-      font-size:11px;
-      color:var(--muted);
-      margin-top:4px;
-    }
-
     /* スマホ向けレイアウト調整 */
     @media (max-width: 768px){
       .topbar{
@@ -564,9 +516,6 @@
       }
       .main-page{
         padding-top:210px;
-      }
-      .pw-dialog{
-        padding:18px 16px 20px;
       }
     }
   </style>
@@ -645,6 +594,16 @@
               プランの確認や変更は ACCOUNTタブからいつでも行うことができます。
             </li>
           </ul>
+
+          <!-- has_password=FALSE のときだけ表示するお知らせ -->
+          <div id="pwHomeNotice" class="status-box hidden">
+            <p style="font-weight:600;" data-i18n="pw_home_notice_title">
+              パスワードの設定をお願いします
+            </p>
+            <p class="muted" style="margin-top:4px;" data-i18n="pw_home_notice_body">
+              初回登録ではメール認証のみでした。ACCOUNTタブの「パスワードの設定」から、今後ログインに使うパスワードを登録してください。
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -856,6 +815,41 @@
         </div>
 
         <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+
+        <!-- has_password=FALSE のときだけ表示するパスワード設定欄 -->
+        <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
+
+        <div id="pwSection" class="hidden">
+          <h3 data-i18n="pw_setup_title">パスワードの設定</h3>
+          <p class="muted" data-i18n="pw_setup_desc">
+            初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
+          </p>
+          <small data-i18n="pw_setup_note">
+            セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。
+          </small>
+
+          <form id="pwForm" class="pw-form" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
+            <input
+              id="pwNew"
+              type="password"
+              class="input"
+              data-i18n-placeholder="pw_placeholder_new"
+              placeholder="新しいパスワード（8文字以上）"
+            />
+            <input
+              id="pwNew2"
+              type="password"
+              class="input"
+              data-i18n-placeholder="pw_placeholder_confirm"
+              placeholder="確認のため、同じパスワードをもう一度"
+            />
+            <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
+              パスワードを設定する
+            </button>
+          </form>
+
+          <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+        </div>
       </div>
     </section>
 
@@ -898,39 +892,6 @@
   </footer>
   </div>
 
-  <!-- 初回ログイン時用 パスワード設定オーバーレイ -->
-  <div id="pwOverlay" class="pw-overlay hidden">
-    <div class="pw-dialog">
-      <h2 data-i18n="pw_setup_title">パスワードの設定</h2>
-      <p class="muted" data-i18n="pw_setup_desc">
-        初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
-      </p>
-      <small data-i18n="pw_setup_note">
-        セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。
-      </small>
-
-      <form id="pwForm" class="pw-form" novalidate>
-        <input
-          id="pwNew"
-          type="password"
-          class="input"
-          placeholder="新しいパスワード（8文字以上）"
-        />
-        <input
-          id="pwNew2"
-          type="password"
-          class="input"
-          placeholder="確認のため、同じパスワードをもう一度"
-        />
-        <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
-          パスワードを設定する
-        </button>
-      </form>
-
-      <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
-    </div>
-  </div>
-
 <script>
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
   const SUPABASE_ANON_KEY =
@@ -964,6 +925,8 @@
       home_how_1:"ANIMATIONタブからメンバー限定アニメを視聴できます。",
       home_how_2:"PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。",
       home_how_3:"プランの確認や変更は ACCOUNTタブからいつでも行うことができます。",
+      pw_home_notice_title:"パスワードの設定をお願いします",
+      pw_home_notice_body:"初回登録ではメール認証のみでした。ACCOUNTタブの「パスワードの設定」から、今後ログインに使うパスワードを登録してください。",
       account_title:"アカウント・プラン情報",
       account_intro:"現在のプランやサブスクリプションの変更・解約は、このページから行うことができます。",
       plan_label:"現在のプラン：",
@@ -1024,7 +987,9 @@
       pw_setup_mismatch:"パスワードが一致しません。",
       pw_setup_short:"パスワードは8文字以上にしてください。",
       pw_setup_success:"パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。",
-      pw_setup_error:"パスワードの設定中にエラーが発生しました。時間をおいて再度お試しください。"
+      pw_setup_error:"パスワードの設定中にエラーが発生しました。時間をおいて再度お試しください。",
+      pw_placeholder_new:"新しいパスワード（8文字以上）",
+      pw_placeholder_confirm:"確認のため、同じパスワードをもう一度"
     },
     en:{
       brand_meta:"MEMBERSHIP",
@@ -1040,6 +1005,8 @@
       home_how_1:"Watch members-only animations from the ANIMATION tab.",
       home_how_2:"Read digital picture books and extras from the PICTUREBOOK tab.",
       home_how_3:"You can check or change your plan anytime from the ACCOUNT tab.",
+      pw_home_notice_title:"Please set your password",
+      pw_home_notice_body:"You initially registered with email verification only. From the ACCOUNT tab (“Set password”), please register the password you will use for login.",
       account_title:"Account & Plan",
       account_intro:"Check your current plan, subscribe, or cancel from this page.",
       plan_label:"Current plan:",
@@ -1100,7 +1067,9 @@
       pw_setup_mismatch:"The passwords do not match.",
       pw_setup_short:"Please use at least 8 characters for the password.",
       pw_setup_success:"Your password has been set. Next time, log in using your email and password on the login page.",
-      pw_setup_error:"An error occurred while setting your password. Please try again later."
+      pw_setup_error:"An error occurred while setting your password. Please try again later.",
+      pw_placeholder_new:"New password (8+ characters)",
+      pw_placeholder_confirm:"Re-enter the same password"
     }
   };
 
@@ -1153,17 +1122,6 @@
     }
   }
 
-  // オーバーレイの表示/非表示を has_password にだけ基づいて行う
-  function showPwOverlay(shouldShow) {
-    const overlay = document.getElementById("pwOverlay");
-    if (!overlay) return;
-    if (shouldShow) {
-      overlay.classList.remove("hidden");
-    } else {
-      overlay.classList.add("hidden");
-    }
-  }
-
   function updateBookViewer(bookKey){
     let images, idx, imgId, indicatorId;
 
@@ -1200,6 +1158,12 @@
     document.querySelectorAll("[data-i18n]").forEach(el=>{
       const key = el.getAttribute("data-i18n");
       if (t[key]) el.textContent = t[key];
+    });
+
+    // placeholder の多言語対応
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (t[key]) el.placeholder = t[key];
     });
 
     const legal = document.getElementById("legalLinks");
@@ -1758,15 +1722,25 @@
     const prof = profRes.data;
     log("profile", prof);
 
-    // has_password の値をデバッグ表示（不要になればこの3行は削除OK）
-    const dbg = document.getElementById("dbg");
-    if (dbg) {
-      dbg.classList.remove("hidden");
-      dbg.textContent += "\nprofile.has_password = " + String(prof.has_password) + "\n";
-    }
+    const hasPassword = !!prof.has_password;
 
-    // has_password が true ならオーバーレイを閉じる / false なら表示
-    showPwOverlay(!prof.has_password);
+    const pwSection = document.getElementById("pwSection");
+    const pwHomeNotice = document.getElementById("pwHomeNotice");
+
+    if (pwSection){
+      if (hasPassword){
+        pwSection.classList.add("hidden");
+      }else{
+        pwSection.classList.remove("hidden");
+      }
+    }
+    if (pwHomeNotice){
+      if (hasPassword){
+        pwHomeNotice.classList.add("hidden");
+      }else{
+        pwHomeNotice.classList.remove("hidden");
+      }
+    }
 
     // パスワード設定フォーム
     const pwForm = document.getElementById("pwForm");
@@ -1838,17 +1812,15 @@
           if (profErr){
             console.error("profiles update(has_password) error:", profErr);
           }
-    
-          showPwOverlay(false);
-          
+
           if (pwMsg){
             pwMsg.textContent = t.pw_setup_success;
             pwMsg.style.color = "#6b6964";
           }
 
-          setTimeout(() => {
-            location.reload();
-          }, 800);
+          // フォームとHOMEのお知らせを非表示にする
+          if (pwSection) pwSection.classList.add("hidden");
+          if (pwHomeNotice) pwHomeNotice.classList.add("hidden");
     
         } catch (e) {
           console.error("pw setup exception:", e);
