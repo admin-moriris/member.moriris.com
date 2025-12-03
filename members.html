@@ -518,6 +518,30 @@
         padding-top:210px;
       }
     }
+    /* パスワード設定オーバーレイ */
+    .pw-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.35);
+      z-index:999;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+    }
+    .pw-card{
+      max-width:480px;
+      width:100%;
+      background:var(--panel);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px 20px 24px;
+    }
+    @media (max-width: 768px){
+      .pw-card{
+        padding:18px 16px 22px;
+      }
+    }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -805,37 +829,6 @@
         </div>
 
         <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
-
-        <!-- ★ パスワード設定セクション（has_password=false のユーザーにだけ表示） -->
-        <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
-
-        <div id="pwSection" class="hidden">
-          <h3 data-i18n="pw_setup_title">パスワードの設定</h3>
-          <p class="muted" data-i18n="pw_setup_desc">
-            初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
-          </p>
-
-          <form id="pwForm" style="margin-top:8px;display:flex;flex-direction:column;gap:8px;max-width:420px;">
-            <input
-              id="pwNew"
-              type="password"
-              class="input"
-              placeholder="新しいパスワード（8文字以上）"
-            />
-            <input
-              id="pwNew2"
-              type="password"
-              class="input"
-              placeholder="確認のため、同じパスワードをもう一度"
-            />
-            <button type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
-              パスワードを設定する
-            </button>
-          </form>
-
-          <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
-        </div>
-      </div>
     </section>
 
     <pre id="dbg" class="hidden"></pre>
@@ -876,7 +869,36 @@
     <div id="legalLinks" style="margin-top:4px;font-size:11px;"></div>
   </footer>
 </div>
+<!-- 初回ログイン時用 パスワード設定オーバーレイ -->
+<div id="pwOverlay" class="pw-overlay hidden">
+  <div class="pw-card">
+    <h2 data-i18n="pw_setup_title">パスワードの設定</h2>
+    <p class="muted" data-i18n="pw_setup_desc">
+      初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
+    </p>
 
+    <form id="pwForm" style="margin-top:8px;display:flex;flex-direction:column;gap:8px;max-width:420px;">
+      <input
+        id="pwNew"
+        type="password"
+        class="input"
+        placeholder="新しいパスワード（8文字以上）"
+      />
+      <input
+        id="pwNew2"
+        type="password"
+        class="input"
+        placeholder="確認のため、同じパスワードをもう一度"
+      />
+      <button type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
+        パスワードを設定する
+      </button>
+    </form>
+
+    <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+  </div>
+</div>
+  
 <script>
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
   const SUPABASE_ANON_KEY =
@@ -1690,15 +1712,18 @@
 
     state.hasPassword = !!prof.has_password;
 
-    // パスワード設定セクションの表示制御
-    const pwSection = $("#pwSection");
+    // ★ 初回ログイン時：パスワード設定オーバーレイを表示
+    const pwOverlay = $("#pwOverlay");
     const pwForm = $("#pwForm");
     const pwMsg = $("#pwMsg");
-    if (pwSection){
+
+    if (pwOverlay){
       if (state.hasPassword){
-        pwSection.classList.add("hidden");
+        // すでにパスワード設定済みならオーバーレイは非表示
+        pwOverlay.classList.add("hidden");
       }else{
-        pwSection.classList.remove("hidden");
+        // パスワード未設定の場合はオーバーレイでブロック
+        pwOverlay.classList.remove("hidden");
       }
     }
 
@@ -1745,7 +1770,6 @@
           return;
         }
 
-        // ボタン無効化
         const btn = pwForm.querySelector("button[type='submit']");
         if (btn) btn.disabled = true;
 
@@ -1768,16 +1792,18 @@
             .eq("id", currentUser.id);
           if (profErr){
             console.error("profiles update has_password error:", profErr);
-            // ここで失敗しても Auth 側は更新済みなので、フォームは非表示にしてよい
           }
 
           state.hasPassword = true;
+
           if (pwMsg){
             pwMsg.textContent = t.pw_setup_success;
             pwMsg.style.color = "#6b6964";
           }
-          if (pwSection){
-            setTimeout(()=>pwSection.classList.add("hidden"), 1000);
+
+          // すこし待ってからオーバーレイを閉じる
+          if (pwOverlay){
+            setTimeout(()=>pwOverlay.classList.add("hidden"), 800);
           }
         }catch(err){
           console.error("password setup exception:", err);
