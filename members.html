@@ -181,7 +181,7 @@
       margin-bottom: 20px;
     }
 
-    main{ margin-top:40px; } /* タブと白枠の間隔 */
+    main{ margin-top:40px; }
     .card{
       background:var(--panel);
       border-radius:var(--radius);
@@ -922,7 +922,7 @@
           class="input"
           placeholder="確認のため、同じパスワードをもう一度"
         />
-        <button type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
+        <button type="submit" id="pwSubmit" class="btn btn-outline" data-i18n="pw_setup_btn">
           パスワードを設定する
         </button>
       </form>
@@ -1020,7 +1020,7 @@
       pw_setup_note:"セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。",
       pw_setup_btn:"パスワードを設定する",
       pw_setup_need_password:"パスワードを入力してください。",
-      pw_setup_need_confirm:"確認用パスワードを入力してください。",
+      pw_setup_need_confirm:"確認用のパスワードを入力してください。",
       pw_setup_mismatch:"パスワードが一致しません。",
       pw_setup_short:"パスワードは8文字以上にしてください。",
       pw_setup_success:"パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。",
@@ -1153,18 +1153,18 @@
     }
   }
 
-  function togglePwOverlay(){
+  // hasPassword を引数で受けて制御できるように変更
+  function togglePwOverlay(forceHasPassword){
     const overlay = document.getElementById("pwOverlay");
     if (!overlay) return;
-  
-    if (state.hasPassword){
+    const hasPw = (typeof forceHasPassword === "boolean") ? forceHasPassword : state.hasPassword;
+    if (hasPw){
       overlay.classList.add("hidden");
     }else{
       overlay.classList.remove("hidden");
     }
   }
 
-  
   function updateBookViewer(bookKey){
     let images, idx, imgId, indicatorId;
 
@@ -1407,14 +1407,14 @@
   async function loadProfileOrCreate(userId){
     let { data:prof, error } = await sb
       .from("profiles")
-      .select("id,tier,is_active,has_password")   // ← has_password を取得
+      .select("id,tier,is_active,has_password")
       .eq("id", userId)
       .single();
   
     const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
     if (notFound){
       const up = await sb.from("profiles").upsert(
-        { id:userId, tier:"free", is_active:false, has_password:false }, // ← has_password 初期値
+        { id:userId, tier:"free", is_active:false, has_password:false },
         { onConflict:"id" }
       );
       if (up.error){
@@ -1424,7 +1424,7 @@
   
       ({ data:prof, error } = await sb
         .from("profiles")
-        .select("id,tier,is_active,has_password")  // ← 同じく has_password
+        .select("id,tier,is_active,has_password")
         .eq("id", userId)
         .single());
     }
@@ -1759,12 +1759,13 @@
     const prof = profRes.data;
     log("profile", prof);
 
+    // プロフィールの has_password を状態に反映し、それに応じてオーバーレイを制御
     state.hasPassword = !!prof.has_password;
-    togglePwOverlay();  
+    togglePwOverlay(state.hasPassword);
 
-    // 初回ログイン時: パスワード設定オーバーレイを表示
+    // パスワード設定フォームの処理
     const pwForm = document.getElementById("pwForm");
-    const pwMsg  = document.getElementById("pwMsg"); // メッセージ表示用
+    const pwMsg  = document.getElementById("pwMsg");
     
     if (pwForm) {
       pwForm.onsubmit = async (e) => {
@@ -1781,48 +1782,49 @@
         const p1 = (document.getElementById("pwNew")?.value || "").trim();
         const p2 = (document.getElementById("pwNew2")?.value || "").trim();
     
-        // 簡単なバリデーション
-        if (!p1 || !p2) {
+        if (!p1) {
           if (pwMsg) {
-            pwMsg.textContent = t.pw_setup_need || "パスワードを入力してください。";
+            pwMsg.textContent = t.pw_setup_need_password;
             pwMsg.style.color = "#b00020";
           }
           return;
         }
-    
+        if (!p2) {
+          if (pwMsg) {
+            pwMsg.textContent = t.pw_setup_need_confirm;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
         if (p1.length < 8) {
           if (pwMsg) {
-            pwMsg.textContent = t.pw_setup_short || "8文字以上のパスワードを入力してください。";
+            pwMsg.textContent = t.pw_setup_short;
             pwMsg.style.color = "#b00020";
           }
           return;
         }
-    
         if (p1 !== p2) {
           if (pwMsg) {
-            pwMsg.textContent = t.pw_setup_mismatch || "同じパスワードを2回入力してください。";
+            pwMsg.textContent = t.pw_setup_mismatch;
             pwMsg.style.color = "#b00020";
           }
           return;
         }
     
-        // ここで初めてボタン無効化（送信中だけ）
         const btn = document.getElementById("pwSubmit");
         if (btn) btn.disabled = true;
     
         try {
-          // 1) Supabase Auth のパスワード更新
           const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
           if (updateErr){
             console.error("updateUser(password) error:", updateErr);
             if (pwMsg){
-              pwMsg.textContent = t.pw_setup_error || "パスワード設定中にエラーが発生しました。";
+              pwMsg.textContent = t.pw_setup_error;
               pwMsg.style.color = "#b00020";
             }
             return;
           }
     
-          // 2) profiles.has_password を true に更新
           const { error:profErr } = await sb
             .from("profiles")
             .update({ has_password:true })
@@ -1830,41 +1832,26 @@
           
           if (profErr){
             console.error("profiles update(has_password) error:", profErr);
-            // ここはログだけでOK（ユーザーには成功扱い）
           }
     
-          // 3) ローカル状態 & UI 更新
           state.hasPassword = true;
-          togglePwOverlay();   // ← モーダルを閉じる
-          
-          if (pwMsg){
-            pwMsg.textContent =
-              t.pw_setup_success ||
-              "パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。";
-            pwMsg.style.color = "#6b6964";
-          }
-
-          // 念のため、少し待ってからページを再読み込み（セッションは維持されます）
-          setTimeout(() => {
-            location.reload();
-          }, 800);
+          togglePwOverlay(true);  // オーバーレイを閉じる
     
-          const pwOverlay = document.getElementById("pwOverlay");
-          if (pwOverlay) {
-            pwOverlay.classList.add("hidden");
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_success;
+            pwMsg.style.color = "#6b6964";
           }
         } catch (e) {
           console.error("pw setup exception:", e);
           if (pwMsg) {
-            pwMsg.textContent = t.pw_setup_error || "パスワード設定中にエラーが発生しました。";
+            pwMsg.textContent = t.pw_setup_error;
             pwMsg.style.color = "#b00020";
           }
         } finally {
-          if (btn) btn.disabled = false; // 送信完了・失敗後には必ず戻す
+          if (btn) btn.disabled = false;
         }
       };
     }
-
 
     const tier = (prof.tier || "free").toLowerCase();
     const isActive = !!prof.is_active;
