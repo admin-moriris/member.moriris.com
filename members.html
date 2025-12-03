@@ -1310,7 +1310,9 @@
         bookList.classList.add("hidden");
         bookSortRow.classList.add("hidden");
       }
-      bookCommonMeta.classList.remove("hidden");
+      if (bookCommonMeta){
+        bookCommonMeta.classList.remove("hidden");
+      }
     }
 
     $("#btn-ja").classList.toggle("active", lang==="ja");
@@ -1810,9 +1812,10 @@
     state.hasPassword = !!prof.has_password;
     const hasPassword = state.hasPassword;
     
-    const pwSection      = document.getElementById("pwSection");       // 初回設定
-    const pwChangeSection = document.getElementById("pwChangeSection"); // 変更
-    const pwHomeNotice   = document.getElementById("pwHomeNotice");
+    const pwSection       = document.getElementById("pwSection");        // 初回設定
+    const pwChangeSection = document.getElementById("pwChangeSection");  // 変更
+    const pwHomeNotice    = document.getElementById("pwHomeNotice");
+    const pwBanner        = document.getElementById("pwBanner");
     
     // 初回設定欄／変更欄の出し分け
     if (pwSection){
@@ -1862,86 +1865,6 @@
       }
     }
     
-    // パスワード変更フォーム
-    const pwChangeForm = document.getElementById("pwChangeForm");
-    const pwChangeMsg  = document.getElementById("pwChangeMsg");
-    
-    if (pwChangeForm){
-      pwChangeForm.onsubmit = async (e)=>{
-        e.preventDefault();
-        if (!currentUser) return;
-    
-        const t = I18N[currentLang] || I18N["ja"];
-    
-        if (pwChangeMsg){
-          pwChangeMsg.textContent = "";
-          pwChangeMsg.style.color = "#6b6964";
-        }
-    
-        const p1 = (document.getElementById("pwChangeNew")?.value || "").trim();
-        const p2 = (document.getElementById("pwChangeNew2")?.value || "").trim();
-    
-        if (!p1){
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_need_password;
-            pwChangeMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (!p2){
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_need_confirm;
-            pwChangeMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (p1.length < 8){
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_short;
-            pwChangeMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (p1 !== p2){
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_mismatch;
-            pwChangeMsg.style.color = "#b00020";
-          }
-          return;
-        }
-    
-        const btn = document.getElementById("pwChangeSubmit");
-        if (btn) btn.disabled = true;
-    
-        try{
-          // 旧パスワードは不要（マジックリンクですでに認証済み）
-          const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
-          if (updateErr){
-            console.error("updateUser(password-change) error:", updateErr);
-            if (pwChangeMsg){
-              pwChangeMsg.textContent = t.pw_setup_error;
-              pwChangeMsg.style.color = "#b00020";
-            }
-            return;
-          }
-    
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_change_success || t.pw_setup_success;
-            pwChangeMsg.style.color = "#6b6964";
-          }
-        }catch(e){
-          console.error("pw change exception:", e);
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_error;
-            pwChangeMsg.style.color = "#b00020";
-          }
-        }finally{
-          if (btn) btn.disabled = false;
-        }
-      };
-    }
-
-
     // パスワード変更フォーム（has_password=TRUE 用）
     const pwChangeForm = document.getElementById("pwChangeForm");
     const pwChangeMsg  = document.getElementById("pwChangeMsg");
@@ -2005,7 +1928,7 @@
           }
 
           if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_change_success;
+            pwChangeMsg.textContent = t.pw_change_success || t.pw_setup_success;
             pwChangeMsg.style.color = "#6b6964";
           }
 
