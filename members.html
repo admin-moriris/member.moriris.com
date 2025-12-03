@@ -477,6 +477,54 @@
       padding-top:180px;
     }
 
+    /* パスワード設定オーバーレイ */
+    .pw-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.45);
+      z-index:200;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+    }
+    .pw-dialog{
+      width:100%;
+      max-width:480px;
+      background:var(--panel);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px 20px 24px;
+    }
+    .pw-dialog h2{
+      margin-top:0;
+      margin-bottom:8px;
+      font-size:18px;
+    }
+    .pw-dialog p{
+      font-size:13px;
+      line-height:1.7;
+    }
+    .pw-dialog form{
+      margin-top:12px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .pw-dialog .input{
+      min-width:0;
+      width:100%;
+    }
+    .pw-dialog .btn{
+      align-self:flex-start;
+    }
+    .pw-dialog small{
+      display:block;
+      font-size:11px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+
     /* スマホ向けレイアウト調整 */
     @media (max-width: 768px){
       .topbar{
@@ -517,46 +565,8 @@
       .main-page{
         padding-top:210px;
       }
-    }
-
-    /* パスワード設定オーバーレイ */
-    .pw-overlay{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.35);
-      z-index:999;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:16px;
-    }
-    .pw-card{
-      max-width:480px;
-      width:100%;
-      background:var(--panel);
-      border-radius:var(--radius);
-      box-shadow:var(--shadow);
-      padding:20px 20px 24px;
-    }
-    .pw-input-wrap{
-      position:relative;
-      display:flex;
-      align-items:center;
-    }
-    .pw-eye-btn{
-      position:absolute;
-      right:10px;
-      top:50%;
-      transform:translateY(-50%);
-      border:none;
-      background:transparent;
-      cursor:pointer;
-      font-size:16px;
-      padding:2px 4px;
-    }
-    @media (max-width: 768px){
-      .pw-card{
-        padding:18px 16px 22px;
+      .pw-dialog{
+        padding:18px 16px 20px;
       }
     }
   </style>
@@ -886,46 +896,41 @@
     </div>
     <div id="legalLinks" style="margin-top:4px;font-size:11px;"></div>
   </footer>
-</div>
+  </div>
 
-<!-- 初回ログイン時用 パスワード設定オーバーレイ -->
-<div id="pwOverlay" class="pw-overlay hidden">
-  <div class="pw-card">
-    <h2 data-i18n="pw_setup_title">パスワードの設定</h2>
-    <p class="muted" data-i18n="pw_setup_desc">
-      初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
-    </p>
+  <!-- 初回ログイン時用 パスワード設定オーバーレイ -->
+  <div id="pwOverlay" class="pw-overlay hidden">
+    <div class="pw-dialog">
+      <h2 data-i18n="pw_setup_title">パスワードの設定</h2>
+      <p class="muted" data-i18n="pw_setup_desc">
+        初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
+      </p>
+      <small data-i18n="pw_setup_note">
+        セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。
+      </small>
 
-    <form id="pwForm" style="margin-top:8px;display:flex;flex-direction:column;gap:8px;max-width:420px;">
-      <div class="pw-input-wrap">
+      <form id="pwForm">
         <input
           id="pwNew"
           type="password"
           class="input"
           placeholder="新しいパスワード（8文字以上）"
-          data-i18n-placeholder="pw_placeholder_new"
         />
-        <button type="button" id="pwNewToggle" class="pw-eye-btn" aria-label="Toggle password">👁</button>
-      </div>
-      <div class="pw-input-wrap">
         <input
           id="pwNew2"
           type="password"
           class="input"
           placeholder="確認のため、同じパスワードをもう一度"
-          data-i18n-placeholder="pw_placeholder_confirm"
         />
-        <button type="button" id="pwNew2Toggle" class="pw-eye-btn" aria-label="Toggle password">👁</button>
-      </div>
-      <button type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
-        パスワードを設定する
-      </button>
-    </form>
+        <button type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
+          パスワードを設定する
+        </button>
+      </form>
 
-    <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+      <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+    </div>
   </div>
-</div>
-  
+
 <script>
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
   const SUPABASE_ANON_KEY =
@@ -943,9 +948,6 @@
   const debugOn = new URL(location.href).searchParams.get("debug")==="1";
   const log = (...a)=>{ if(!debugOn) return; const el=$("#dbg"); el.classList.remove("hidden");
     el.textContent += a.map(x=>typeof x==="string"?x:JSON.stringify(x,null,2)).join(" ") + "\n"; };
-
-  // ★ パスワード設定済みフラグ（ブラウザ側）
-  const pwLocalKeyBase = "moriris_pw_done_";
 
   const I18N = {
     ja:{
@@ -1015,15 +1017,14 @@
       /* パスワード設定まわり */
       pw_setup_title:"パスワードの設定",
       pw_setup_desc:"初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。",
+      pw_setup_note:"セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。",
       pw_setup_btn:"パスワードを設定する",
       pw_setup_need_password:"パスワードを入力してください。",
       pw_setup_need_confirm:"確認用パスワードを入力してください。",
       pw_setup_mismatch:"パスワードが一致しません。",
       pw_setup_short:"パスワードは8文字以上にしてください。",
       pw_setup_success:"パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。",
-      pw_setup_error:"パスワードの設定中にエラーが発生しました。時間をおいて再度お試しください。",
-      pw_placeholder_new:"新しいパスワード（8文字以上）",
-      pw_placeholder_confirm:"確認のため、同じパスワードをもう一度"
+      pw_setup_error:"パスワードの設定中にエラーが発生しました。時間をおいて再度お試しください。"
     },
     en:{
       brand_meta:"MEMBERSHIP",
@@ -1092,15 +1093,14 @@
       /* password setup */
       pw_setup_title:"Set your password",
       pw_setup_desc:"You initially registered with email verification only. To log in with your email and password from now on, please set a password here.",
+      pw_setup_note:"For security, we recommend at least 8 characters and not reusing passwords from other services.",
       pw_setup_btn:"Set password",
       pw_setup_need_password:"Please enter a password.",
       pw_setup_need_confirm:"Please enter the confirmation password.",
       pw_setup_mismatch:"The passwords do not match.",
       pw_setup_short:"Please use at least 8 characters for the password.",
       pw_setup_success:"Your password has been set. Next time, log in using your email and password on the login page.",
-      pw_setup_error:"An error occurred while setting your password. Please try again later.",
-      pw_placeholder_new:"New password (8+ characters)",
-      pw_placeholder_confirm:"Re-enter the same password"
+      pw_setup_error:"An error occurred while setting your password. Please try again later."
     }
   };
 
@@ -1189,11 +1189,6 @@
     document.querySelectorAll("[data-i18n]").forEach(el=>{
       const key = el.getAttribute("data-i18n");
       if (t[key]) el.textContent = t[key];
-    });
-
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
-      const key = el.getAttribute("data-i18n-placeholder");
-      if (t[key]) el.placeholder = t[key];
     });
 
     const legal = document.getElementById("legalLinks");
@@ -1400,7 +1395,7 @@
   async function loadProfileOrCreate(userId){
     let { data:prof, error } = await sb
       .from("profiles")
-      .select("id,tier,is_active,has_password")
+      .select("id,tier,is_active,has_password")  // has_password を取得
       .eq("id", userId)
       .single();
 
@@ -1620,36 +1615,6 @@
     }
   }
 
-  function setupPwEyeToggle(){
-    const pw1 = $("#pwNew");
-    const pw2 = $("#pwNew2");
-    const t1 = $("#pwNewToggle");
-    const t2 = $("#pwNew2Toggle");
-
-    if (t1 && pw1){
-      t1.onclick = ()=>{
-        if (pw1.type === "password"){
-          pw1.type = "text";
-          t1.textContent = "🙈";
-        }else{
-          pw1.type = "password";
-          t1.textContent = "👁";
-        }
-      };
-    }
-    if (t2 && pw2){
-      t2.onclick = ()=>{
-        if (pw2.type === "password"){
-          pw2.type = "text";
-          t2.textContent = "🙈";
-        }else{
-          pw2.type = "password";
-          t2.textContent = "👁";
-        }
-      };
-    }
-  }
-
   async function main(){
     const urlLang = new URL(location.href).searchParams.get("lang");
     const storedLang = localStorage.getItem(langKey);
@@ -1659,7 +1624,6 @@
     updateBookViewer("ep1");
     updateBookViewer("ep2");
     updateFullscreenButtons();
-    setupPwEyeToggle();
 
     await loadVideoEpisodes();
 
@@ -1694,10 +1658,6 @@
     if (currentEmailEl){
       currentEmailEl.textContent = user.email || "";
     }
-
-    // ★ ブラウザ側フラグ
-    const localPwDone =
-      localStorage.getItem(pwLocalKeyBase + user.id) === "1";
 
     const btnChangeEmail = $("#btnChangeEmail");
     if (btnChangeEmail){
@@ -1784,18 +1744,20 @@
     const prof = profRes.data;
     log("profile", prof);
 
-    // ★ Supabase＋ブラウザの両方を見て判定
-    state.hasPassword = (prof.has_password === true) || localPwDone;
+    state.hasPassword = !!prof.has_password;
 
+    // 初回ログイン時: パスワード設定オーバーレイを表示
     const pwOverlay = $("#pwOverlay");
     const pwForm = $("#pwForm");
     const pwMsg = $("#pwMsg");
 
-    if (pwOverlay){
-      if (state.hasPassword){
-        pwOverlay.classList.add("hidden");
-      }else{
+    if (!state.hasPassword){
+      if (pwOverlay){
         pwOverlay.classList.remove("hidden");
+      }
+    }else{
+      if (pwOverlay){
+        pwOverlay.classList.add("hidden");
       }
     }
 
@@ -1864,14 +1826,15 @@
             console.error("profiles update has_password error:", profErr);
           }
 
-          // ★ ブラウザ側フラグも立てる
-          localStorage.setItem(pwLocalKeyBase + currentUser.id, "1");
           state.hasPassword = true;
-
           if (pwMsg){
             pwMsg.textContent = t.pw_setup_success;
             pwMsg.style.color = "#6b6964";
           }
+          const pwNewEl = $("#pwNew");
+          const pwNew2El = $("#pwNew2");
+          if (pwNewEl) pwNewEl.value = "";
+          if (pwNew2El) pwNew2El.value = "";
 
           if (pwOverlay){
             setTimeout(()=>pwOverlay.classList.add("hidden"), 800);
