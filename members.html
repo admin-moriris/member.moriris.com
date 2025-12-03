@@ -107,6 +107,18 @@
       font-weight:600;
     }
 
+    .pw-banner{
+      background:#ffe7e3;        /* btn-danger と同系の薄い赤 */
+      border:1px solid #ffb3a7;  /* 枠線も同系 */
+      color:#8b1a07;             /* 文字色も同系 */
+      border-radius:12px;
+      padding:10px 14px;
+      margin-bottom:16px;
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    
     .user-box{
       display:flex;
       align-items:center;
@@ -565,19 +577,11 @@
 
     <!-- HOME -->
     <section id="tab-home" class="tab-pane active">
-      <div id="pwBanner" class="hidden" style="
-      background:#d93c3c;
-      color:#fff;
-      padding:14px 18px;
-      border-radius:8px;
-      margin-bottom:20px;
-      font-size:16px;
-      font-weight:600;
-      cursor:pointer;
-    ">
-      パスワードをまだ設定していません。こちらをクリックして設定してください。
-    </div>
       <div class="card home-layout">
+        <!-- パスワード未設定時の案内バナー -->
+        <div id="pwBanner" class="pw-banner hidden" data-i18n="pw_banner_text">
+          パスワードをまだ設定していません。ACCOUNTタブから設定してください。
+        </div>
         <div>
           <h2 data-i18n="home_title">ようこそ、モリリス メンバーシップへ</h2>
           <p class="muted" data-i18n="home_intro">
@@ -921,6 +925,7 @@
       tab_animation:"ANIMATION",
       tab_book:"PICTUREBOOK",
       tab_account:"ACCOUNT",
+      pw_banner_text:"パスワードをまだ設定していません。ACCOUNTタブから設定してください。",
       home_title:"ようこそ、モリリスメンバーズへ",
       home_intro:"メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。",
       home_how_title:"メンバーエリアの楽しみ方",
@@ -1001,6 +1006,7 @@
       tab_animation:"ANIMATION",
       tab_book:"PICTUREBOOK",
       tab_account:"ACCOUNT",
+      pw_banner_text:"You haven't set a password yet. Please set it from the ACCOUNT tab.",
       home_title:"Welcome to MORIRIS MEMBERSHIP",
       home_intro:"Enjoy members-only animations and digital picture books from this page.",
       home_how_title:"How to use this area",
@@ -1724,6 +1730,9 @@
     const prof = profRes.data;
     log("profile", prof);
 
+    // has_password を state に反映
+    state.hasPassword = !!prof.has_password;
+    
     const hasPassword = !!prof.has_password;
 
     const pwSection = document.getElementById("pwSection");
