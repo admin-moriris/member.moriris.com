@@ -477,6 +477,48 @@
     .main-page{
       padding-top:180px;
     }
+
+    /* ===== スマホ向けレイアウト調整 ===== */
+    @media (max-width: 768px){
+      .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:8px;
+      }
+      .brand{
+        gap:10px;
+      }
+      .brand img{
+        max-width:180px;
+      }
+      .brand-title span{
+        font-size:16px;
+        letter-spacing:.16em;
+      }
+      .user-box{
+        justify-content:flex-start;
+        flex-wrap:wrap;
+      }
+      .lang{
+        justify-content:flex-start;
+      }
+      .tabs{
+        border-radius:16px;
+        padding:4px 6px;
+        gap:6px;
+        -webkit-overflow-scrolling:touch;
+      }
+      .tab-btn{
+        flex:0 0 auto;
+        white-space:nowrap;
+        font-size:12px;
+        letter-spacing:.08em;
+        padding:8px 10px;
+      }
+      .main-page{
+        padding-top:210px;
+      }
+    }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
