@@ -22,6 +22,7 @@
       --ink:#1d1b16;
       --muted:#6b6964;
       --accent:#75c29c;
+      --accent-dark:#0b5130;
       --r:18px;
       --sh:0 10px 30px rgba(0,0,0,.18);
     }
@@ -91,18 +92,26 @@
     }
 
     .lang button{
-      border:1px solid #ddd;
-      background:#fff;
       border-radius:999px;
-      padding:6px 12px;
+      padding:6px 14px;
       cursor:pointer;
       font-size:14px;
+      border:1px solid transparent;
+      background:rgba(255,255,255,.6);
+      color:var(--muted);
+      transition:background .15s,border-color .15s,color .15s,transform .1s;
     }
 
-    .lang .active{
-      border-color:var(--accent);
-      color:#0b5130;
+    .lang button:hover{
+      transform:translateY(-1px);
+    }
+
+    .lang button.active{
+      background:var(--accent);
+      color:#ffffff;
+      border-color:var(--accent-dark);
       font-weight:600;
+      box-shadow:0 0 0 1px rgba(0,0,0,.02);
     }
 
     .card{
@@ -221,19 +230,6 @@
       line-height:1.5;
     }
 
-    .signup-box{
-      margin-top:24px;
-      text-align:center;
-    }
-
-    .signup-box button{
-      max-width:260px;
-      width:100%;
-      border-radius:999px;
-      padding:10px 18px;
-      font-size:15px;
-    }
-
     footer{
       margin-top:16px;
       color:var(--muted);
@@ -280,6 +276,11 @@
         <div class="row">
           <button id="btn-login-pw" class="primary">ログイン</button>
         </div>
+
+        <p class="small-link">
+          <span id="t_pw_reset_prefix">パスワードを忘れた方は</span>
+          <a href="#" id="link-reset">こちら</a>
+        </p>
       </section>
 
       <hr />
@@ -307,11 +308,6 @@
           <button id="btn-magic" class="primary" disabled>メールを送る</button>
         </div>
       </section>
-
-      <!-- 3. 大きめの新規登録ボタン（メール認証エリアへスクロール） -->
-      <div class="signup-box">
-        <button id="btn-scroll-signup" class="outline">新規会員登録</button>
-      </div>
     </div>
 
     <footer>
@@ -335,6 +331,8 @@
         pwTitle:"パスワードでログイン",
         pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
         pwButton:"ログイン",
+        pwResetPrefix:"パスワードを忘れた方は",
+        pwResetLink:"こちら",
         magicTitle:"新規会員登録 / パスワード再設定",
         magicDesc:"メールアドレスを認証してアカウントを作成します。すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
         magicButton:"メールを送る",
@@ -355,6 +353,8 @@
         pwTitle:"Log in with password",
         pwDesc:"If you have already set a password, you can log in here.",
         pwButton:"Log in",
+        pwResetPrefix:"If you forgot your password,",
+        pwResetLink:"click here",
         magicTitle:"Sign up / Reset password",
         magicDesc:"Verify your email address to create an account. If you already have one, you can also reset your password using this link.",
         magicButton:"Send email",
@@ -379,8 +379,10 @@
     const magicBtn = $("#btn-magic");
     const pwLoginBtn = $("#btn-login-pw");
     const resetLink = $("#link-reset");
-    const btnScrollSignup = $("#btn-scroll-signup");
     const magicBlock = $("#magic-block");
+
+    const btnJa = $("#btn-ja");
+    const btnEn = $("#btn-en");
 
     /***** 4. 利用規約チェックボックス制御 *****/
     function updateMagicDisabled(){
@@ -407,14 +409,15 @@
       $("#t_note").textContent = t.hint;
       $("#t_agree_text").innerHTML = t.agreeText;
 
-      $("#btn-ja").classList.toggle("active", lang==="ja");
-      $("#btn-en").classList.toggle("active", lang==="en");
+      // アクティブ状態の更新
+      btnJa.classList.toggle("active", lang === "ja");
+      btnEn.classList.toggle("active", lang === "en");
 
       updateMagicDisabled();
     }
 
-    $("#btn-ja").onclick = ()=>setLang("ja");
-    $("#btn-en").onclick = ()=>setLang("en");
+    btnJa.onclick = ()=>setLang("ja");
+    btnEn.onclick = ()=>setLang("en");
 
     // 初期言語
     setLang(
@@ -480,14 +483,11 @@
       else alert(t.sent);
     };
 
-    /***** 9. スクロール系の導線 *****/
-    function scrollToMagic(e){
+    /***** 9. パスワードを忘れた方リンク → メール認証エリアへスクロール *****/
+    resetLink.addEventListener("click", (e)=>{
       e.preventDefault();
       magicBlock.scrollIntoView({ behavior:"smooth", block:"start" });
-    }
-
-    resetLink.addEventListener("click", scrollToMagic);
-    btnScrollSignup.addEventListener("click", scrollToMagic);
+    });
   </script>
 
 </body>
