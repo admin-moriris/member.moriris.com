@@ -181,7 +181,7 @@
       margin-bottom: 20px;
     }
 
-    main{ margin-top:18px; }
+    main{ margin-top:30px; } /* タブと白枠の間隔を広げる */
     .card{
       background:var(--panel);
       border-radius:var(--radius);
@@ -358,7 +358,7 @@
       margin-left:auto;
       display:flex;
       align-items:center;
-      gap:12px; /* 「→」と全画面アイコンの間 */
+      gap:12px;
     }
 
     .book-viewer-btn{
@@ -406,7 +406,6 @@
       display:block;
     }
 
-    /* フルスクリーン時の見え方調整 */
     .book-viewer:fullscreen{
       border-radius:0;
     }
@@ -478,7 +477,7 @@
       padding-top:180px;
     }
 
-    /* ===== スマホ向けレイアウト調整 ===== */
+    /* スマホ向けレイアウト調整 */
     @media (max-width: 768px){
       .topbar{
         flex-direction:column;
@@ -558,6 +557,12 @@
 
   <div class="page main-page">
   <main>
+    <!-- 未ログイン時に表示する案内 -->
+    <div id="notLoggedAlert" class="card hidden" style="background:#fff7e0;border:1px solid #f3d38a;">
+      <p id="notLoggedText" class="muted" style="font-size:14px;margin-bottom:8px;"></p>
+      <a id="notLoggedLink" href="./" style="font-size:14px;">ログイン画面に戻る</a>
+    </div>
+
     <!-- HOME -->
     <section id="tab-home" class="tab-pane active">
       <div class="card home-layout">
@@ -847,6 +852,8 @@
   const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
+  const SITE_TOP_URL = "https://member.moriris.com/";
+
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
     auth:{ persistSession:true, autoRefreshToken:true, storageKey:"moriris-auth" }
   });
@@ -879,7 +886,7 @@
       plan_free:"Free",
       plan_standard:"Standard",
       status_checking:"ログイン状態を確認しています…",
-      status_not_logged:"未ログインです。ログイン画面に戻ってください。",
+      status_not_logged:"未ログインか、ブラウザが変わったためログイン情報を確認できませんでした。もう一度ログインを行ってください。",
       status_free:"ただいま有効なサブスクリプションがありません。",
       status_loading:"動画を読み込み中…",
       status_ready:"コンテンツをお楽しみください。",
@@ -943,7 +950,7 @@
       plan_free:"Free",
       plan_standard:"Standard",
       status_checking:"Checking your login status…",
-      status_not_logged:"You are not logged in. Please go back to the login page.",
+      status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
       status_free:"You don't have an active subscription yet.",
       status_loading:"Loading videos…",
       status_ready:"Enjoy the content!",
@@ -998,7 +1005,6 @@
 
   let currentUser = null;
 
-  // Picture book images
   const BOOK_EP1_IMAGES = [
     "/assets/book-ep1/1.png","/assets/book-ep1/2.png","/assets/book-ep1/3.png",
     "/assets/book-ep1/4.png","/assets/book-ep1/5.png","/assets/book-ep1/6.png",
@@ -1019,7 +1025,6 @@
     ep2Index:0
   };
 
-  // ▼ ここから動画JSON関連の設定
   const VIDEO_JSON_URL = "/data/video.json";
   let VIDEO_EPISODES = [];
   let videoSortMode = "episode";
@@ -1029,7 +1034,6 @@
       const res = await fetch(VIDEO_JSON_URL);
       if(!res.ok) throw new Error("HTTP " + res.status);
       const data = await res.json();
-      // 配列で、visible が false でないものだけ採用
       VIDEO_EPISODES = Array.isArray(data)
         ? data.filter(ep => !Object.prototype.hasOwnProperty.call(ep, "visible") || ep.visible !== false)
         : [];
@@ -1039,7 +1043,6 @@
       VIDEO_EPISODES = [];
     }
   }
-  // ▲ 動画JSONの読み込みここまで
 
   function updateBookViewer(bookKey){
     let images, idx, imgId, indicatorId;
@@ -1130,7 +1133,6 @@
         bookList.classList.add("hidden");
         bookSortRow.classList.add("hidden");
       }
-      // Kindle案内は常に表示
       bookCommonMeta.classList.remove("hidden");
     }
 
@@ -1151,7 +1153,6 @@
     });
   });
 
-  // 絵本ページ送り・ボタン系
   document.addEventListener("click", (e)=>{
     const viewerBtn = e.target.closest(".book-viewer-btn");
     if (viewerBtn){
@@ -1180,7 +1181,6 @@
       return;
     }
 
-    // フルスクリーンボタン
     const fullBtn = e.target.closest(".book-full-btn");
     if (fullBtn){
       const viewerId = fullBtn.dataset.viewer;
@@ -1190,7 +1190,6 @@
       return;
     }
 
-    // 絵本 並び替えボタン
     const bookSortBtn = e.target.closest(".book-sort-btn");
     if (bookSortBtn){
       const mode = bookSortBtn.dataset.sort || "episode";
@@ -1201,7 +1200,6 @@
       return;
     }
 
-    // 動画 並び替えボタン
     const videoSortBtn = e.target.closest(".video-sort-btn");
     if (videoSortBtn){
       const mode = videoSortBtn.dataset.sort || "episode";
@@ -1213,7 +1211,6 @@
     }
   });
 
-  // 絵本リストの並び替え
   function sortBookEntries(mode){
     const list = $("#bookList");
     if (!list) return;
@@ -1229,7 +1226,6 @@
     entries.forEach(el=>list.appendChild(el));
   }
 
-  // フルスクリーンのトグル
   function toggleBookFullscreen(viewerId){
     const el = document.getElementById(viewerId);
     if (!el) return;
@@ -1252,7 +1248,6 @@
     }
   }
 
-  // フルスクリーン状態に応じてアイコン／ツールチップを変更
   function updateFullscreenButtons(){
     const current = document.fullscreenElement;
     document.querySelectorAll(".book-full-btn").forEach(btn=>{
@@ -1328,8 +1323,8 @@
         body:JSON.stringify({
           user_id:userId,
           price_id:PRICE_ID_STANDARD,
-          success_url:location.href,
-          cancel_url:location.href
+          success_url:SITE_TOP_URL,
+          cancel_url:SITE_TOP_URL
         })
       }
     );
@@ -1364,7 +1359,7 @@
         },
         body:JSON.stringify({
           user_id:userId,
-          return_url:location.href
+          return_url:SITE_TOP_URL
         })
       }
     );
@@ -1517,12 +1512,10 @@
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
 
-    // 絵本ビューア初期表示
     updateBookViewer("ep1");
     updateBookViewer("ep2");
     updateFullscreenButtons();
 
-    // 動画JSONを先に読み込む
     await loadVideoEpisodes();
 
     state.statusCode = "checking";
@@ -1533,18 +1526,30 @@
       state.statusCode = "not_logged";
       applyLang(currentLang);
       $("#userEmail").textContent = "-";
+
+      const alertBox = $("#notLoggedAlert");
+      if (alertBox){
+        alertBox.classList.remove("hidden");
+        const t = I18N[currentLang] || I18N["ja"];
+        const msgEl = $("#notLoggedText");
+        const linkEl = $("#notLoggedLink");
+        if (msgEl) msgEl.textContent = t.status_not_logged;
+        if (linkEl){
+          linkEl.textContent = currentLang === "ja"
+            ? "ログイン画面に戻る"
+            : "Back to login page";
+        }
+      }
       return;
     }
     currentUser = user;
     $("#userEmail").textContent = user.email || "";
 
-    // ACCOUNTタブ用：現在のメールアドレス表示
     const currentEmailEl = $("#currentEmailText");
     if (currentEmailEl){
       currentEmailEl.textContent = user.email || "";
     }
 
-    // メールアドレス変更ボタンの設定（形式チェック＋同一アドレスチェック付き）
     const btnChangeEmail = $("#btnChangeEmail");
     if (btnChangeEmail){
       btnChangeEmail.onclick = async ()=>{
@@ -1590,7 +1595,7 @@
           const { data, error } = await sb.auth.updateUser(
             { email: newEmail },
             {
-              emailRedirectTo: "https://member.moriris.com/"
+              emailRedirectTo: SITE_TOP_URL
             }
           );
     
