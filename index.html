@@ -213,7 +213,14 @@
       line-height:1.6;
       text-align:center;
     }
-
+    .show-pw-row{
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-size:14px;
+      color:#555;
+      margin-top:-6px;
+    }
     a{ color:#0d6b45; }
   </style>
 
@@ -248,6 +255,10 @@
         <div class="row">
           <input id="pw-email" type="email" placeholder="you@example.com" aria-label="email" />
           <input id="pw-password" type="password" placeholder="Password" aria-label="password" />
+          <label class="show-pw-row">
+            <input type="checkbox" id="show-password">
+            <span id="t_show_pw">Show Password</span>
+          </label>
         </div>
         <div class="row">
           <button id="btn-login-pw" class="primary">ログイン</button>
@@ -406,6 +417,14 @@
       return I18N[localStorage.getItem(langKey) || "ja"];
     }
 
+    /***** Show Password（パスワード表示切替） *****/
+    const showPw = $("#show-password");
+    const pwField = $("#pw-password");
+    
+    showPw.addEventListener("change", ()=>{
+      pwField.type = showPw.checked ? "text" : "password";
+    });
+    
     /***** パスワードログイン *****/
     pwLoginBtn.onclick = async ()=>{
       const t = currentText();
