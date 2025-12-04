@@ -198,7 +198,6 @@
       display:flex;
       align-items:center;
     }
-    /* 念のため、チェックボックスの余計なズレを消す */
     .agree-label input[type="checkbox"]{
       margin:0 6px 0 0;
     }
@@ -228,14 +227,13 @@
 
     a{ color:#0d6b45; }
 
-    /* メッセージ表示エリア */
+    /* メッセージ表示エリア（共通スタイル） */
     .message-box{
-      margin:0 auto 16px;
-      max-width:520px;
+      margin:0 0 10px;
       font-size:14px;
       line-height:1.5;
       border-radius:10px;
-      padding:10px 12px;
+      padding:8px 10px;
       display:none;
     }
     .message-box.error{
@@ -273,9 +271,6 @@
     <!-- カード本体 -->
     <div class="card">
 
-      <!-- 共通メッセージ表示エリア -->
-      <div id="msg-box" class="message-box" aria-live="polite"></div>
-
       <!-- 1. パスワードログイン -->
       <section class="form-block" aria-label="password login">
         <h2 class="section-title" id="t_pw_title">パスワードでログイン</h2>
@@ -294,6 +289,8 @@
         <div class="row">
           <button id="btn-login-pw" class="primary">ログイン</button>
         </div>
+        <!-- パスワードログイン用メッセージ -->
+        <div id="msg-pw" class="message-box" aria-live="polite"></div>
       </section>
 
       <hr />
@@ -321,6 +318,8 @@
           <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
           <button id="btn-magic" class="primary" disabled>メールを送る</button>
         </div>
+        <!-- メール送信用メッセージ -->
+        <div id="msg-magic" class="message-box" aria-live="polite"></div>
       </section>
     </div>
 
@@ -402,20 +401,32 @@
     const btnJa = $("#btn-ja");
     const btnEn = $("#btn-en");
 
-    const msgBox = $("#msg-box");
+    const msgPw = $("#msg-pw");
+    const msgMagic = $("#msg-magic");
 
     /***** メッセージ表示 *****/
-    function showMessage(text, type = "error"){
-      if(!msgBox) return;
+    function showPwMessage(text, type="error"){
+      if(!msgPw) return;
       if(!text){
-        msgBox.textContent = "";
-        msgBox.className = "message-box";
-        msgBox.style.display = "none";
+        msgPw.textContent = "";
+        msgPw.className = "message-box";
+        msgPw.style.display = "none";
         return;
       }
-      msgBox.textContent = text;
-      msgBox.className = "message-box " + type;
-      // display はクラスで制御
+      msgPw.textContent = text;
+      msgPw.className = "message-box " + type;
+    }
+
+    function showMagicMessage(text, type="error"){
+      if(!msgMagic) return;
+      if(!text){
+        msgMagic.textContent = "";
+        msgMagic.className = "message-box";
+        msgMagic.style.display = "none";
+        return;
+      }
+      msgMagic.textContent = text;
+      msgMagic.className = "message-box " + type;
     }
 
     /***** 利用規約チェック制御 *****/
@@ -480,24 +491,25 @@
       const password = $("#pw-password").value;
 
       // 前回メッセージをクリア
-      showMessage("");
+      showPwMessage("");
+      showMagicMessage("");  // 別フォームのメッセージも一応クリア
 
       if(!email){
-        showMessage(t.needEmail, "error");
+        showPwMessage(t.needEmail, "error");
         return;
       }
       if(!validateEmail(email)){
-        showMessage(t.invalidEmail, "error");
+        showPwMessage(t.invalidEmail, "error");
         return;
       }
       if(!password){
-        showMessage(t.needPassword, "error");
+        showPwMessage(t.needPassword, "error");
         return;
       }
 
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if(error){
-        showMessage(t.pwLoginFailed + " " + t.errorPrefix + error.message, "error");
+        showPwMessage(t.pwLoginFailed + " " + t.errorPrefix + error.message, "error");
         return;
       }
 
@@ -511,18 +523,19 @@
       const email = $("#magic-email").value.trim();
 
       // 前回メッセージをクリア
-      showMessage("");
+      showMagicMessage("");
+      showPwMessage("");  // 片方のフォームのメッセージもクリア
 
       if(!email){
-        showMessage(t.needEmail, "error");
+        showMagicMessage(t.needEmail, "error");
         return;
       }
       if(!validateEmail(email)){
-        showMessage(t.invalidEmail, "error");
+        showMagicMessage(t.invalidEmail, "error");
         return;
       }
       if(!agreeCheckbox.checked){
-        showMessage(t.needAgree, "error");
+        showMagicMessage(t.needAgree, "error");
         return;
       }
 
@@ -535,9 +548,9 @@
       });
 
       if(error){
-        showMessage(t.errorPrefix + error.message, "error");
+        showMagicMessage(t.errorPrefix + error.message, "error");
       } else {
-        showMessage(t.sent, "success");
+        showMagicMessage(t.sent, "success");
       }
     };
   </script>
