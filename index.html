@@ -62,12 +62,15 @@
       align-items:center;
       justify-content:space-between;
       margin-bottom:18px;
+      flex-wrap:wrap;       /* 画面幅が狭いときに折り返し */
+      gap:12px;
     }
 
     .brand{
       display:flex;
       align-items:center;
       gap:20px;
+      flex-wrap:wrap;       /* ロゴと MEMBERSHIP を折り返し可能に */
     }
 
     .brand img{
@@ -198,7 +201,6 @@
       display:flex;
       align-items:center;
     }
-    /* チェックボックスの余計なズレを消す */
     .agree-label input[type="checkbox"]{
       margin:0 6px 0 0;
     }
@@ -241,6 +243,23 @@
     }
     .form-message.success{
       color:#0b5130;
+    }
+
+    /* スマホ用調整 */
+    @media (max-width:600px){
+      .wrap{
+        padding:16px 12px 32px;
+      }
+      .brand img{
+        height:120px;
+      }
+      .brand h1{
+        font-size:18px;
+        letter-spacing:0.18em;
+      }
+      .lang{
+        margin-left:auto;  /* 右寄せ */
+      }
     }
   </style>
 
@@ -470,7 +489,7 @@
       pwField.type = showPw.checked ? "text" : "password";
     });
 
-    /***** フォーカス時にメッセージをクリア（軽め） *****/
+    /***** フォーカス時にメッセージをクリア *****/
     $("#pw-email").addEventListener("input", ()=>showPwMessage(""));
     $("#pw-password").addEventListener("input", ()=>showPwMessage(""));
     $("#magic-email").addEventListener("input", ()=>showMagicMessage(""));
@@ -509,7 +528,6 @@
         return;
       }
 
-      // 成功時はいったんメッセージを成功表示してから遷移
       showPwMessage("", "success");
       window.location.href = `/members.html?lang=${lang}`;
     };
