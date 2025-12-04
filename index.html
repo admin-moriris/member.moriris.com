@@ -198,7 +198,7 @@
       display:flex;
       align-items:center;
     }
-    /* 念のため、チェックボックスの余計なズレを消す */
+    /* チェックボックスの余計なズレを消す */
     .agree-label input[type="checkbox"]{
       margin:0 6px 0 0;
     }
@@ -216,6 +216,7 @@
       line-height:1.6;
       text-align:center;
     }
+
     .show-pw-row{
       display:flex;
       align-items:center;
@@ -224,7 +225,23 @@
       color:#555;
       margin-top:-6px;
     }
+
     a{ color:#0d6b45; }
+
+    /* メッセージ表示用 */
+    .form-message{
+      margin:6px 2px 0;
+      font-size:13px;
+      line-height:1.4;
+      min-height:1.2em;
+      color:var(--muted);
+    }
+    .form-message.error{
+      color:#b3261e;
+    }
+    .form-message.success{
+      color:#0b5130;
+    }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -265,6 +282,8 @@
         </div>
         <div class="row">
           <button id="btn-login-pw" class="primary">ログイン</button>
+          <!-- パスワードログイン用メッセージ表示場所 -->
+          <p id="pw-message" class="form-message" aria-live="polite"></p>
         </div>
       </section>
 
@@ -292,6 +311,8 @@
         <div class="row">
           <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
           <button id="btn-magic" class="primary" disabled>メールを送る</button>
+          <!-- 新規登録 / パスワード再設定用メッセージ表示場所 -->
+          <p id="magic-message" class="form-message" aria-live="polite"></p>
         </div>
       </section>
     </div>
@@ -309,16 +330,16 @@
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
     const sb = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY,
-    {
-      auth: {
-        persistSession: true,        // セッションを localStorage に保存
-        autoRefreshToken: true,      // トークン自動更新
-        detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
-      },
-    }
-  );
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY,
+      {
+        auth: {
+          persistSession: true,        // セッションを localStorage に保存
+          autoRefreshToken: true,      // トークン自動更新
+          detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
+        },
+      }
+    );
 
     /***** 多言語テキスト *****/
     const I18N = {
@@ -370,9 +391,30 @@
     const agreeCheckbox = $("#agree");
     const magicBtn = $("#btn-magic");
     const pwLoginBtn = $("#btn-login-pw");
+    const pwMsg = $("#pw-message");
+    const magicMsg = $("#magic-message");
 
     const btnJa = $("#btn-ja");
     const btnEn = $("#btn-en");
+
+    /***** メッセージ表示ヘルパ *****/
+    function showPwMessage(text, type = "error"){
+      if(!pwMsg) return;
+      pwMsg.textContent = text || "";
+      pwMsg.classList.remove("error","success");
+      if(text){
+        pwMsg.classList.add(type);
+      }
+    }
+
+    function showMagicMessage(text, type = "error"){
+      if(!magicMsg) return;
+      magicMsg.textContent = text || "";
+      magicMsg.classList.remove("error","success");
+      if(text){
+        magicMsg.classList.add(type);
+      }
+    }
 
     /***** 利用規約チェック制御 *****/
     function updateMagicDisabled(){
@@ -427,7 +469,12 @@
     showPw.addEventListener("change", ()=>{
       pwField.type = showPw.checked ? "text" : "password";
     });
-    
+
+    /***** フォーカス時にメッセージをクリア（軽め） *****/
+    $("#pw-email").addEventListener("input", ()=>showPwMessage(""));
+    $("#pw-password").addEventListener("input", ()=>showPwMessage(""));
+    $("#magic-email").addEventListener("input", ()=>showMagicMessage(""));
+
     /***** パスワードログイン *****/
     pwLoginBtn.onclick = async ()=>{
       const t = currentText();
@@ -435,16 +482,35 @@
       const email = $("#pw-email").value.trim();
       const password = $("#pw-password").value;
 
-      if(!email) return alert(t.needEmail);
-      if(!validateEmail(email)) return alert(t.invalidEmail);
-      if(!password) return alert(t.needPassword);
+      showPwMessage(""); // いったんクリア
 
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if(error){
-        alert(t.pwLoginFailed + "\n\n" + t.errorPrefix + error.message);
+      if(!email){
+        showPwMessage(t.needEmail, "error");
+        return;
+      }
+      if(!validateEmail(email)){
+        showPwMessage(t.invalidEmail, "error");
+        return;
+      }
+      if(!password){
+        showPwMessage(t.needPassword, "error");
         return;
       }
 
+      pwLoginBtn.disabled = true;
+
+      const { error } = await sb.auth.signInWithPassword({ email, password });
+
+      pwLoginBtn.disabled = false;
+
+      if(error){
+        console.error("Login error:", error.message);
+        showPwMessage(t.pwLoginFailed, "error");
+        return;
+      }
+
+      // 成功時はいったんメッセージを成功表示してから遷移
+      showPwMessage("", "success");
       window.location.href = `/members.html?lang=${lang}`;
     };
 
@@ -454,9 +520,22 @@
       const lang = localStorage.getItem(langKey) || "ja";
       const email = $("#magic-email").value.trim();
 
-      if(!email) return alert(t.needEmail);
-      if(!validateEmail(email)) return alert(t.invalidEmail);
-      if(!agreeCheckbox.checked) return alert(t.needAgree);
+      showMagicMessage(""); // いったんクリア
+
+      if(!email){
+        showMagicMessage(t.needEmail, "error");
+        return;
+      }
+      if(!validateEmail(email)){
+        showMagicMessage(t.invalidEmail, "error");
+        return;
+      }
+      if(!agreeCheckbox.checked){
+        showMagicMessage(t.needAgree, "error");
+        return;
+      }
+
+      magicBtn.disabled = true;
 
       const { error } = await sb.auth.signInWithOtp({
         email,
@@ -466,8 +545,14 @@
         }
       });
 
-      if(error) alert(t.errorPrefix + error.message);
-      else alert(t.sent);
+      magicBtn.disabled = false;
+
+      if(error){
+        console.error("Magic link error:", error.message);
+        showMagicMessage(t.errorPrefix + error.message, "error");
+      } else {
+        showMagicMessage(t.sent, "success");
+      }
     };
   </script>
 
