@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8"/>
+
   <!-- Google tag (gtag.js)  -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
   <script>
@@ -12,28 +12,24 @@
     gtag('config', 'G-HWRX6Q9K3E');
   </script>
   
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MORIRIS MEMBERSHIP</title>
-
   <style>
     :root{
       --bg:#faf8f4;
       --panel:#ffffff;
-      --ink:#1d1b16;
+      --ink:#24311c;
       --muted:#6b6964;
       --accent:#75c29c;
       --accent-dark:#0b5130;
-      --r:18px;
-      --sh:0 10px 30px rgba(0,0,0,.18);
+      --radius:20px;
+      --shadow:0 10px 32px rgba(0,0,0,.18);
     }
-
-    *{ box-sizing:border-box; }
-
+    *{box-sizing:border-box;}
     html,body{
       margin:0;
       height:100%;
     }
-
     body{
       min-height:100vh;
       background-color:#faf8f4;
@@ -42,518 +38,2110 @@
       background-size:cover;
       background-position:center;
       background-attachment:fixed;
-
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-      padding:24px 0 40px;
+    }
+    .page{
+      max-width:1120px;
+      margin:0 auto;
+      padding:0 18px 32px;
     }
 
-    .wrap{
-      width:100%;
-      max-width:960px;
-      padding:24px 20px 40px;
+    .header-wrap{
+      position:sticky;
+      top:0;
+      z-index:100;
+      padding-bottom:10px;
+      background:
+        linear-gradient(to bottom, rgba(250,248,244,1) 0%, rgba(250,248,244,.95) 70%, rgba(250,248,244,0) 100%);
+      backdrop-filter:blur(4px);
     }
 
-    header{
+    .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap:16px;
       margin-bottom:18px;
     }
-
     .brand{
       display:flex;
       align-items:center;
-      gap:20px;
+      gap:18px;
     }
-
     .brand img{
+      max-width:220px;
+      height:auto;
       display:block;
-      height:144px;
-      border-radius:0;
-      box-shadow:none;
+      filter:drop-shadow(0 4px 12px rgba(0,0,0,.18));
     }
-
-    .brand h1{
-      margin:0;
-      font-size:24px;
-      font-weight:500;
-      letter-spacing:0.22em;
+    .brand-title{
+      display:flex;
+      align-items:center;
+    }
+    .brand-title span{
+      font-size:20px;
+      letter-spacing:.22em;
       text-transform:uppercase;
       color:#666666;
+      font-weight:500;
+      white-space:nowrap;
     }
 
     .lang{
       display:flex;
       gap:8px;
+      align-items:center;
     }
-
     .lang button{
-      border:1px solid #cfcfcf;
-      background:#ffffff; 
+      border:1px solid #ddd;
+      background:#fff;
       border-radius:999px;
-      padding:6px 14px;
+      padding:6px 12px;
       cursor:pointer;
-      font-size:14px;
-      color:#222;
-      transition:background 0.2s, color 0.2s, border-color 0.2s;
+      font-size:13px;
     }
-
-    .lang button.active{
-      border-color:#75c29c;
-      background:#ffffff;
-      color:#0b5130;
+    .lang .active{
+      border-color:var(--accent);
+      color:var(--accent-dark);
       font-weight:600;
     }
 
+    .pw-banner{
+      background:#ffe7e3;
+      border:1px solid #ffb3a7;
+      color:#8b1a07;
+      border-radius:12px;
+      padding:10px 14px;
+      margin-bottom:16px;
+      font-size:14px;
+      font-weight:600;
+      cursor:pointer;
+    }
+    
+    .user-box{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+      color:var(--muted);
+      justify-content:flex-end;
+    }
+    .pill{
+      border-radius:999px;
+      background:#ffffff;
+      padding:4px 10px;
+      border:1px solid rgba(0,0,0,.08);
+    }
+    .btn{
+      border-radius:999px;
+      border:1px solid #ddd;
+      background:#fff;
+      padding:7px 12px;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .btn-primary{
+      background:var(--accent);
+      border-color:transparent;
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+    .btn-outline{ background:#fff; }
+    .btn-danger{
+      background:#ffe7e3;
+      border-color:#ffb3a7;
+      color:#8b1a07;
+      font-weight:600;
+    }
+    .input{
+      border-radius:999px;
+      border:1px solid #ddd;
+      background:#fff;
+      padding:7px 10px;
+      font-size:13px;
+      min-width:220px;
+    }
+
+    .tabs{
+      margin-top:8px;
+      background:rgba(255,255,255,.95);
+      border-radius:999px;
+      box-shadow:0 4px 18px rgba(0,0,0,.08);
+      padding:4px;
+      display:flex;
+      gap:4px;
+      overflow:auto;
+    }
+    .tab-btn{
+      flex:1;
+      min-width:0;
+      border:none;
+      background:transparent;
+      border-radius:999px;
+      padding:10px 12px;
+      font-size:14px;
+      cursor:pointer;
+      letter-spacing:.12em;
+    }
+    .tab-btn.active{
+      background:var(--accent);
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+    .add-gap {
+      margin-bottom: 20px;
+    }
+
+    main{ margin-top:40px; }
     .card{
       background:var(--panel);
-      border-radius:var(--r);
-      box-shadow:var(--sh);
-      padding:28px 32px 32px;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:20px 20px 24px;
+      margin-bottom:18px;
     }
+    .tab-pane{display:none;}
+    .tab-pane.active{display:block;}
 
-    .form-block{
-      max-width:520px;
-      margin:0 auto;
-    }
+    h2{ margin:0 0 10px; font-size:20px; }
+    h3{ margin:0 0 6px; font-size:16px; }
+    p{ margin:6px 0; line-height:1.7; font-size:14px; }
+    .muted{color:var(--muted);}
 
-    .section-title{
-      margin:0 0 16px;
-      font-size:20px;
-      font-weight:600;
-      text-align:center;
-    }
-
-    .section-note{
-      margin:0 0 12px;
-      font-size:14px;
-      color:var(--muted);
-      line-height:1.5;
-      text-align:center;
-      white-space:pre-line;
-    }
-
-    .row{
+    .home-layout{
       display:flex;
       flex-direction:column;
-      gap:10px;
-      width:100%;
-      margin-bottom:16px;
+      gap:18px;
     }
-
-    input,button{
+    .status-box{
+      background:#f5ffe9;
+      border-radius:16px;
       padding:12px 14px;
-      font-size:16px;
-      border-radius:12px;
-      border:1px solid #ddd;
+      font-size:13px;
+      margin-top:8px;
+    }
+    .plan-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid rgba(0,0,0,.05);
+      font-size:13px;
+    }
+    .plan-pill{
+      display:inline-block;
+      padding:2px 8px;
+      border-radius:999px;
+      background:#e9f8ef;
+      color:#0b5130;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+    }
+    .cta-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:10px;
     }
 
-    input{
+    .video-grid{
+      display:flex;
+      flex-direction:column;
+      gap:22px;
+      margin-top:12px;
+    }
+
+    .video-card{
+      background:var(--panel);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
       width:100%;
+      max-width:none;
+      margin:0;
     }
 
-    input[type="checkbox"]{
-      width:auto;
-      padding:0;
-      margin:0 6px 0 0;
-      border:none;
-    }
-
-    button.primary{
-      width:100%;
-      background:var(--accent);
-      color:#05361f;
-      border-color:transparent;
-      cursor:pointer;
+    .video-title{
+      padding:10px 12px 12px;
+      font-size:14px;
       font-weight:600;
     }
 
-    button.primary:disabled{
-      opacity:0.5;
-      cursor:not-allowed;
+    .video-sort{
+      margin-top:6px;
+      margin-bottom:6px;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .video-sort-btn{
+      border-radius:999px;
+      border:1px solid #ccc;
+      background:#fff;
+      padding:4px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .video-sort-btn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:var(--accent-dark);
+      font-weight:600;
     }
 
-    hr{
+    .book-sort{
+      margin-top:6px;
+      margin-bottom:6px;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .book-sort-btn{
+      border-radius:999px;
+      border:1px solid #ccc;
+      background:#fff;
+      padding:4px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .book-sort-btn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+
+    .book-list{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+      margin-top:10px;
+    }
+    .book-entry{
       width:100%;
+    }
+    .book-item{
+      background:#f5ffe9;
+      border-radius:16px;
+      padding:12px 14px 14px;
+    }
+    .book-title{
+      font-weight:600;
+      margin-bottom:4px;
+    }
+
+    .book-viewer{
+      margin:12px 0 0;
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      background:#000;
+      width:100%;
+      max-width:none;
+    }
+    .book-viewer-inner img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+
+    .book-viewer-nav{
+      display:flex;
+      align-items:center;
+      padding:6px 12px;
+      font-size:12px;
+      background:rgba(0,0,0,.7);
+      color:#ffffff;
+      position:relative; 
+    }
+    .book-viewer-nav-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .book-viewer-nav-right{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .book-viewer-btn{
       border:none;
-      border-top:1px solid #e3e0d7;
-      margin:24px 0;
+      background:transparent;
+      color:#ffffff;
+      font-size:18px;
+      cursor:pointer;
+      padding:4px 10px;
     }
 
-    .agree-row{
+    .book-viewer-btn:focus{
+      outline:2px solid rgba(255,255,255,.6);
+      outline-offset:2px;
+    }
+
+    .book-viewer-page{
+      font-size:12px;
+      position:absolute; 
+      left:50%;
+      transform:translateX(-50%);  
+    }
+
+    .book-meta{
+      margin-top:6px;
+      font-size:13px;
+    }
+
+    .book-full-btn{
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      padding:4px 8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .book-full-btn:focus{
+      outline:2px solid rgba(255,255,255,.6);
+      outline-offset:2px;
+    }
+    .book-full-icon{
+      width:20px;
+      height:20px;
+      display:block;
+    }
+
+    .book-viewer:fullscreen{
+      border-radius:0;
+    }
+    .book-viewer:fullscreen .book-viewer-inner img{
       width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
-      margin-bottom:16px;
-      font-size:13px;
-      color:#8a8a8a;
-      line-height:1.5;
-    }
-    .agree-label{
-      display:flex;
-      align-items:center;
-    }
-    .agree-label input[type="checkbox"]{
-      margin:0 6px 0 0;
+      height:100%;
+      object-fit:contain;
     }
 
-    .agree-label span{
-      font-size:13px;
-      color:#8a8a8a;
-      line-height:1.5;
-    }
+    a{color:#0d6b45;text-decoration:none;}
+    a:hover{text-decoration:underline;}
 
     footer{
-      margin-top:16px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.6;
+      margin-top:24px;
       text-align:center;
+      font-size:12px;
+      color:var(--muted);
     }
-
-    .show-pw-row{
+    .sns-row{
+      display:flex;
+      justify-content:center;
+      gap:16px;
+      margin:10px 0 6px;
+    }
+    .sns-icon{
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      background:#ffffff;
+      box-shadow:0 4px 12px rgba(0,0,0,.12);
       display:flex;
       align-items:center;
-      gap:6px;
-      font-size:14px;
-      color:#555;
-      margin-top:-6px;
+      justify-content:center;
+      cursor:pointer;
+      text-decoration:none;
+    }
+    .sns-icon svg{
+      width:20px;
+      height:20px;
+      fill:#3f6f4b;
     }
 
-    a{ color:#0d6b45; }
-
-    /* メッセージ表示エリア（共通スタイル） */
-    .message-box{
-      margin:0 0 10px;
-      font-size:14px;
-      line-height:1.5;
+    .hidden{display:none;}
+    pre#dbg{
+      white-space:pre-wrap;
+      background:#f6f6f6;
+      border:1px solid #eee;
+      padding:10px;
       border-radius:10px;
-      padding:8px 10px;
-      display:none;
+      font-size:11px;
+      margin-top:14px;
     }
-    .message-box.error{
-      display:block;
-      background:#ffecec;
-      border:1px solid #f5b5b5;
-      color:#8a1f1f;
+
+    .site-header{
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      z-index:100;
+      background:
+        linear-gradient(to bottom,
+          rgba(250,248,244,1) 0%,
+          rgba(250,248,244,.95) 70%,
+          rgba(250,248,244,0) 100%);
+      backdrop-filter:blur(4px);
     }
-    .message-box.success{
-      display:block;
-      background:#e7f7ee;
-      border:1px solid #9fd8b8;
-      color:#0b5130;
+
+    .main-page{
+      padding-top:180px;
+    }
+
+    @media (max-width: 768px){
+      .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:8px;
+      }
+      .brand{
+        gap:10px;
+      }
+      .brand img{
+        max-width:180px;
+      }
+      .brand-title span{
+        font-size:16px;
+        letter-spacing:.16em;
+      }
+      .user-box{
+        justify-content:flex-start;
+        flex-wrap:wrap;
+      }
+      .lang{
+        justify-content:flex-start;
+      }
+      .tabs{
+        border-radius:16px;
+        padding:4px 6px;
+        gap:6px;
+        -webkit-overflow-scrolling:touch;
+      }
+      .tab-btn{
+        flex:0 0 auto;
+        white-space:nowrap;
+        font-size:12px;
+        letter-spacing:.08em;
+        padding:8px 10px;
+      }
+      .main-page{
+        padding-top:210px;
+      }
     }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
-
 <body>
-  <div class="wrap">
+  <header class="site-header">
+    <div class="page header-inner">
+      <div class="topbar">
+        <div class="brand">
+          <img src="/assets/logo-moriris.png" alt="Moriris" />
+          <div class="brand-title">
+            <span data-i18n="brand_meta">MEMBERSHIP</span>
+          </div>
+        </div>
 
-    <header>
-      <div class="brand">
-        <img src="/assets/logo-moriris.png" alt="Moriris" />
-        <h1 id="t_title">MEMBERSHIP</h1>
+        <div>
+          <div class="user-box">
+            <span data-i18n="logged_in_label">ログイン中：</span>
+            <span id="userEmail" class="pill"></span>
+            <button id="logout" class="btn btn-outline" data-i18n="logout">ログアウト</button>
+          </div>
+          <div class="lang" style="margin-top:6px;justify-content:flex-end;">
+            <button id="btn-en">EN</button>
+            <button id="btn-ja" class="active">JP</button>
+          </div>
+        </div>
       </div>
 
-      <div class="lang">
-        <button id="btn-en">EN</button>
-        <button id="btn-ja" class="active">JP</button>
-      </div>
-    </header>
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="home" data-i18n="tab_home">HOME</button>
+        <button class="tab-btn" data-tab="animation" data-i18n="tab_animation">ANIMATION</button>
+        <button class="tab-btn" data-tab="book" data-i18n="tab_book">PICTUREBOOK</button>
+        <button class="tab-btn" data-tab="account" data-i18n="tab_account">ACCOUNT</button>
+      </nav>
+    </div>
+  </header>
 
-    <!-- カード本体 -->
-    <div class="card">
-
-      <!-- 1. パスワードログイン -->
-      <section class="form-block" aria-label="password login">
-        <h2 class="section-title" id="t_pw_title">パスワードでログイン</h2>
-        <p class="section-note" id="t_pw_desc">
-          すでにパスワードを設定済みの方はこちらからログインしてください。
-        </p>
-
-        <div class="row">
-          <input id="pw-email" type="email" placeholder="you@example.com" aria-label="email" />
-          <input id="pw-password" type="password" placeholder="Password" aria-label="password" />
-          <label class="show-pw-row">
-            <input type="checkbox" id="show-password">
-            <span id="t_show_pw">Show Password</span>
-          </label>
-        </div>
-        <div class="row">
-          <button id="btn-login-pw" class="primary">ログイン</button>
-        </div>
-        <!-- パスワードログイン用メッセージ -->
-        <div id="msg-pw" class="message-box" aria-live="polite"></div>
-      </section>
-
-      <hr />
-
-      <!-- 2. 新規会員登録 / パスワード再設定 -->
-      <section id="magic-block" class="form-block" aria-label="signup and reset">
-        <h2 class="section-title" id="t_magic_title">新規会員登録 / パスワード再設定</h2>
-        <p class="section-note" id="t_magic_desc">
-          メールアドレスを認証してアカウントを作成します。
-すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。
-        </p>
-
-        <div class="agree-row">
-          <label class="agree-label">
-            <input type="checkbox" id="agree">
-            <span id="t_agree_text">
-              「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および
-              「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」
-              を読んで同意しました。
-            </span>
-          </label>
-        </div>
-
-        <div class="row">
-          <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
-          <button id="btn-magic" class="primary" disabled>メールを送る</button>
-        </div>
-        <!-- メール送信用メッセージ -->
-        <div id="msg-magic" class="message-box" aria-live="polite"></div>
-      </section>
+  <div class="page main-page">
+  <main>
+    <!-- 未ログイン時に表示する案内 -->
+    <div id="notLoggedAlert" class="card hidden" style="background:#fff7e0;border:1px solid #f3d38a;">
+      <p id="notLoggedText"
+         class="muted"
+         style="font-size:14px;margin-bottom:8px;"
+         data-i18n="status_not_logged"></p>
+    
+      <a id="notLoggedLink"
+         href="./"
+         style="font-size:14px;"
+         data-i18n="not_logged_back_link">
+        ログイン画面に戻る
+      </a>
     </div>
 
-    <footer>
-      <span id="t_note">メールが届かない場合は迷惑メールフォルダをご確認ください。</span>
-    </footer>
+    <!-- HOME -->
+    <section id="tab-home" class="tab-pane active">
+      <div class="card home-layout">
+        <!-- パスワード未設定時の案内バナー -->
+        <div id="pwBanner" class="pw-banner hidden" data-i18n="pw_banner_text">
+          パスワードをまだ設定していません。ACCOUNTタブから設定してください。
+        </div>
+        <div>
+          <h2 data-i18n="home_title">ようこそ、モリリス メンバーシップへ</h2>
+          <p class="muted" data-i18n="home_intro">
+            メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。
+          </p>
+
+          <img
+            src="https://member.moriris.com/assets/home-img.png"
+            alt="Moriris members home illustration"
+            style="width:100%;max-width:720px;border-radius:16px;margin:16px 0;"
+          />
+        </div>
+
+        <div>
+          <h3 data-i18n="home_how_title">
+            メンバーシップの楽しみ方
+          </h3>
+          <ul style="margin:4px 0 0;padding-left:18px;font-size:13px;line-height:1.7;">
+            <li data-i18n="home_how_1">
+              ANIMATIONタブからメンバー限定アニメを視聴できます。
+            </li>
+            <li data-i18n="home_how_2">
+              PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。
+            </li>
+            <li data-i18n="home_how_3">
+              プランの確認や変更は ACCOUNTタブからいつでも行うことができます。
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ANIMATION -->
+    <section id="tab-animation" class="tab-pane">
+      <div class="card">
+        <h2 data-i18n="anim_title">メンバー限定アニメ</h2>
+        <p class="muted" id="animGateText">
+          Standardプランに登録すると、メンバー限定のアニメを視聴できます。
+        </p>
+
+        <button id="btnSubscribeAnim"
+                class="btn btn-primary hidden add-gap"
+                data-i18n="btn_subscribe">
+          Standardプランに登録する
+        </button>
+
+        <div class="video-sort" id="videoSortRow">
+          <span data-i18n="video_sort_label">表示順：</span>
+          <button type="button" class="video-sort-btn active" data-sort="episode" data-i18n="video_sort_episode">
+            エピソード順
+          </button>
+          <button type="button" class="video-sort-btn" data-sort="new" data-i18n="video_sort_new">
+            新着順
+          </button>
+        </div>
+
+        <div id="videos" class="video-grid"></div>
+      </div>
+    </section>
+
+    <!-- PICTUREBOOK -->
+    <section id="tab-book" class="tab-pane">
+      <div class="card">
+        <h2 data-i18n="book_title">デジタル絵本</h2>
+        <p class="muted" id="bookIntro">
+          デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。
+        </p>
+
+        <button id="btnSubscribeBook"
+                class="btn btn-primary hidden add-gap"
+                data-i18n="btn_subscribe">
+          Standardプランに登録する
+        </button>
+
+        <div class="book-sort hidden" id="bookSortRow">
+          <span data-i18n="book_sort_label">表示順：</span>
+          <button type="button" class="book-sort-btn active" data-sort="episode" data-i18n="book_sort_episode">
+            エピソード順
+          </button>
+          <button type="button" class="book-sort-btn" data-sort="new" data-i18n="book_sort_new">
+            新着順
+          </button>
+        </div>
+
+        <div class="book-list hidden" id="bookList">
+          <!-- Episode 1 -->
+          <div class="book-entry" data-ep="1">
+            <div class="book-item">
+              <div class="book-title" data-i18n="book_ep1_title">
+                Moriris Picture Book – Episode 1
+              </div>
+
+              <div class="book-viewer" id="bookViewerEp1">
+                <div class="book-viewer-inner">
+                  <img
+                    id="bookEp1Image"
+                    src="/assets/book-ep1/1.png"
+                    alt="Moriris Picture Book Episode 1 page 1"
+                  />
+                </div>
+                <div class="book-viewer-nav">
+                  <div class="book-viewer-nav-left">
+                    <button type="button"
+                            class="book-viewer-btn"
+                            data-book="ep1"
+                            data-dir="prev">←</button>
+                    <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 15</span>
+                  </div>
+                  <div class="book-viewer-nav-right">
+                    <button type="button"
+                            class="book-viewer-btn"
+                            data-book="ep1"
+                            data-dir="next">→</button>
+                    <button type="button"
+                            class="book-full-btn"
+                            data-viewer="bookViewerEp1"
+                            title="Full Screen"
+                            aria-label="Full Screen">
+                      <img src="/assets/expansion_icon.png" alt="" class="book-full-icon">
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Episode 2 -->
+          <div class="book-entry" data-ep="2">
+            <div class="book-item">
+              <div class="book-title" data-i18n="book_ep2_title">
+                Moriris Picture Book – Episode 2
+              </div>
+
+              <div class="book-viewer" id="bookViewerEp2">
+                <div class="book-viewer-inner">
+                  <img
+                    id="bookEp2Image"
+                    src="/assets/book-ep2/1.png"
+                    alt="Moriris Picture Book Episode 2 page 1"
+                  />
+                </div>
+                <div class="book-viewer-nav">
+                  <div class="book-viewer-nav-left">
+                    <button type="button"
+                            class="book-viewer-btn"
+                            data-book="ep2"
+                            data-dir="prev">←</button>
+                    <span class="book-viewer-page" id="bookEp2PageIndicator">1 / 14</span>
+                  </div>
+                  <div class="book-viewer-nav-right">
+                    <button type="button"
+                            class="book-viewer-btn"
+                            data-book="ep2"
+                            data-dir="next">→</button>
+                    <button type="button"
+                            class="book-full-btn"
+                            data-viewer="bookViewerEp2"
+                            title="Full Screen"
+                            aria-label="Full Screen">
+                      <img src="/assets/expansion_icon.png" alt="" class="book-full-icon">
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kindle 説明文＋リンク（共通・一箇所だけ） -->
+        <div id="bookCommonMeta" class="book-meta hidden">
+          <p class="muted" data-i18n="book_common_desc">
+            森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。
+          </p>
+          <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
+             target="_blank" rel="noopener noreferrer"
+             data-i18n="book_kindle_link">
+            Kindle ストアで見る
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCOUNT -->
+    <section id="tab-account" class="tab-pane">
+      <div class="card">
+        <h2 data-i18n="account_title">アカウント・プラン情報</h2>
+        <p class="muted" data-i18n="account_intro">
+          現在のプランやサブスクリプションの変更・解約は、このページから行うことができます。
+        </p>
+
+        <div class="status-box">
+          <div>
+            <span data-i18n="plan_label">現在のプラン：</span>
+            <span id="planLabelText">Free</span>
+          </div>
+          <p id="statusText"
+             class="muted"
+             style="margin-top:6px;">
+            ログイン状態を確認しています…
+          </p>
+        </div>
+
+        <div class="cta-row">
+          <button id="btnSubscribe" class="btn btn-primary hidden" data-i18n="btn_subscribe">
+            Standardプランに登録する
+          </button>
+          <button id="btnCancel" class="btn btn-danger hidden" data-i18n="btn_cancel">
+            サブスクを解約する
+          </button>
+          <button id="btnDeleteAccount" class="btn btn-danger hidden" data-i18n="btn_delete">
+            アカウントを削除する
+          </button>
+        </div>
+
+        <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
+
+        <h3 data-i18n="email_change_title">メールアドレスの変更</h3>
+        <p class="muted" data-i18n="email_change_desc">
+          新しいメールアドレスを入力すると、確認メールを送信します。メール内のリンクから変更を完了してください。
+        </p>
+
+        <p style="font-size:13px;margin-top:8px;">
+          <span data-i18n="email_change_current">現在のメールアドレス：</span>
+          <strong id="currentEmailText"></strong>
+        </p>
+
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+          <input
+            id="emailNew"
+            type="email"
+            class="input"
+            placeholder="new-address@example.com"
+          />
+          <button id="btnChangeEmail" class="btn btn-outline" data-i18n="email_change_btn">
+            変更用メールを送信
+          </button>
+        </div>
+
+        <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+
+        <!-- has_password=FALSE のときだけ表示するパスワード設定欄 -->
+        <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
+
+        <div id="pwSection" class="hidden">
+          <h3 data-i18n="pw_setup_title">パスワードの設定</h3>
+          <p class="muted" data-i18n="pw_setup_desc">
+            初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
+          </p>
+          <small data-i18n="pw_setup_note">
+            セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。
+          </small>
+
+          <form id="pwForm" class="pw-form" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
+            <input
+              id="pwNew"
+              type="password"
+              class="input"
+              data-i18n-placeholder="pw_placeholder_new"
+              placeholder="新しいパスワード（8文字以上）"
+            />
+            <input
+              id="pwNew2"
+              type="password"
+              class="input"
+              data-i18n-placeholder="pw_placeholder_confirm"
+              placeholder="確認のため、同じパスワードをもう一度"
+            />
+            <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+              <input type="checkbox" id="pwShowSetup" />
+              <label for="pwShowSetup" style="font-size:13px;" data-i18n="pw_show_label">
+                パスワードを表示する
+              </label>
+            </div>
+            <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
+              パスワードを設定する
+            </button>
+          </form>
+
+          <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+        </div>
+
+        <!-- has_password=TRUE のときだけ表示するパスワード変更欄 -->
+        <div id="pwChangeSection" class="hidden" style="margin-top:18px;">
+          <h3 data-i18n="pw_change_title">パスワードの変更</h3>
+          <p class="muted" data-i18n="pw_change_desc">
+            現在ログインしているアカウントのパスワードを変更できます。古いパスワードの入力は不要です。
+          </p>
+          <small data-i18n="pw_change_note">
+            セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。
+          </small>
+
+          <form id="pwChangeForm" class="pw-form" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
+            <input
+              id="pwChangeNew"
+              type="password"
+              class="input"
+              data-i18n-placeholder="pw_placeholder_new"
+              placeholder="新しいパスワード（8文字以上）"
+            />
+            <input
+              id="pwChangeNew2"
+              type="password"
+              class="input"
+              data-i18n-placeholder="pw_placeholder_confirm"
+              placeholder="確認のため、同じパスワードをもう一度"
+            />
+            <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+              <input type="checkbox" id="pwShowChange" />
+              <label for="pwShowChange" style="font-size:13px;" data-i18n="pw_show_label">
+                パスワードを表示する
+              </label>
+            </div>
+            <button id="pwChangeSubmit" type="submit" class="btn btn-outline" data-i18n="pw_change_btn">
+              パスワードを変更する
+            </button>
+          </form>
+
+          <p id="pwChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+        </div>
+      </div>
+    </section>
+
+    <pre id="dbg" class="hidden"></pre>
+  </main>
+
+  <footer>
+    <div class="sns-row">
+      <a class="sns-icon" href="https://www.youtube.com/@moriris_world"
+         target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/>
+        </svg>
+      </a>
+      <a class="sns-icon" href="https://www.instagram.com/moriris_world"
+         target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 7.3A4.7 4.7 0 1 0 16.7 12 4.71 4.71 0 0 0 12 7.3zm0 7.7A3 3 0 1 1 15 12a3 3 0 0 1-3 3z"/>
+          <path d="M17.2 3H6.8A3.8 3.8 0 0 0 3 6.8v10.4A3.8 3.8 0 0 0 6.8 21h10.4A3.8 3.8 0 0 0 21 17.2V6.8A3.8 3.8 0 0 0 17.2 3zm2.1 14.2a2.1 2.1 0 0 1-2.1 2.1H6.8a2.1 2.1 0 0 1-2.1-2.1V6.8a2.1 2.1 0 0 1 2.1-2.1h10.4a2.1 2.1 0 0 1 2.1 2.1z"/>
+          <circle cx="17" cy="7" r="1"/>
+        </svg>
+      </a>
+      <a class="sns-icon" href="https://x.com/moriris_world"
+         target="_blank" rel="noopener noreferrer" aria-label="X">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18.9 4H16.4L12.9 8.3 10 4H5.1l5.2 7.4L5 20h2.5l3.8-4.7L14 20h4.9l-5.5-7.9L18.9 4zm-3 14-6-8.7L9.2 7h.9l6 8.7.7 1.3z"/>
+        </svg>
+      </a>
+      <a class="sns-icon" href="https://www.tiktok.com/@moriris_world"
+         target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M18.5 7.3a4.4 4.4 0 0 1-2.7-1V14a4.9 4.9 0 1 1-4.9-4.9 5 5 0 0 1 1 .1v2.1a2.8 2.8 0 0 0-1-.2 2.8 2.8 0 1 0 2.8 2.8V3.9h2.2a4.4 4.4 0 0 0 2.6 2.5z"/>
+        </svg>
+      </a>
+    </div>
+    <div data-i18n="footer_note">
+      最新情報は各種SNSでお知らせします。
+    </div>
+    <div id="legalLinks" style="margin-top:4px;font-size:11px;"></div>
+  </footer>
   </div>
 
+<script>
+  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
-  <script>
-    /***** Supabase クライアント *****/
-    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+  const SITE_TOP_URL = "https://member.moriris.com/";
 
-    const sb = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY,
-      {
-        auth: {
-          persistSession: true,        // セッションを localStorage に保存
-          autoRefreshToken: true,      // トークン自動更新
-          detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
-        },
-      }
-    );
-
-    /***** 多言語テキスト *****/
-    const I18N = {
-      ja:{
-        title:"MEMBERSHIP",
-        pwTitle:"パスワードでログイン",
-        pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
-        pwButton:"ログイン",
-        magicTitle:"新規会員登録 / パスワード再設定",
-        magicDesc:"メールアドレスを認証してアカウントを作成します。\nすでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
-        magicButton:"メールを送る",
-        hint:"メールが届かない場合は迷惑メールフォルダをご確認ください。",
-        needEmail:"メールアドレスを入力してください。",
-        needPassword:"パスワードを入力してください。",
-        needAgree:"利用規約とプライバシーポリシーへの同意が必要です。",
-        invalidEmail:"メールアドレスの形式が正しくありません。",
-        sent:"認証メールを送信しました。",
-        pwLoginFailed:"ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。",
-        errorPrefix:"エラー：",
-        agreeText:
-          '「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および ' +
-          '「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」 を読んで同意しました。'
+  const sb = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
       },
-      en:{
-        title:"MEMBERSHIP",
-        pwTitle:"Log in with password",
-        pwDesc:"If you have already set a password, you can log in here.",
-        pwButton:"Log in",
-        magicTitle:"Sign up / Reset password",
-        magicDesc:"Verify your email address to create an account.\nIf you already have an account, you can also reset your password using this link.",
-        magicButton:"Send email",
-        hint:"If you don't see the email, please check your spam folder.",
-        needEmail:"Please enter your email address.",
-        needPassword:"Please enter your password.",
-        needAgree:"Please read and agree to the Terms of Service and Privacy Policy.",
-        invalidEmail:"The email format is invalid.",
-        sent:"A verification email has been sent.",
-        pwLoginFailed:"Login failed. Please check your email and password.",
-        errorPrefix:"Error: ",
-        agreeText:
-          'I have read and agree to the <a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> ' +
-          'and <a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'
+    }
+  );
+
+  const PRICE_ID_STANDARD = "price_1SZ4pbJBnnPY5Sg2uplAWUVc";
+
+  const $ = (s)=>document.querySelector(s);
+  const debugOn = new URL(location.href).searchParams.get("debug")==="1";
+  const log = (...a)=>{
+    if(!debugOn) return;
+    const el=$("#dbg");
+    el.classList.remove("hidden");
+    el.textContent += a.map(x=>typeof x==="string"?x:JSON.stringify(x,null,2)).join(" ") + "\n";
+  };
+
+  const I18N = {
+    ja:{
+      brand_meta:"MEMBERSHIP",
+      logged_in_label:"ログイン中：",
+      logout:"ログアウト",
+      tab_home:"HOME",
+      tab_animation:"ANIMATION",
+      tab_book:"PICTUREBOOK",
+      tab_account:"ACCOUNT",
+      status_not_logged:"未ログインか、ブラウザが変わったためログイン情報を確認できませんでした。もう一度ログインを行ってください。",
+      not_logged_back_link:"ログイン画面に戻る",
+      pw_banner_text:"パスワードをまだ設定していません。ACCOUNTタブから設定してください。",
+      home_title:"ようこそ、モリリスメンバーズへ",
+      home_intro:"メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。",
+      home_how_title:"メンバーエリアの楽しみ方",
+      home_how_1:"ANIMATIONタブからメンバー限定アニメを視聴できます。",
+      home_how_2:"PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。",
+      home_how_3:"プランの確認や変更は ACCOUNTタブからいつでも行うことができます。",
+      pw_home_notice_title:"パスワードの設定をお願いします",
+      pw_home_notice_body:"初回登録ではメール認証のみでした。ACCOUNTタブの「パスワードの設定」から、今後ログインに使うパスワードを登録してください。",
+      account_title:"アカウント・プラン情報",
+      account_intro:"現在のプランやサブスクリプションの変更・解約は、このページから行うことができます。",
+      plan_label:"現在のプラン：",
+      plan_free:"Free",
+      plan_standard:"Standard",
+      status_checking:"ログイン状態を確認しています…",
+      status_not_logged:"未ログインか、ブラウザが変わったためログイン情報を確認できませんでした。もう一度ログインを行ってください。",
+      status_free:"ただいま有効なサブスクリプションがありません。",
+      status_loading:"動画を読み込み中…",
+      status_ready:"コンテンツをお楽しみください。",
+      status_error:"情報の取得に失敗しました。",
+      btn_subscribe:"Standardプランに登録する",
+      btn_cancel:"サブスクを解約する",
+      btn_delete:"アカウントを削除する",
+      delete_confirm:"本当にアカウントを削除しますか？この操作は取り消せません。",
+      delete_done:"アカウントを削除しました。ご利用ありがとうございました。",
+      delete_error:"アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。",
+      anim_title:"メンバー限定アニメ",
+      anim_gate_free:"Standard プランに登録いただくと、すべてのエピソードが視聴可能になります。",
+      anim_gate_std:"メンバー限定アニメをお楽しみいただけます。",
+      anim_empty:"現在、視聴可能な動画がありません。",
+      video_sort_label:"表示順：",
+      video_sort_episode:"エピソード順",
+      video_sort_new:"新着順",
+      book_title:"デジタル絵本",
+      book_intro_free:"デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。",
+      book_intro_std:"モリリスの世界を絵本でもお楽しみいただけます。",
+      book_ep1_title:"Moriris Picture Book – Episode 1",
+      book_ep2_title:"Moriris Picture Book – Episode 2",
+      book_common_desc:"森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。",
+      book_kindle_link:"Kindle ストアで見る",
+      book_sort_label:"表示順：",
+      book_sort_episode:"エピソード順",
+      book_sort_new:"新着順",
+      footer_note:"最新情報は各種SNSでお知らせします。",
+      legal_note:
+        '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a> / ' +
+        '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a> / '+
+        '<a href="https://member.moriris.com/legal.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a>',
+      email_change_title:"メールアドレスの変更",
+      email_change_desc:"新しいメールアドレスを入力すると、確認メールを送信します。メール内のリンクから変更を完了してください。",
+      email_change_current:"現在のメールアドレス：",
+      email_change_btn:"変更用メールを送信",
+      email_change_sent:"新しいメールアドレス宛に確認メールを送信しました。メール内のリンクから変更を完了してください。",
+      email_change_invalid:"正しいメールアドレスを入力してください。",
+      email_change_error:"メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。",
+      email_change_same:"現在登録されているメールアドレスと同じです。別のメールアドレスを入力してください。",
+      checkout_error:"お手続き中にエラーが発生しました。時間をおいて再度お試しください。",
+      portal_error:"サブスクリプション管理ページを開けませんでした。時間をおいて再度お試しください。",
+
+      /* パスワード設定まわり */
+      pw_setup_title:"パスワードの設定",
+      pw_setup_desc:"初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。",
+      pw_setup_note:"セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。",
+      pw_setup_btn:"パスワードを設定する",
+      pw_setup_need_password:"パスワードを入力してください。",
+      pw_setup_need_confirm:"確認用パスワードを入力してください。",
+      pw_setup_mismatch:"パスワードが一致しません。",
+      pw_setup_short:"パスワードは8文字以上にしてください。",
+      pw_setup_success:"パスワードを設定しました。次回からはログイン画面でメールアドレスとパスワードをご利用ください。",
+      pw_setup_error:"パスワードの設定中にエラーが発生しました。時間をおいて再度お試しください。",
+      pw_placeholder_new:"新しいパスワード（8文字以上）",
+      pw_placeholder_confirm:"確認のため、同じパスワードをもう一度",
+      pw_show_label:"パスワードを表示する",
+      
+      /* パスワード変更まわり（has_password=TRUE 向け） */
+      pw_change_title:"パスワードの変更",
+      pw_change_desc:"現在ログインしているアカウントのパスワードを変更できます。古いパスワードの入力は不要です。",
+      pw_change_note:"セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。",
+      pw_change_btn:"パスワードを変更する",
+      pw_change_success:"パスワードを変更しました。次回からは新しいパスワードでログインしてください。"
+      
+    },
+    en:{
+      brand_meta:"MEMBERSHIP",
+      logged_in_label:"Logged in as",
+      logout:"Logout",
+      tab_home:"HOME",
+      tab_animation:"ANIMATION",
+      tab_book:"PICTUREBOOK",
+      tab_account:"ACCOUNT",
+      status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
+      not_logged_back_link:"Back to login page",
+      pw_banner_text:"You haven't set a password yet. Please set it from the ACCOUNT tab.",
+      home_title:"Welcome to MORIRIS MEMBERSHIP",
+      home_intro:"Enjoy members-only animations and digital picture books from this page.",
+      home_how_title:"How to use this area",
+      home_how_1:"Watch members-only animations from the ANIMATION tab.",
+      home_how_2:"Read digital picture books and extras from the PICTUREBOOK tab.",
+      home_how_3:"You can check or change your plan anytime from the ACCOUNT tab.",
+      pw_home_notice_title:"Please set your password",
+      pw_home_notice_body:"You initially registered with email verification only. From the ACCOUNT tab (“Set password”), please register the password you will use for login.",
+      account_title:"Account & Plan",
+      account_intro:"Check your current plan, subscribe, or cancel from this page.",
+      plan_label:"Current plan:",
+      plan_free:"Free",
+      plan_standard:"Standard",
+      status_checking:"Checking your login status…",
+      status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
+      status_free:"You don't have an active subscription yet.",
+      status_loading:"Loading videos…",
+      status_ready:"Enjoy the content!",
+      status_error:"Failed to load your membership information.",
+      btn_subscribe:"Subscribe to Standard plan",
+      btn_cancel:"Cancel subscription",
+      btn_delete:"Delete account",
+      delete_confirm:"Are you sure you want to delete your account? This action cannot be undone.",
+      delete_done:"Your account has been deleted. Thank you for using Moriris.",
+      delete_error:"An error occurred while deleting your account. Please try again later.",
+      anim_title:"Members-only Animation",
+      anim_gate_free:"By subscribing to the Standard plan, you can watch all episodes.",
+      anim_gate_std:"You can now watch all members-only episodes.",
+      anim_empty:"There are no videos available yet.",
+      video_sort_label:"Order:",
+      video_sort_episode:"By episode",
+      video_sort_new:"Newest first",
+      book_title:"Digital Picture Books",
+      book_intro_free:"Digital picture books are available with the Standard plan.",
+      book_intro_std:"Enjoy the world of Moriris as picture books.",
+      book_ep1_title:"Moriris Picture Book – Episode 1",
+      book_ep2_title:"Moriris Picture Book – Episode 2",
+      book_common_desc:"A small adventure that begins in the forest. Also available on Kindle.",
+      book_kindle_link:"View on Kindle Store",
+      book_sort_label:"Order:",
+      book_sort_episode:"By episode",
+      book_sort_new:"Newest first",
+      footer_note:"Follow Moriris on social media for the latest updates.",
+      legal_note:
+        '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> / ' +
+        '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> / '+
+        '<a href="https://member.moriris.com/legal.html" target="_blank" rel="noopener">Legal Notice</a>',
+      email_change_title:"Change Email Address",
+      email_change_desc:"Enter a new email address and we will send a confirmation email. Please use the link in that email to complete the change.",
+      email_change_current:"Current email:",
+      email_change_btn:"Send confirmation email",
+      email_change_sent:"We’ve sent a confirmation email to your new address. Please follow the link in the email to complete the change.",
+      email_change_invalid:"Please enter a valid email address.",
+      email_change_error:"An error occurred while changing your email. Please try again later.",
+      email_change_same:"This is the same as your current email. Please enter a different address.",
+      checkout_error:"Something went wrong while processing your request. Please try again later.",
+      portal_error:"We couldn’t open the subscription management page. Please try again later.",
+
+      /* password setup */
+      pw_setup_title:"Set your password",
+      pw_setup_desc:"You initially registered with email verification only. To log in with your email and password from now on, please set a password here.",
+      pw_setup_note:"For security, we recommend at least 8 characters and not reusing passwords from other services.",
+      pw_setup_btn:"Set password",
+      pw_setup_need_password:"Please enter a password.",
+      pw_setup_need_confirm:"Please enter the confirmation password.",
+      pw_setup_mismatch:"The passwords do not match.",
+      pw_setup_short:"Please use at least 8 characters for the password.",
+      pw_setup_success:"Your password has been set. Next time, log in using your email and password on the login page.",
+      pw_setup_error:"An error occurred while setting your password. Please try again later.",
+      pw_placeholder_new:"New password (8+ characters)",
+      pw_placeholder_confirm:"Re-enter the same password",
+      pw_show_label:"Show password",
+
+      /* password change */
+      pw_change_title:"Change password",
+      pw_change_desc:"You can change the password for the account you are currently logged in with. You do not need to enter your old password.",
+      pw_change_note:"For security, we recommend at least 8 characters and not reusing passwords from other services.",
+      pw_change_btn:"Change password",
+      pw_change_success:"Your password has been changed. Please use the new password the next time you log in."
+    }
+  };
+
+  let currentLang = "ja";
+  const langKey = "moriris_lang_members";
+
+  const state = {
+    plan: "free",
+    statusCode: "checking",
+    hasPassword: false
+  };
+
+  let currentUser = null;
+
+  const BOOK_EP1_IMAGES = [
+    "/assets/book-ep1/1.png","/assets/book-ep1/2.png","/assets/book-ep1/3.png",
+    "/assets/book-ep1/4.png","/assets/book-ep1/5.png","/assets/book-ep1/6.png",
+    "/assets/book-ep1/7.png","/assets/book-ep1/8.png","/assets/book-ep1/9.png",
+    "/assets/book-ep1/10.png","/assets/book-ep1/11.png","/assets/book-ep1/12.png",
+    "/assets/book-ep1/13.png","/assets/book-ep1/14.png","/assets/book-ep1/15.png"
+  ];
+  const BOOK_EP2_IMAGES = [
+    "/assets/book-ep2/1.png","/assets/book-ep2/2.png","/assets/book-ep2/3.png",
+    "/assets/book-ep2/4.png","/assets/book-ep2/5.png","/assets/book-ep2/6.png",
+    "/assets/book-ep2/7.png","/assets/book-ep2/8.png","/assets/book-ep2/9.png",
+    "/assets/book-ep2/10.png","/assets/book-ep2/11.png","/assets/book-ep2/12.png",
+    "/assets/book-ep2/13.png","/assets/book-ep2/14.png"
+  ];
+
+  const bookState = {
+    ep1Index:0,
+    ep2Index:0
+  };
+
+  const VIDEO_JSON_URL = "/data/video.json";
+  let VIDEO_EPISODES = [];
+  let videoSortMode = "episode";
+
+  async function loadVideoEpisodes(){
+    try{
+      const res = await fetch(VIDEO_JSON_URL);
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      VIDEO_EPISODES = Array.isArray(data)
+        ? data.filter(ep => !Object.prototype.hasOwnProperty.call(ep, "visible") || ep.visible !== false)
+        : [];
+      log("video json loaded", VIDEO_EPISODES);
+    }catch(e){
+      console.error("video json load error", e);
+      VIDEO_EPISODES = [];
+    }
+  }
+
+  function updateBookViewer(bookKey){
+    let images, idx, imgId, indicatorId;
+
+    if (bookKey === "ep1"){
+      images = BOOK_EP1_IMAGES;
+      idx = bookState.ep1Index;
+      imgId = "bookEp1Image";
+      indicatorId = "bookEp1PageIndicator";
+    }else if (bookKey === "ep2"){
+      images = BOOK_EP2_IMAGES;
+      idx = bookState.ep2Index;
+      imgId = "bookEp2Image";
+      indicatorId = "bookEp2PageIndicator";
+    }else{
+      return;
+    }
+    if (!images || !images.length) return;
+
+    const img = document.getElementById(imgId);
+    const indicator = document.getElementById(indicatorId);
+    if (!img || !indicator) return;
+
+    img.src = images[idx];
+    indicator.textContent = (idx + 1) + " / " + images.length;
+  }
+
+  function applyLang(lang){
+    currentLang = lang;
+    localStorage.setItem(langKey, lang);
+    document.documentElement.lang = lang;
+
+    const t = I18N[lang];
+
+    document.querySelectorAll("[data-i18n]").forEach(el=>{
+      const key = el.getAttribute("data-i18n");
+      if (t[key]) el.textContent = t[key];
+    });
+
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
+      const key = el.getAttribute("data-i18n-placeholder");
+      if (t[key]) el.placeholder = t[key];
+    });
+
+    const legal = document.getElementById("legalLinks");
+    if (legal && t.legal_note){
+      legal.innerHTML = t.legal_note;
+    }
+
+    const planLabelText = $("#planLabelText");
+    if (planLabelText){
+      const planKey = state.plan === "standard" ? "plan_standard" : "plan_free";
+      planLabelText.textContent = t[planKey];
+    }
+
+    const statusEl = $("#statusText");
+    if (statusEl){
+      const map = {
+        checking:"status_checking",
+        not_logged:"status_not_logged",
+        free:"status_free",
+        loading:"status_loading",
+        ready:"status_ready",
+        error:"status_error"
+      };
+      const k = map[state.statusCode] || "status_error";
+      statusEl.textContent = t[k];
+    }
+
+    const animGate = $("#animGateText");
+    if (animGate){
+      animGate.textContent = state.plan === "standard"
+        ? t.anim_gate_std
+        : t.anim_gate_free;
+    }
+
+    const bookIntro = $("#bookIntro");
+    if (bookIntro){
+      bookIntro.textContent = state.plan === "standard"
+        ? t.book_intro_std
+        : t.book_intro_free;
+    }
+
+    const bookList = $("#bookList");
+    const bookSortRow = $("#bookSortRow");
+    const bookCommonMeta = $("#bookCommonMeta");
+    
+    if (bookList){
+      if (state.plan === "standard"){
+        bookList.classList.remove("hidden");
+        bookSortRow.classList.remove("hidden");
+      }else{
+        bookList.classList.add("hidden");
+        bookSortRow.classList.add("hidden");
       }
-    };
-
-    /***** DOM 取得 *****/
-    const $ = (s)=>document.querySelector(s);
-
-    const agreeCheckbox = $("#agree");
-    const magicBtn = $("#btn-magic");
-    const pwLoginBtn = $("#btn-login-pw");
-
-    const btnJa = $("#btn-ja");
-    const btnEn = $("#btn-en");
-
-    const msgPw = $("#msg-pw");
-    const msgMagic = $("#msg-magic");
-
-    /***** メッセージ表示 *****/
-    function showPwMessage(text, type="error"){
-      if(!msgPw) return;
-      if(!text){
-        msgPw.textContent = "";
-        msgPw.className = "message-box";
-        msgPw.style.display = "none";
-        return;
+      if (bookCommonMeta){
+        bookCommonMeta.classList.remove("hidden");
       }
-      msgPw.textContent = text;
-      msgPw.className = "message-box " + type;
     }
 
-    function showMagicMessage(text, type="error"){
-      if(!msgMagic) return;
-      if(!text){
-        msgMagic.textContent = "";
-        msgMagic.className = "message-box";
-        msgMagic.style.display = "none";
-        return;
+    $("#btn-ja").classList.toggle("active", lang==="ja");
+    $("#btn-en").classList.toggle("active", lang==="en");
+  }
+
+  $("#btn-ja").onclick = ()=>applyLang("ja");
+  $("#btn-en").onclick = ()=>applyLang("en");
+
+  document.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active", b===btn));
+      document.querySelectorAll(".tab-pane").forEach(p=>{
+        p.classList.toggle("active", p.id === "tab-"+tab);
+      });
+    });
+  });
+
+  document.addEventListener("click", (e)=>{
+    const viewerBtn = e.target.closest(".book-viewer-btn");
+    if (viewerBtn){
+      const dir = viewerBtn.dataset.dir;
+      const bookKey = viewerBtn.dataset.book;
+      if (!dir || !bookKey) return;
+
+      if (bookKey === "ep1"){
+        if (dir === "prev"){
+          bookState.ep1Index =
+            (bookState.ep1Index - 1 + BOOK_EP1_IMAGES.length) % BOOK_EP1_IMAGES.length;
+        }else{
+          bookState.ep1Index =
+            (bookState.ep1Index + 1) % BOOK_EP1_IMAGES.length;
+        }
+      }else if (bookKey === "ep2"){
+        if (dir === "prev"){
+          bookState.ep2Index =
+            (bookState.ep2Index - 1 + BOOK_EP2_IMAGES.length) % BOOK_EP2_IMAGES.length;
+        }else{
+          bookState.ep2Index =
+            (bookState.ep2Index + 1) % BOOK_EP2_IMAGES.length;
+        }
       }
-      msgMagic.textContent = text;
-      msgMagic.className = "message-box " + type;
+      updateBookViewer(bookKey);
+      return;
     }
 
-    /***** 利用規約チェック制御 *****/
-    function updateMagicDisabled(){
-      magicBtn.disabled = !agreeCheckbox.checked;
-    }
-    agreeCheckbox.addEventListener("change", updateMagicDisabled);
-
-    /***** 言語切り替え *****/
-    const langKey = "moriris_lang";
-
-    function setLang(lang){
-      localStorage.setItem(langKey, lang);
-      const t = I18N[lang];
-
-      $("#t_title").textContent = t.title;
-      $("#t_pw_title").textContent = t.pwTitle;
-      $("#t_pw_desc").textContent = t.pwDesc;
-      $("#btn-login-pw").textContent = t.pwButton;
-      $("#t_magic_title").textContent = t.magicTitle;
-      $("#t_magic_desc").textContent = t.magicDesc;
-      $("#btn-magic").textContent = t.magicButton;
-      $("#t_note").textContent = t.hint;
-      $("#t_agree_text").innerHTML = t.agreeText;
-
-      btnJa.classList.toggle("active", lang === "ja");
-      btnEn.classList.toggle("active", lang === "en");
-
-      updateMagicDisabled();
+    const fullBtn = e.target.closest(".book-full-btn");
+    if (fullBtn){
+      const viewerId = fullBtn.dataset.viewer;
+      if (viewerId){
+        toggleBookFullscreen(viewerId);
+      }
+      return;
     }
 
-    btnJa.onclick = ()=>setLang("ja");
-    btnEn.onclick = ()=>setLang("en");
+    const bookSortBtn = e.target.closest(".book-sort-btn");
+    if (bookSortBtn){
+      const mode = bookSortBtn.dataset.sort || "episode";
+      document.querySelectorAll(".book-sort-btn").forEach(b=>{
+        b.classList.toggle("active", b===bookSortBtn);
+      });
+      sortBookEntries(mode);
+      return;
+    }
 
-    setLang(
-      localStorage.getItem(langKey) ||
-      ((navigator.language||"ja").startsWith("ja") ? "ja":"en")
+    const videoSortBtn = e.target.closest(".video-sort-btn");
+    if (videoSortBtn){
+      const mode = videoSortBtn.dataset.sort || "episode";
+      document.querySelectorAll(".video-sort-btn").forEach(b=>{
+        b.classList.toggle("active", b===videoSortBtn);
+      });
+      renderVideosForPlan(state.plan, mode);
+      return;
+    }
+  });
+
+  function sortBookEntries(mode){
+    const list = $("#bookList");
+    if (!list) return;
+    const entries = Array.from(list.querySelectorAll(".book-entry"));
+    entries.sort((a,b)=>{
+      const ea = Number(a.dataset.ep || "0");
+      const eb = Number(b.dataset.ep || "0");
+      if (mode === "new"){
+        return eb - ea;
+      }
+      return ea - eb;
+    });
+    entries.forEach(el=>list.appendChild(el));
+  }
+
+  function toggleBookFullscreen(viewerId){
+    const el = document.getElementById(viewerId);
+    if (!el) return;
+
+    if (document.fullscreenElement === el){
+      if (document.exitFullscreen){
+        document.exitFullscreen();
+      }else if (document.webkitExitFullscreen){
+        document.webkitExitFullscreen();
+      }
+      return;
+    }
+
+    if (el.requestFullscreen){
+      el.requestFullscreen();
+    }else if (el.webkitRequestFullscreen){
+      el.webkitRequestFullscreen();
+    }else{
+      alert("Fullscreen is not supported in this browser.");
+    }
+  }
+
+  function updateFullscreenButtons(){
+    const current = document.fullscreenElement;
+    document.querySelectorAll(".book-full-btn").forEach(btn=>{
+      const viewerId = btn.dataset.viewer;
+      const img = btn.querySelector("img.book-full-icon");
+      if (!img) return;
+      if (current && current.id === viewerId){
+        img.src = "/assets/reduction_icon.png";
+        btn.title = "Exit Full Screen";
+        btn.setAttribute("aria-label", "Exit Full Screen");
+      }else{
+        img.src = "/assets/expansion_icon.png";
+        btn.title = "Full Screen";
+        btn.setAttribute("aria-label", "Full Screen");
+      }
+    });
+  }
+  document.addEventListener("fullscreenchange", updateFullscreenButtons);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenButtons);
+
+  const sleep = ms => new Promise(r=>setTimeout(r,ms));
+
+  async function getUserWithRetry({tries=40, interval=150}={}){
+    try{
+      await sb.auth.exchangeCodeForSession(window.location.href);
+    }catch(e){ log("exchange_err", String(e)); }
+
+    for(let i=0;i<tries;i++){
+      const { data:{ user } } = await sb.auth.getUser();
+      if (user) return user;
+      await sleep(interval);
+    }
+    return null;
+  }
+
+  async function loadProfileOrCreate(userId){
+    let { data:prof, error } = await sb
+      .from("profiles")
+      .select("id,tier,is_active,has_password")
+      .eq("id", userId)
+      .single();
+  
+    const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
+    if (notFound){
+      const up = await sb.from("profiles").upsert(
+        { id:userId, tier:"free", is_active:false, has_password:false },
+        { onConflict:"id" }
+      );
+      if (up.error){
+        log("profiles upsert failed", up.error);
+        return { data:null, error:up.error };
+      }
+  
+      ({ data:prof, error } = await sb
+        .from("profiles")
+        .select("id,tier,is_active,has_password")
+        .eq("id", userId)
+        .single());
+    }
+    return { data:prof, error };
+  }
+
+  async function createCheckout(userId){
+    const { data:sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+    const i18n = I18N[currentLang] || I18N["ja"] || {};
+
+    const res = await fetch(
+      "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":`Bearer ${token}`
+        },
+        body:JSON.stringify({
+          user_id:userId,
+          price_id:PRICE_ID_STANDARD,
+          success_url:SITE_TOP_URL,
+          cancel_url:SITE_TOP_URL
+        })
+      }
     );
 
-    /***** メール形式チェック *****/
-    function validateEmail(email){
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!res.ok){
+      const bodyText = await res.text().catch(()=> "");
+      console.error("createCheckout failed:", res.status, bodyText);
+      alert(i18n.checkout_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
+      return;
     }
-
-    function currentText(){
-      return I18N[localStorage.getItem(langKey) || "ja"];
+    const data = await res.json();
+    if (!data?.url){
+      console.error("createCheckout: url missing", data);
+      alert(i18n.checkout_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
+      return;
     }
+    location.href = data.url;
+  }
 
-    /***** Show Password（パスワード表示切替） *****/
-    const showPw = $("#show-password");
-    const pwField = $("#pw-password");
-    
-    showPw.addEventListener("change", ()=>{
-      pwField.type = showPw.checked ? "text" : "password";
-    });
-    
-    /***** パスワードログイン *****/
-    pwLoginBtn.onclick = async ()=>{
-      const t = currentText();
-      const lang = localStorage.getItem(langKey) || "ja";
-      const email = $("#pw-email").value.trim();
-      const password = $("#pw-password").value;
+  async function openPortal(userId){
+    const { data:sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+    const i18n = I18N[currentLang] || I18N["ja"] || {};
 
-      // 前回メッセージをクリア
-      showPwMessage("");
-      showMagicMessage("");  // 別フォームのメッセージも一応クリア
-
-      if(!email){
-        showPwMessage(t.needEmail, "error");
-        return;
+    const res = await fetch(
+      "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-portal-session",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":`Bearer ${token}`
+        },
+        body:JSON.stringify({
+          user_id:userId,
+          return_url:SITE_TOP_URL
+        })
       }
-      if(!validateEmail(email)){
-        showPwMessage(t.invalidEmail, "error");
-        return;
-      }
-      if(!password){
-        showPwMessage(t.needPassword, "error");
-        return;
-      }
+    );
 
-      const { error } = await sb.auth.signInWithPassword({ email, password });
-      if(error){
-        showPwMessage(t.pwLoginFailed + " " + t.errorPrefix + error.message, "error");
-        return;
-      }
+    if (!res.ok){
+      const bodyText = await res.text().catch(()=> "");
+      console.error("openPortal failed:", res.status, bodyText);
+      alert(i18n.portal_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
+      return;
+    }
+    const data = await res.json();
+    if (!data?.url){
+      console.error("openPortal: url missing", data);
+      alert(i18n.portal_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
+      return;
+    }
+    location.href = data.url;
+  }
 
-      window.location.href = `/members.html?lang=${lang}`;
-    };
-
-    /***** メール認証（新規 / PWリセット） *****/
-    magicBtn.onclick = async ()=>{
-      const t = currentText();
-      const lang = localStorage.getItem(langKey) || "ja";
-      const email = $("#magic-email").value.trim();
-
-      // 前回メッセージをクリア
-      showMagicMessage("");
-      showPwMessage("");  // 片方のフォームのメッセージもクリア
-
-      if(!email){
-        showMagicMessage(t.needEmail, "error");
-        return;
-      }
-      if(!validateEmail(email)){
-        showMagicMessage(t.invalidEmail, "error");
-        return;
-      }
-      if(!agreeCheckbox.checked){
-        showMagicMessage(t.needAgree, "error");
-        return;
-      }
-
-      const { error } = await sb.auth.signInWithOtp({
-        email,
-        options:{
-          shouldCreateUser:true,
-          emailRedirectTo:`https://member.moriris.com/members.html?lang=${lang}`
+  async function updateStripeEmail(userId, newEmail){
+    try{
+      const { data:sess } = await sb.auth.getSession();
+      const token = sess?.session?.access_token;
+  
+      const res = await fetch(
+        "https://sqwyfscumunyhsvsvejv.functions.supabase.co/update-stripe-email",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ user_id: userId, new_email: newEmail })
         }
-      });
-
-      if(error){
-        showMagicMessage(t.errorPrefix + error.message, "error");
-      } else {
-        showMagicMessage(t.sent, "success");
+      );
+  
+      if (!res.ok){
+        const t = await res.text().catch(()=> "");
+        console.error("updateStripeEmail failed:", res.status, t);
+        return;
       }
-    };
-  </script>
+      const data = await res.json();
+      console.log("updateStripeEmail result:", data);
+    }catch(e){
+      console.error("updateStripeEmail error:", e);
+    }
+  }
 
+  async function handleDeleteAccount() {
+    if (!currentUser) return;
+  
+    const i18n = I18N[currentLang] || I18N["ja"] || {};
+  
+    const msg =
+      i18n.delete_confirm ||
+      "本当にアカウントを削除しますか？この操作は取り消せません。";
+  
+    const ok = window.confirm(msg);
+    if (!ok) return;
+  
+    try {
+      const { data: sess } = await sb.auth.getSession();
+      const token = sess?.session?.access_token;
+      if (!token) throw new Error("no access token");
+  
+      const res = await fetch(
+        "https://sqwyfscumunyhsvsvejv.functions.supabase.co/delete-account",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+  
+      if (!res.ok) {
+        const bodyText = await res.text().catch(() => "");
+        console.error("delete-account failed:", res.status, bodyText);
+  
+        const baseMsg =
+          i18n.delete_error ||
+          "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
+  
+        alert(baseMsg);
+        return;
+      }
+  
+      const doneMsg =
+        i18n.delete_done || "アカウントを削除しました。トップページに戻ります。";
+  
+      alert(doneMsg);
+      await sb.auth.signOut();
+      location.href = "./";
+    } catch (e) {
+      console.error("handleDeleteAccount error:", e);
+  
+      const baseMsg =
+        i18n.delete_error ||
+        "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
+  
+      alert(baseMsg);
+    }
+  }
+
+  function renderVideosForPlan(plan, mode = videoSortMode){
+    videoSortMode = mode;
+    const wrap = $("#videos");
+    wrap.innerHTML = "";
+
+    let episodes = VIDEO_EPISODES.filter(v =>
+      plan === "standard" ? true : v.tier === "free"
+    );
+
+    episodes.sort((a,b)=>{
+      if (mode === "new"){
+        return b.ep - a.ep;
+      }
+      return a.ep - b.ep;
+    });
+
+    if (!episodes.length){
+      const p = document.createElement("p");
+      p.className = "muted";
+      p.textContent = I18N[currentLang].anim_empty;
+      wrap.appendChild(p);
+      return;
+    }
+
+    for (const v of episodes){
+      const card = document.createElement("div");
+      card.className = "video-card";
+      const src =
+        `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1`;
+      card.innerHTML = `
+        <div style="position:relative;background:#000;aspect-ratio:16/9;">
+          <iframe src="${src}" title="${v.title}" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen loading="lazy"
+            style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
+        </div>
+        <div class="video-title">${v.title}</div>
+      `;
+      wrap.appendChild(card);
+    }
+  }
+
+  async function main(){
+    const urlLang = new URL(location.href).searchParams.get("lang");
+    const storedLang = localStorage.getItem(langKey);
+    const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
+    applyLang(urlLang || storedLang || navLang);
+
+    updateBookViewer("ep1");
+    updateBookViewer("ep2");
+    updateFullscreenButtons();
+
+    await loadVideoEpisodes();
+
+    state.statusCode = "checking";
+    applyLang(currentLang);
+
+    const user = await getUserWithRetry();
+    if (!user){
+      state.statusCode = "not_logged";
+      applyLang(currentLang);
+      $("#userEmail").textContent = "-";
+    
+      const alertBox = $("#notLoggedAlert");
+      if (alertBox){
+        alertBox.classList.remove("hidden");
+      }
+      return;
+    }
+
+    currentUser = user;
+    $("#userEmail").textContent = user.email || "";
+
+    const currentEmailEl = $("#currentEmailText");
+    if (currentEmailEl){
+      currentEmailEl.textContent = user.email || "";
+    }
+
+    const btnChangeEmail = $("#btnChangeEmail");
+    if (btnChangeEmail){
+      btnChangeEmail.onclick = async ()=>{
+        const input = $("#emailNew");
+        const msgEl = $("#emailChangeMsg");
+        if (!input || !msgEl) return;
+    
+        msgEl.style.color = "#6b6964";
+        const t = I18N[currentLang] || I18N["ja"];
+    
+        const newEmail = input.value.trim();
+        const currentEmail = currentUser?.email || "";
+    
+        if (!newEmail){
+          msgEl.textContent = t.email_change_invalid;
+          msgEl.style.color = "#b00020";
+          return;
+        }
+    
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(newEmail)){
+          msgEl.textContent = t.email_change_invalid;
+          msgEl.style.color = "#b00020";
+          return;
+        }
+    
+        if (newEmail.toLowerCase() === currentEmail.toLowerCase()){
+          msgEl.textContent = t.email_change_same;
+          msgEl.style.color = "#b00020";
+          return;
+        }
+    
+        if (!currentUser){
+          msgEl.textContent = "ログイン情報を取得できませんでした。";
+          msgEl.style.color = "#b00020";
+          return;
+        }
+    
+        btnChangeEmail.disabled = true;
+        msgEl.textContent = "";
+    
+        try{
+          const { data, error } = await sb.auth.updateUser(
+            { email: newEmail },
+            {
+              emailRedirectTo: SITE_TOP_URL
+            }
+          );
+    
+          if (error){
+            console.error("updateUser ERROR:", error);
+            msgEl.textContent =
+              t.email_change_error ||
+              "メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。";
+            msgEl.style.color = "#b00020";
+            return;
+          }
+    
+          updateStripeEmail(currentUser.id, newEmail);
+    
+          msgEl.textContent = t.email_change_sent;
+          msgEl.style.color = "#6b6964";
+          input.value = "";
+        }catch(e){
+          console.error("updateUser exception:", e);
+          msgEl.textContent =
+            t.email_change_error ||
+            "メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。";
+          msgEl.style.color = "#b00020";
+        }finally{
+          btnChangeEmail.disabled = false;
+        }
+      };
+    }
+    
+    const profRes = await loadProfileOrCreate(user.id);
+    if (profRes.error || !profRes.data){
+      state.statusCode = "error";
+      applyLang(currentLang);
+      return;
+    }
+
+    const prof = profRes.data;
+    log("profile", prof);
+
+    state.hasPassword = !!prof.has_password;
+    const hasPassword = state.hasPassword;
+    
+    const pwSection       = document.getElementById("pwSection");        // 初回設定
+    const pwChangeSection = document.getElementById("pwChangeSection");  // 変更
+    const pwHomeNotice    = document.getElementById("pwHomeNotice");
+    const pwBanner        = document.getElementById("pwBanner");
+    
+    // 初回設定欄／変更欄の出し分け
+    if (pwSection){
+      if (hasPassword){
+        pwSection.classList.add("hidden");
+      }else{
+        pwSection.classList.remove("hidden");
+      }
+    }
+    if (pwChangeSection){
+      if (hasPassword){
+        pwChangeSection.classList.remove("hidden");
+      }else{
+        pwChangeSection.classList.add("hidden");
+      }
+    }
+    if (pwHomeNotice){
+      if (hasPassword){
+        pwHomeNotice.classList.add("hidden");
+      }else{
+        pwHomeNotice.classList.remove("hidden");
+      }
+    }
+    
+    // パスワード未設定ならHOMEのバナー表示
+    if (!state.hasPassword) {
+      if (pwBanner) {
+        pwBanner.classList.remove("hidden");
+    
+        pwBanner.onclick = ()=>{
+          document.querySelectorAll(".tab-btn").forEach(btn=>{
+            btn.classList.toggle("active", btn.dataset.tab === "account");
+          });
+          document.querySelectorAll(".tab-pane").forEach(pane=>{
+            pane.classList.toggle("active", pane.id === "tab-account");
+          });
+
+          const target = document.getElementById("pwSection");
+          if (target){
+            target.scrollIntoView({ behavior:"smooth", block:"center" });
+          }
+        };
+      }
+    } else {
+      if (pwBanner){
+        pwBanner.classList.add("hidden");
+      }
+    }
+    
+    // パスワード変更フォーム（has_password=TRUE 用）
+    const pwChangeForm = document.getElementById("pwChangeForm");
+    const pwChangeMsg  = document.getElementById("pwChangeMsg");
+
+    const pwForm = document.getElementById("pwForm");
+    const pwMsg  = document.getElementById("pwMsg");
+
+    if (pwForm){
+      pwForm.onsubmit = async (e)=>{
+        e.preventDefault();
+        if (!currentUser) return;
+
+        const t = I18N[currentLang] || I18N["ja"];
+
+        if (pwMsg){
+          pwMsg.textContent = "";
+          pwMsg.style.color = "#6b6964";
+        }
+
+        const p1 = (document.getElementById("pwNew")?.value || "").trim();
+        const p2 = (document.getElementById("pwNew2")?.value || "").trim();
+
+        if (!p1){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_need_password;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (!p2){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_need_confirm;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (p1.length < 8){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_short;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (p1 !== p2){
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_mismatch;
+            pwMsg.style.color = "#b00020";
+          }
+          return;
+        }
+
+        const btn = document.getElementById("pwSubmit");
+        if (btn) btn.disabled = true;
+
+        try{
+          // Supabase Auth のパスワード更新
+          const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
+          if (updateErr){
+            console.error("updateUser(set password) error:", updateErr);
+            if (pwMsg){
+              pwMsg.textContent = t.pw_setup_error;
+              pwMsg.style.color = "#b00020";
+            }
+            return;
+          }
+
+          // profiles.has_password を true に更新（失敗しても致命的ではない）
+          try{
+            await sb
+              .from("profiles")
+              .update({ has_password:true })
+              .eq("id", currentUser.id);
+          }catch(e2){
+            console.warn("profiles.has_password update error:", e2);
+          }
+
+          state.hasPassword = true;
+
+          // UI を「設定済み」状態へ切り替え
+          if (pwSection)       pwSection.classList.add("hidden");
+          if (pwChangeSection) pwChangeSection.classList.remove("hidden");
+          if (pwHomeNotice)    pwHomeNotice.classList.add("hidden");
+          if (pwBanner)        pwBanner.classList.add("hidden");
+
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_success;
+            pwMsg.style.color = "#6b6964";
+          }
+
+          const input1 = document.getElementById("pwNew");
+          const input2 = document.getElementById("pwNew2");
+          if (input1) input1.value = "";
+          if (input2) input2.value = "";
+        }catch(e){
+          console.error("pw setup exception:", e);
+          if (pwMsg){
+            pwMsg.textContent = t.pw_setup_error;
+            pwMsg.style.color = "#b00020";
+          }
+        }finally{
+          if (btn) btn.disabled = false;
+        }
+      };
+    }
+
+    if (pwChangeForm){
+      pwChangeForm.onsubmit = async (e)=>{
+        e.preventDefault();
+        if (!currentUser) return;
+
+        const t = I18N[currentLang] || I18N["ja"];
+
+        if (pwChangeMsg){
+          pwChangeMsg.textContent = "";
+          pwChangeMsg.style.color = "#6b6964";
+        }
+
+        const p1 = (document.getElementById("pwChangeNew")?.value || "").trim();
+        const p2 = (document.getElementById("pwChangeNew2")?.value || "").trim();
+
+        if (!p1){
+          if (pwChangeMsg){
+            pwChangeMsg.textContent = t.pw_setup_need_password;
+            pwChangeMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (!p2){
+          if (pwChangeMsg){
+            pwChangeMsg.textContent = t.pw_setup_need_confirm;
+            pwChangeMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (p1.length < 8){
+          if (pwChangeMsg){
+            pwChangeMsg.textContent = t.pw_setup_short;
+            pwChangeMsg.style.color = "#b00020";
+          }
+          return;
+        }
+        if (p1 !== p2){
+          if (pwChangeMsg){
+            pwChangeMsg.textContent = t.pw_setup_mismatch;
+            pwChangeMsg.style.color = "#b00020";
+          }
+          return;
+        }
+
+        const btn = document.getElementById("pwChangeSubmit");
+        if (btn) btn.disabled = true;
+
+        try{
+          const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
+          if (updateErr){
+            console.error("updateUser(change password) error:", updateErr);
+            if (pwChangeMsg){
+              pwChangeMsg.textContent = t.pw_setup_error;
+              pwChangeMsg.style.color = "#b00020";
+            }
+            return;
+          }
+
+          if (pwChangeMsg){
+            pwChangeMsg.textContent = t.pw_change_success || t.pw_setup_success;
+            pwChangeMsg.style.color = "#6b6964";
+          }
+
+          const input1 = document.getElementById("pwChangeNew");
+          const input2 = document.getElementById("pwChangeNew2");
+          if (input1) input1.value = "";
+          if (input2) input2.value = "";
+        }catch(e){
+          console.error("pw change exception:", e);
+          if (pwChangeMsg){
+            pwChangeMsg.textContent = t.pw_setup_error;
+            pwChangeMsg.style.color = "#b00020";
+          }
+        }finally{
+          if (btn) btn.disabled = false;
+        }
+      };
+    }
+
+    // ★ 初回パスワード設定：Show Password
+    const pwShowSetup = document.getElementById("pwShowSetup");
+    if (pwShowSetup){
+      pwShowSetup.addEventListener("change", ()=>{
+        const type = pwShowSetup.checked ? "text" : "password";
+        const f1 = document.getElementById("pwNew");
+        const f2 = document.getElementById("pwNew2");
+        if (f1) f1.type = type;
+        if (f2) f2.type = type;
+      });
+    }
+    
+    // ★ パスワード変更：Show Password
+    const pwShowChange = document.getElementById("pwShowChange");
+    if (pwShowChange){
+      pwShowChange.addEventListener("change", ()=>{
+        const type = pwShowChange.checked ? "text" : "password";
+        const f1 = document.getElementById("pwChangeNew");
+        const f2 = document.getElementById("pwChangeNew2");
+        if (f1) f1.type = type;
+        if (f2) f2.type = type;
+      });
+    }
+
+    const tier = (prof.tier || "free").toLowerCase();
+    const isActive = !!prof.is_active;
+
+    if (!isActive || tier==="free"){
+      state.plan = "free";
+      state.statusCode = "free";
+      applyLang(currentLang);
+    
+      const btnSubMain  = $("#btnSubscribe");
+      const btnSubAnim  = $("#btnSubscribeAnim");
+      const btnSubBook  = $("#btnSubscribeBook");
+      const btnCancel   = $("#btnCancel");
+      const btnDelete   = $("#btnDeleteAccount");
+    
+      [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
+        if (!b) return;
+        b.classList.remove("hidden");
+        b.onclick = ()=>createCheckout(user.id);
+      });
+      if (btnCancel){
+        btnCancel.classList.add("hidden");
+        btnCancel.onclick = null;
+      }
+      if (btnDelete){
+        btnDelete.classList.remove("hidden");
+        btnDelete.onclick = handleDeleteAccount;
+      }
+    
+      renderVideosForPlan("free", videoSortMode);
+    }else{
+      state.plan = "standard";
+      state.statusCode = "loading";
+      applyLang(currentLang);
+    
+      const btnSubMain  = $("#btnSubscribe");
+      const btnSubAnim  = $("#btnSubscribeAnim");
+      const btnSubBook  = $("#btnSubscribeBook");
+      const btnCancel   = $("#btnCancel");
+      const btnDelete   = $("#btnDeleteAccount");
+    
+      [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
+        if (!b) return;
+        b.classList.add("hidden");
+        b.onclick = null;
+      });
+      if (btnCancel){
+        btnCancel.classList.remove("hidden");
+        btnCancel.onclick = ()=>openPortal(user.id);
+      }
+      if (btnDelete){
+        btnDelete.classList.add("hidden");
+        btnDelete.onclick = null;
+      }
+    
+      renderVideosForPlan("standard", videoSortMode);
+    
+      state.statusCode = "ready";
+      applyLang(currentLang);
+    
+      sortBookEntries("episode");
+    }
+
+    $("#logout").onclick = async ()=>{
+      try{ await sb.auth.signOut(); }catch{}
+      location.replace("./");
+    };
+  }
+
+  main();
+</script>
 </body>
 </html>
