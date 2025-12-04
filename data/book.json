@@ -1,0 +1,22 @@
+[
+  {
+    "ep": 1,
+    "id": "ep1",
+    "title_ja": "Moriris Picture Book – Episode 1",
+    "title_en": "Moriris Picture Book – Episode 1",
+    "base_path": "/assets/book-ep1",
+    "pages": 15,
+    "tier": "standard",
+    "visible": true
+  },
+  {
+    "ep": 2,
+    "id": "ep2",
+    "title_ja": "Moriris Picture Book – Episode 2",
+    "title_en": "Moriris Picture Book – Episode 2",
+    "base_path": "/assets/book-ep2",
+    "pages": 14,
+    "tier": "standard",
+    "visible": true
+  }
+]
