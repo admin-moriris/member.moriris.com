@@ -216,6 +216,7 @@
       line-height:1.6;
       text-align:center;
     }
+
     .show-pw-row{
       display:flex;
       align-items:center;
@@ -224,7 +225,31 @@
       color:#555;
       margin-top:-6px;
     }
+
     a{ color:#0d6b45; }
+
+    /* メッセージ表示エリア */
+    .message-box{
+      margin:0 auto 16px;
+      max-width:520px;
+      font-size:14px;
+      line-height:1.5;
+      border-radius:10px;
+      padding:10px 12px;
+      display:none;
+    }
+    .message-box.error{
+      display:block;
+      background:#ffecec;
+      border:1px solid #f5b5b5;
+      color:#8a1f1f;
+    }
+    .message-box.success{
+      display:block;
+      background:#e7f7ee;
+      border:1px solid #9fd8b8;
+      color:#0b5130;
+    }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -247,6 +272,9 @@
 
     <!-- カード本体 -->
     <div class="card">
+
+      <!-- 共通メッセージ表示エリア -->
+      <div id="msg-box" class="message-box" aria-live="polite"></div>
 
       <!-- 1. パスワードログイン -->
       <section class="form-block" aria-label="password login">
@@ -309,16 +337,16 @@
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
     const sb = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY,
-    {
-      auth: {
-        persistSession: true,        // セッションを localStorage に保存
-        autoRefreshToken: true,      // トークン自動更新
-        detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
-      },
-    }
-  );
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY,
+      {
+        auth: {
+          persistSession: true,        // セッションを localStorage に保存
+          autoRefreshToken: true,      // トークン自動更新
+          detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
+        },
+      }
+    );
 
     /***** 多言語テキスト *****/
     const I18N = {
@@ -373,6 +401,22 @@
 
     const btnJa = $("#btn-ja");
     const btnEn = $("#btn-en");
+
+    const msgBox = $("#msg-box");
+
+    /***** メッセージ表示 *****/
+    function showMessage(text, type = "error"){
+      if(!msgBox) return;
+      if(!text){
+        msgBox.textContent = "";
+        msgBox.className = "message-box";
+        msgBox.style.display = "none";
+        return;
+      }
+      msgBox.textContent = text;
+      msgBox.className = "message-box " + type;
+      // display はクラスで制御
+    }
 
     /***** 利用規約チェック制御 *****/
     function updateMagicDisabled(){
@@ -435,13 +479,25 @@
       const email = $("#pw-email").value.trim();
       const password = $("#pw-password").value;
 
-      if(!email) return alert(t.needEmail);
-      if(!validateEmail(email)) return alert(t.invalidEmail);
-      if(!password) return alert(t.needPassword);
+      // 前回メッセージをクリア
+      showMessage("");
+
+      if(!email){
+        showMessage(t.needEmail, "error");
+        return;
+      }
+      if(!validateEmail(email)){
+        showMessage(t.invalidEmail, "error");
+        return;
+      }
+      if(!password){
+        showMessage(t.needPassword, "error");
+        return;
+      }
 
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if(error){
-        alert(t.pwLoginFailed + "\n\n" + t.errorPrefix + error.message);
+        showMessage(t.pwLoginFailed + " " + t.errorPrefix + error.message, "error");
         return;
       }
 
@@ -454,9 +510,21 @@
       const lang = localStorage.getItem(langKey) || "ja";
       const email = $("#magic-email").value.trim();
 
-      if(!email) return alert(t.needEmail);
-      if(!validateEmail(email)) return alert(t.invalidEmail);
-      if(!agreeCheckbox.checked) return alert(t.needAgree);
+      // 前回メッセージをクリア
+      showMessage("");
+
+      if(!email){
+        showMessage(t.needEmail, "error");
+        return;
+      }
+      if(!validateEmail(email)){
+        showMessage(t.invalidEmail, "error");
+        return;
+      }
+      if(!agreeCheckbox.checked){
+        showMessage(t.needAgree, "error");
+        return;
+      }
 
       const { error } = await sb.auth.signInWithOtp({
         email,
@@ -466,8 +534,11 @@
         }
       });
 
-      if(error) alert(t.errorPrefix + error.message);
-      else alert(t.sent);
+      if(error){
+        showMessage(t.errorPrefix + error.message, "error");
+      } else {
+        showMessage(t.sent, "success");
+      }
     };
   </script>
 
