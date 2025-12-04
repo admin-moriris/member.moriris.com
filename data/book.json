@@ -19,4 +19,14 @@
     "tier": "standard",
     "visible": true
   }
+  {
+    "ep": 3,
+    "id": "ep2",
+    "title_ja": "Moriris Picture Book – Episode 3",
+    "title_en": "Moriris Picture Book – Episode 3",
+    "base_path": "/assets/book-ep2",
+    "pages": 14,
+    "tier": "standard",
+    "visible": true
+  }
 ]
