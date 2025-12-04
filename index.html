@@ -234,7 +234,7 @@
       line-height:1.5;
       border-radius:10px;
       padding:8px 10px;
-      display:none;
+      display:none;         /* 初期状態は非表示 */
     }
     .message-box.error{
       display:block;
@@ -340,9 +340,9 @@
       SUPABASE_ANON_KEY,
       {
         auth: {
-          persistSession: true,        // セッションを localStorage に保存
-          autoRefreshToken: true,      // トークン自動更新
-          detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
         },
       }
     );
@@ -404,17 +404,16 @@
     const msgPw = $("#msg-pw");
     const msgMagic = $("#msg-magic");
 
-    /***** メッセージ表示 *****/
+    /***** メッセージ表示（display は CSS クラスに任せる） *****/
     function showPwMessage(text, type="error"){
       if(!msgPw) return;
       if(!text){
         msgPw.textContent = "";
-        msgPw.className = "message-box";
-        msgPw.style.display = "none";
+        msgPw.className = "message-box";   // display:none（初期）に戻る
         return;
       }
       msgPw.textContent = text;
-      msgPw.className = "message-box " + type;
+      msgPw.className = "message-box " + type; // error / success で display:block
     }
 
     function showMagicMessage(text, type="error"){
@@ -422,7 +421,6 @@
       if(!text){
         msgMagic.textContent = "";
         msgMagic.className = "message-box";
-        msgMagic.style.display = "none";
         return;
       }
       msgMagic.textContent = text;
@@ -492,7 +490,7 @@
 
       // 前回メッセージをクリア
       showPwMessage("");
-      showMagicMessage("");  // 別フォームのメッセージも一応クリア
+      showMagicMessage("");
 
       if(!email){
         showPwMessage(t.needEmail, "error");
@@ -524,7 +522,7 @@
 
       // 前回メッセージをクリア
       showMagicMessage("");
-      showPwMessage("");  // 片方のフォームのメッセージもクリア
+      showPwMessage("");
 
       if(!email){
         showMagicMessage(t.needEmail, "error");
