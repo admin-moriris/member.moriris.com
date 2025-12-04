@@ -227,14 +227,14 @@
 
     a{ color:#0d6b45; }
 
-    /* メッセージ表示エリア（共通スタイル） */
+    /* メッセージ表示エリア（カード上部に1つ） */
     .message-box{
-      margin:0 0 10px;
+      margin:0 0 16px;
       font-size:14px;
       line-height:1.5;
       border-radius:10px;
       padding:8px 10px;
-      display:none;         /* 初期状態は非表示 */
+      display:none;         /* 初期は非表示 */
     }
     .message-box.error{
       display:block;
@@ -271,6 +271,9 @@
     <!-- カード本体 -->
     <div class="card">
 
+      <!-- 共通メッセージ（上部に固定） -->
+      <div id="msg" class="message-box" aria-live="polite"></div>
+
       <!-- 1. パスワードログイン -->
       <section class="form-block" aria-label="password login">
         <h2 class="section-title" id="t_pw_title">パスワードでログイン</h2>
@@ -289,8 +292,6 @@
         <div class="row">
           <button id="btn-login-pw" class="primary">ログイン</button>
         </div>
-        <!-- パスワードログイン用メッセージ -->
-        <div id="msg-pw" class="message-box" aria-live="polite"></div>
       </section>
 
       <hr />
@@ -318,8 +319,6 @@
           <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
           <button id="btn-magic" class="primary" disabled>メールを送る</button>
         </div>
-        <!-- メール送信用メッセージ -->
-        <div id="msg-magic" class="message-box" aria-live="polite"></div>
       </section>
     </div>
 
@@ -401,30 +400,18 @@
     const btnJa = $("#btn-ja");
     const btnEn = $("#btn-en");
 
-    const msgPw = $("#msg-pw");
-    const msgMagic = $("#msg-magic");
+    const msgBox = $("#msg");
 
-    /***** メッセージ表示（display は CSS クラスに任せる） *****/
-    function showPwMessage(text, type="error"){
-      if(!msgPw) return;
+    /***** メッセージ表示（1箇所だけ） *****/
+    function showMessage(text, type = "error"){
+      if(!msgBox) return;
       if(!text){
-        msgPw.textContent = "";
-        msgPw.className = "message-box";   // display:none（初期）に戻る
+        msgBox.textContent = "";
+        msgBox.className = "message-box";   // display:none の状態
         return;
       }
-      msgPw.textContent = text;
-      msgPw.className = "message-box " + type; // error / success で display:block
-    }
-
-    function showMagicMessage(text, type="error"){
-      if(!msgMagic) return;
-      if(!text){
-        msgMagic.textContent = "";
-        msgMagic.className = "message-box";
-        return;
-      }
-      msgMagic.textContent = text;
-      msgMagic.className = "message-box " + type;
+      msgBox.textContent = text;
+      msgBox.className = "message-box " + type;  // error / success で display:block
     }
 
     /***** 利用規約チェック制御 *****/
@@ -489,28 +476,28 @@
       const password = $("#pw-password").value;
 
       // 前回メッセージをクリア
-      showPwMessage("");
-      showMagicMessage("");
+      showMessage("");
 
       if(!email){
-        showPwMessage(t.needEmail, "error");
+        showMessage(t.needEmail, "error");
         return;
       }
       if(!validateEmail(email)){
-        showPwMessage(t.invalidEmail, "error");
+        showMessage(t.invalidEmail, "error");
         return;
       }
       if(!password){
-        showPwMessage(t.needPassword, "error");
+        showMessage(t.needPassword, "error");
         return;
       }
 
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if(error){
-        showPwMessage(t.pwLoginFailed + " " + t.errorPrefix + error.message, "error");
+        showMessage(t.pwLoginFailed + " " + t.errorPrefix + error.message, "error");
         return;
       }
 
+      // ログイン成功時は画面遷移（ここは元の動作と同じ）
       window.location.href = `/members.html?lang=${lang}`;
     };
 
@@ -521,19 +508,18 @@
       const email = $("#magic-email").value.trim();
 
       // 前回メッセージをクリア
-      showMagicMessage("");
-      showPwMessage("");
+      showMessage("");
 
       if(!email){
-        showMagicMessage(t.needEmail, "error");
+        showMessage(t.needEmail, "error");
         return;
       }
       if(!validateEmail(email)){
-        showMagicMessage(t.invalidEmail, "error");
+        showMessage(t.invalidEmail, "error");
         return;
       }
       if(!agreeCheckbox.checked){
-        showMagicMessage(t.needAgree, "error");
+        showMessage(t.needAgree, "error");
         return;
       }
 
@@ -546,9 +532,9 @@
       });
 
       if(error){
-        showMagicMessage(t.errorPrefix + error.message, "error");
+        showMessage(t.errorPrefix + error.message, "error");
       } else {
-        showMagicMessage(t.sent, "success");
+        showMessage(t.sent, "success");
       }
     };
   </script>
