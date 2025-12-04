@@ -198,6 +198,7 @@
       display:flex;
       align-items:center;
     }
+    /* 念のため、チェックボックスの余計なズレを消す */
     .agree-label input[type="checkbox"]{
       margin:0 6px 0 0;
     }
@@ -215,7 +216,6 @@
       line-height:1.6;
       text-align:center;
     }
-
     .show-pw-row{
       display:flex;
       align-items:center;
@@ -224,30 +224,7 @@
       color:#555;
       margin-top:-6px;
     }
-
     a{ color:#0d6b45; }
-
-    /* メッセージ表示エリア（カード上部に1つ） */
-    .message-box{
-      margin:0 0 16px;
-      font-size:14px;
-      line-height:1.5;
-      border-radius:10px;
-      padding:8px 10px;
-      display:none;         /* 初期は非表示 */
-    }
-    .message-box.error{
-      display:block;
-      background:#ffecec;
-      border:1px solid #f5b5b5;
-      color:#8a1f1f;
-    }
-    .message-box.success{
-      display:block;
-      background:#e7f7ee;
-      border:1px solid #9fd8b8;
-      color:#0b5130;
-    }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -270,9 +247,6 @@
 
     <!-- カード本体 -->
     <div class="card">
-
-      <!-- 共通メッセージ（上部に固定） -->
-      <div id="msg" class="message-box" aria-live="polite"></div>
 
       <!-- 1. パスワードログイン -->
       <section class="form-block" aria-label="password login">
@@ -335,16 +309,16 @@
       "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
 
     const sb = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY,
-      {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true,
-          detectSessionInUrl: true,
-        },
-      }
-    );
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    {
+      auth: {
+        persistSession: true,        // セッションを localStorage に保存
+        autoRefreshToken: true,      // トークン自動更新
+        detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
+      },
+    }
+  );
 
     /***** 多言語テキスト *****/
     const I18N = {
@@ -399,20 +373,6 @@
 
     const btnJa = $("#btn-ja");
     const btnEn = $("#btn-en");
-
-    const msgBox = $("#msg");
-
-    /***** メッセージ表示（1箇所だけ） *****/
-    function showMessage(text, type = "error"){
-      if(!msgBox) return;
-      if(!text){
-        msgBox.textContent = "";
-        msgBox.className = "message-box";   // display:none の状態
-        return;
-      }
-      msgBox.textContent = text;
-      msgBox.className = "message-box " + type;  // error / success で display:block
-    }
 
     /***** 利用規約チェック制御 *****/
     function updateMagicDisabled(){
@@ -475,29 +435,16 @@
       const email = $("#pw-email").value.trim();
       const password = $("#pw-password").value;
 
-      // 前回メッセージをクリア
-      showMessage("");
-
-      if(!email){
-        showMessage(t.needEmail, "error");
-        return;
-      }
-      if(!validateEmail(email)){
-        showMessage(t.invalidEmail, "error");
-        return;
-      }
-      if(!password){
-        showMessage(t.needPassword, "error");
-        return;
-      }
+      if(!email) return alert(t.needEmail);
+      if(!validateEmail(email)) return alert(t.invalidEmail);
+      if(!password) return alert(t.needPassword);
 
       const { error } = await sb.auth.signInWithPassword({ email, password });
       if(error){
-        showMessage(t.pwLoginFailed + " " + t.errorPrefix + error.message, "error");
+        alert(t.pwLoginFailed + "\n\n" + t.errorPrefix + error.message);
         return;
       }
 
-      // ログイン成功時は画面遷移（ここは元の動作と同じ）
       window.location.href = `/members.html?lang=${lang}`;
     };
 
@@ -507,21 +454,9 @@
       const lang = localStorage.getItem(langKey) || "ja";
       const email = $("#magic-email").value.trim();
 
-      // 前回メッセージをクリア
-      showMessage("");
-
-      if(!email){
-        showMessage(t.needEmail, "error");
-        return;
-      }
-      if(!validateEmail(email)){
-        showMessage(t.invalidEmail, "error");
-        return;
-      }
-      if(!agreeCheckbox.checked){
-        showMessage(t.needAgree, "error");
-        return;
-      }
+      if(!email) return alert(t.needEmail);
+      if(!validateEmail(email)) return alert(t.invalidEmail);
+      if(!agreeCheckbox.checked) return alert(t.needAgree);
 
       const { error } = await sb.auth.signInWithOtp({
         email,
@@ -531,11 +466,8 @@
         }
       });
 
-      if(error){
-        showMessage(t.errorPrefix + error.message, "error");
-      } else {
-        showMessage(t.sent, "success");
-      }
+      if(error) alert(t.errorPrefix + error.message);
+      else alert(t.sent);
     };
   </script>
 
