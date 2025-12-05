@@ -678,89 +678,8 @@
           </button>
         </div>
 
-        <div class="book-list hidden" id="bookList">
-          <!-- Episode 1 -->
-          <div class="book-entry" data-ep="1">
-            <div class="book-item">
-              <div class="book-title" data-i18n="book_ep1_title">
-                Moriris Picture Book – Episode 1
-              </div>
-
-              <div class="book-viewer" id="bookViewerEp1">
-                <div class="book-viewer-inner">
-                  <img
-                    id="bookEp1Image"
-                    src="/assets/book-ep1/1.png"
-                    alt="Moriris Picture Book Episode 1 page 1"
-                  />
-                </div>
-                <div class="book-viewer-nav">
-                  <div class="book-viewer-nav-left">
-                    <button type="button"
-                            class="book-viewer-btn"
-                            data-book="ep1"
-                            data-dir="prev">←</button>
-                    <span class="book-viewer-page" id="bookEp1PageIndicator">1 / 15</span>
-                  </div>
-                  <div class="book-viewer-nav-right">
-                    <button type="button"
-                            class="book-viewer-btn"
-                            data-book="ep1"
-                            data-dir="next">→</button>
-                    <button type="button"
-                            class="book-full-btn"
-                            data-viewer="bookViewerEp1"
-                            title="Full Screen"
-                            aria-label="Full Screen">
-                      <img src="/assets/expansion_icon.png" alt="" class="book-full-icon">
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Episode 2 -->
-          <div class="book-entry" data-ep="2">
-            <div class="book-item">
-              <div class="book-title" data-i18n="book_ep2_title">
-                Moriris Picture Book – Episode 2
-              </div>
-
-              <div class="book-viewer" id="bookViewerEp2">
-                <div class="book-viewer-inner">
-                  <img
-                    id="bookEp2Image"
-                    src="/assets/book-ep2/1.png"
-                    alt="Moriris Picture Book Episode 2 page 1"
-                  />
-                </div>
-                <div class="book-viewer-nav">
-                  <div class="book-viewer-nav-left">
-                    <button type="button"
-                            class="book-viewer-btn"
-                            data-book="ep2"
-                            data-dir="prev">←</button>
-                    <span class="book-viewer-page" id="bookEp2PageIndicator">1 / 14</span>
-                  </div>
-                  <div class="book-viewer-nav-right">
-                    <button type="button"
-                            class="book-viewer-btn"
-                            data-book="ep2"
-                            data-dir="next">→</button>
-                    <button type="button"
-                            class="book-full-btn"
-                            data-viewer="bookViewerEp2"
-                            title="Full Screen"
-                            aria-label="Full Screen">
-                      <img src="/assets/expansion_icon.png" alt="" class="book-full-icon">
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- JSON から生成するので中身は空 -->
+        <div class="book-list hidden" id="bookList"></div>
 
         <!-- Kindle 説明文＋リンク（共通・一箇所だけ） -->
         <div id="bookCommonMeta" class="book-meta hidden">
@@ -1055,8 +974,6 @@
       book_title:"デジタル絵本",
       book_intro_free:"デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。",
       book_intro_std:"モリリスの世界を絵本でもお楽しみいただけます。",
-      book_ep1_title:"Moriris Picture Book – Episode 1",
-      book_ep2_title:"Moriris Picture Book – Episode 2",
       book_common_desc:"森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。",
       book_kindle_link:"Kindle ストアで見る",
       book_sort_label:"表示順：",
@@ -1150,8 +1067,6 @@
       book_title:"Digital Picture Books",
       book_intro_free:"Digital picture books are available with the Standard plan.",
       book_intro_std:"Enjoy the world of Moriris as picture books.",
-      book_ep1_title:"Moriris Picture Book – Episode 1",
-      book_ep2_title:"Moriris Picture Book – Episode 2",
       book_common_desc:"A small adventure that begins in the forest. Also available on Kindle.",
       book_kindle_link:"View on Kindle Store",
       book_sort_label:"Order:",
@@ -1208,29 +1123,13 @@
 
   let currentUser = null;
 
-  const BOOK_EP1_IMAGES = [
-    "/assets/book-ep1/1.png","/assets/book-ep1/2.png","/assets/book-ep1/3.png",
-    "/assets/book-ep1/4.png","/assets/book-ep1/5.png","/assets/book-ep1/6.png",
-    "/assets/book-ep1/7.png","/assets/book-ep1/8.png","/assets/book-ep1/9.png",
-    "/assets/book-ep1/10.png","/assets/book-ep1/11.png","/assets/book-ep1/12.png",
-    "/assets/book-ep1/13.png","/assets/book-ep1/14.png","/assets/book-ep1/15.png"
-  ];
-  const BOOK_EP2_IMAGES = [
-    "/assets/book-ep2/1.png","/assets/book-ep2/2.png","/assets/book-ep2/3.png",
-    "/assets/book-ep2/4.png","/assets/book-ep2/5.png","/assets/book-ep2/6.png",
-    "/assets/book-ep2/7.png","/assets/book-ep2/8.png","/assets/book-ep2/9.png",
-    "/assets/book-ep2/10.png","/assets/book-ep2/11.png","/assets/book-ep2/12.png",
-    "/assets/book-ep2/13.png","/assets/book-ep2/14.png"
-  ];
-
-  const bookState = {
-    ep1Index:0,
-    ep2Index:0
-  };
-
   const VIDEO_JSON_URL = "/data/video.json";
   let VIDEO_EPISODES = [];
   let videoSortMode = "episode";
+
+  const BOOK_JSON_URL = "/data/book.json";
+  let BOOK_EPISODES = [];
+  const bookState = {}; // { [bookId]: currentIndex }
 
   async function loadVideoEpisodes(){
     try{
@@ -1247,30 +1146,130 @@
     }
   }
 
-  function updateBookViewer(bookKey){
-    let images, idx, imgId, indicatorId;
-
-    if (bookKey === "ep1"){
-      images = BOOK_EP1_IMAGES;
-      idx = bookState.ep1Index;
-      imgId = "bookEp1Image";
-      indicatorId = "bookEp1PageIndicator";
-    }else if (bookKey === "ep2"){
-      images = BOOK_EP2_IMAGES;
-      idx = bookState.ep2Index;
-      imgId = "bookEp2Image";
-      indicatorId = "bookEp2PageIndicator";
-    }else{
-      return;
+  async function loadBookEpisodes(){
+    try{
+      const res = await fetch(BOOK_JSON_URL);
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      BOOK_EPISODES = Array.isArray(data)
+        ? data.filter(ep => ep.visible !== false)
+        : [];
+      BOOK_EPISODES.forEach(ep => {
+        if (typeof bookState[ep.id] !== "number"){
+          bookState[ep.id] = 0;
+        }
+      });
+      renderBookList();
+      updateBookTitlesForLang();
+    }catch(e){
+      console.error("book json load error", e);
+      BOOK_EPISODES = [];
     }
-    if (!images || !images.length) return;
+  }
 
-    const img = document.getElementById(imgId);
-    const indicator = document.getElementById(indicatorId);
+  function getBookEpisodeById(id){
+    return BOOK_EPISODES.find(ep => ep.id === id);
+  }
+
+  function renderBookList(){
+    const list = $("#bookList");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    for (const ep of BOOK_EPISODES){
+      const viewerId = `bookViewer_${ep.id}`;
+      const imgId    = `bookImage_${ep.id}`;
+      const pageId   = `bookPage_${ep.id}`;
+      const epNum    = ep.ep || 0;
+      const pages    = ep.pages || 0;
+
+      const entry = document.createElement("div");
+      entry.className = "book-entry";
+      entry.dataset.ep     = String(epNum);
+      entry.dataset.bookId = ep.id;
+
+      const altTitle = ep.title_en || ep.title_ja || ep.id;
+
+      entry.innerHTML = `
+        <div class="book-item">
+          <div class="book-title"></div>
+          <div class="book-viewer" id="${viewerId}">
+            <div class="book-viewer-inner">
+              <img
+                id="${imgId}"
+                src="${ep.base_path}/1.png"
+                alt="${altTitle} page 1"
+              />
+            </div>
+            <div class="book-viewer-nav">
+              <div class="book-viewer-nav-left">
+                <button type="button"
+                        class="book-viewer-btn"
+                        data-book="${ep.id}"
+                        data-dir="prev">←</button>
+              </div>
+              <div class="book-viewer-page" id="${pageId}">1 / ${pages}</div>
+              <div class="book-viewer-nav-right">
+                <button type="button"
+                        class="book-viewer-btn"
+                        data-book="${ep.id}"
+                        data-dir="next">→</button>
+                <button type="button"
+                        class="book-full-btn"
+                        data-viewer="${viewerId}"
+                        title="Full Screen"
+                        aria-label="Full Screen">
+                  <img src="/assets/expansion_icon.png" alt="" class="book-full-icon">
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      list.appendChild(entry);
+      updateBookViewer(ep.id);
+    }
+  }
+
+  function updateBookViewer(bookId){
+    const ep = getBookEpisodeById(bookId);
+    if (!ep) return;
+
+    const total = ep.pages || 0;
+    if (!total) return;
+
+    let idx = bookState[bookId];
+    if (typeof idx !== "number" || idx < 0 || idx >= total){
+      idx = 0;
+      bookState[bookId] = 0;
+    }
+
+    const img = document.getElementById(`bookImage_${bookId}`);
+    const indicator = document.getElementById(`bookPage_${bookId}`);
     if (!img || !indicator) return;
 
-    img.src = images[idx];
-    indicator.textContent = (idx + 1) + " / " + images.length;
+    const pageNum = idx + 1;
+    img.src = `${ep.base_path}/${pageNum}.png`;
+    indicator.textContent = `${pageNum} / ${total}`;
+  }
+
+  function updateBookTitlesForLang(){
+    const lang = currentLang;
+    for (const ep of BOOK_EPISODES){
+      const title =
+        lang === "ja"
+          ? (ep.title_ja || ep.title_en || ep.id)
+          : (ep.title_en || ep.title_ja || ep.id);
+
+      const titleEl = document.querySelector(
+        `.book-entry[data-book-id="${ep.id}"] .book-title`
+      );
+      if (titleEl){
+        titleEl.textContent = title;
+      }
+    }
   }
 
   function applyLang(lang){
@@ -1348,6 +1347,9 @@
 
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
+
+    // 絵本タイトル（JSON）の言語切り替え
+    updateBookTitlesForLang();
   }
 
   $("#btn-ja").onclick = ()=>applyLang("ja");
@@ -1366,28 +1368,23 @@
   document.addEventListener("click", (e)=>{
     const viewerBtn = e.target.closest(".book-viewer-btn");
     if (viewerBtn){
-      const dir = viewerBtn.dataset.dir;
-      const bookKey = viewerBtn.dataset.book;
-      if (!dir || !bookKey) return;
+      const dir    = viewerBtn.dataset.dir;
+      const bookId = viewerBtn.dataset.book;
+      if (!dir || !bookId) return;
 
-      if (bookKey === "ep1"){
-        if (dir === "prev"){
-          bookState.ep1Index =
-            (bookState.ep1Index - 1 + BOOK_EP1_IMAGES.length) % BOOK_EP1_IMAGES.length;
-        }else{
-          bookState.ep1Index =
-            (bookState.ep1Index + 1) % BOOK_EP1_IMAGES.length;
-        }
-      }else if (bookKey === "ep2"){
-        if (dir === "prev"){
-          bookState.ep2Index =
-            (bookState.ep2Index - 1 + BOOK_EP2_IMAGES.length) % BOOK_EP2_IMAGES.length;
-        }else{
-          bookState.ep2Index =
-            (bookState.ep2Index + 1) % BOOK_EP2_IMAGES.length;
-        }
+      const ep = getBookEpisodeById(bookId);
+      if (!ep || !ep.pages) return;
+
+      const total   = ep.pages;
+      const current = bookState[bookId] ?? 0;
+
+      if (dir === "prev"){
+        bookState[bookId] = (current - 1 + total) % total;
+      }else{
+        bookState[bookId] = (current + 1) % total;
       }
-      updateBookViewer(bookKey);
+
+      updateBookViewer(bookId);
       return;
     }
 
@@ -1621,7 +1618,6 @@
     }
   }
 
-  // 画面上の確認ボックスから呼ばれる、実際の削除処理のみを行う関数
   async function handleDeleteAccount() {
     if (!currentUser) return;
   
@@ -1734,11 +1730,10 @@
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
 
-    updateBookViewer("ep1");
-    updateBookViewer("ep2");
     updateFullscreenButtons();
 
     await loadVideoEpisodes();
+    await loadBookEpisodes();
 
     state.statusCode = "checking";
     applyLang(currentLang);
@@ -1852,12 +1847,11 @@
     state.hasPassword = !!prof.has_password;
     const hasPassword = state.hasPassword;
     
-    const pwSection       = document.getElementById("pwSection");        // 初回設定
-    const pwChangeSection = document.getElementById("pwChangeSection");  // 変更
+    const pwSection       = document.getElementById("pwSection");
+    const pwChangeSection = document.getElementById("pwChangeSection");
     const pwHomeNotice    = document.getElementById("pwHomeNotice");
     const pwBanner        = document.getElementById("pwBanner");
     
-    // 初回設定欄／変更欄の出し分け
     if (pwSection){
       if (hasPassword){
         pwSection.classList.add("hidden");
@@ -1880,7 +1874,6 @@
       }
     }
     
-    // パスワード未設定ならHOMEのバナー表示
     if (!state.hasPassword) {
       if (pwBanner) {
         pwBanner.classList.remove("hidden");
@@ -1905,7 +1898,6 @@
       }
     }
     
-    // パスワード変更フォーム（has_password=TRUE 用）
     const pwChangeForm = document.getElementById("pwChangeForm");
     const pwChangeMsg  = document.getElementById("pwChangeMsg");
 
@@ -1960,7 +1952,6 @@
         if (btn) btn.disabled = true;
 
         try{
-          // Supabase Auth のパスワード更新
           const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
           if (updateErr){
             console.error("updateUser(set password) error:", updateErr);
@@ -1971,7 +1962,6 @@
             return;
           }
 
-          // profiles.has_password を true に更新（失敗しても致命的ではない）
           try{
             await sb
               .from("profiles")
@@ -1983,7 +1973,6 @@
 
           state.hasPassword = true;
 
-          // UI を「設定済み」状態へ切り替え
           if (pwSection)       pwSection.classList.add("hidden");
           if (pwChangeSection) pwChangeSection.classList.remove("hidden");
           if (pwHomeNotice)    pwHomeNotice.classList.add("hidden");
@@ -2089,7 +2078,6 @@
       };
     }
 
-    // ★ 初回パスワード設定：Show Password
     const pwShowSetup = document.getElementById("pwShowSetup");
     if (pwShowSetup){
       pwShowSetup.addEventListener("change", ()=>{
@@ -2101,7 +2089,6 @@
       });
     }
     
-    // ★ パスワード変更：Show Password
     const pwShowChange = document.getElementById("pwShowChange");
     if (pwShowChange){
       pwShowChange.addEventListener("change", ()=>{
