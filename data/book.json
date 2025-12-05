@@ -27,6 +27,6 @@
     "base_path": "/assets/book-ep2",
     "pages": 14,
     "tier": "standard",
-    "visible": true
+    "visible": false
   }
 ]
