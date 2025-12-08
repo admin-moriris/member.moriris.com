@@ -62,7 +62,7 @@
       align-items:center;
       justify-content:space-between;
       margin-bottom:18px;
-      flex-wrap:wrap;       /* 画面幅が狭いときに折り返し */
+      flex-wrap:wrap;
       gap:12px;
     }
 
@@ -70,7 +70,7 @@
       display:flex;
       align-items:center;
       gap:20px;
-      flex-wrap:wrap;       /* ロゴと MEMBERSHIP を折り返し可能に */
+      flex-wrap:wrap;
     }
 
     .brand img{
@@ -148,7 +148,8 @@
       margin-bottom:16px;
     }
 
-    input,button{
+    /* ★ select も同じスタイルを適用 */
+    input,button,select{
       padding:12px 14px;
       font-size:16px;
       border-radius:12px;
@@ -157,6 +158,12 @@
 
     input{
       width:100%;
+    }
+
+    /* ★ signup-lang 用 */
+    select{
+      width:100%;
+      background-color:#ffffff;
     }
 
     input[type="checkbox"]{
@@ -258,7 +265,7 @@
         letter-spacing:0.18em;
       }
       .lang{
-        margin-left:auto;  /* 右寄せ */
+        margin-left:auto;
       }
     }
   </style>
@@ -301,7 +308,6 @@
         </div>
         <div class="row">
           <button id="btn-login-pw" class="primary">ログイン</button>
-          <!-- パスワードログイン用メッセージ表示場所 -->
           <p id="pw-message" class="form-message" aria-live="polite"></p>
         </div>
       </section>
@@ -329,8 +335,12 @@
 
         <div class="row">
           <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
+          <!-- ★ メール配信用の希望言語を選択するプルダウン -->
+          <select id="signup-lang" aria-label="Preferred language for emails">
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+          </select>
           <button id="btn-magic" class="primary" disabled>メールを送る</button>
-          <!-- 新規登録 / パスワード再設定用メッセージ表示場所 -->
           <p id="magic-message" class="form-message" aria-live="polite"></p>
         </div>
       </section>
@@ -353,9 +363,9 @@
       SUPABASE_ANON_KEY,
       {
         auth: {
-          persistSession: true,        // セッションを localStorage に保存
-          autoRefreshToken: true,      // トークン自動更新
-          detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
         },
       }
     );
@@ -415,6 +425,7 @@
 
     const btnJa = $("#btn-ja");
     const btnEn = $("#btn-en");
+    const signupLangSelect = $("#signup-lang");  // ★ 追加
 
     /***** メッセージ表示ヘルパ *****/
     function showPwMessage(text, type = "error"){
@@ -461,6 +472,11 @@
       btnJa.classList.toggle("active", lang === "ja");
       btnEn.classList.toggle("active", lang === "en");
 
+      // ★ UI 言語と同じ値をデフォルトとしてプルダウンに反映
+      if(signupLangSelect){
+        signupLangSelect.value = (lang === "ja" ? "ja" : "en");
+      }
+
       updateMagicDisabled();
     }
 
@@ -501,7 +517,7 @@
       const email = $("#pw-email").value.trim();
       const password = $("#pw-password").value;
 
-      showPwMessage(""); // いったんクリア
+      showPwMessage("");
 
       if(!email){
         showPwMessage(t.needEmail, "error");
@@ -537,8 +553,10 @@
       const t = currentText();
       const lang = localStorage.getItem(langKey) || "ja";
       const email = $("#magic-email").value.trim();
+      const preferredLang =
+        (signupLangSelect && signupLangSelect.value) ? signupLangSelect.value : lang;  // ★ 追加
 
-      showMagicMessage(""); // いったんクリア
+      showMagicMessage("");
 
       if(!email){
         showMagicMessage(t.needEmail, "error");
@@ -559,7 +577,11 @@
         email,
         options:{
           shouldCreateUser:true,
-          emailRedirectTo:`https://member.moriris.com/members.html?lang=${lang}`
+          emailRedirectTo:`https://member.moriris.com/members.html?lang=${lang}`,
+          // ★ user_metadata に希望言語を保存（auth.users.raw_user_meta_data）
+          data:{
+            preferred_lang: preferredLang
+          }
         }
       });
 
