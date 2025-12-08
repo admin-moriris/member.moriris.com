@@ -1533,8 +1533,8 @@
         body:JSON.stringify({
           user_id:userId,
           price_id:PRICE_ID_STANDARD,
-          success_url:SITE_TOP_URL,
-          cancel_url:SITE_TOP_URL
+          success_url: window.location.href,
+          cancel_url: window.location.href
         })
       }
     );
