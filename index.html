@@ -531,6 +531,13 @@
       }
 
       showPwMessage("", "success");
+
+      gtag('event', 'login_success', {
+        method: 'password',
+        funnel_step: 'login_complete',
+        lang: lang
+      });
+      
       window.location.href = `/members.html?lang=${lang}`;
     };
 
