@@ -1762,6 +1762,22 @@
     currentUser = user;
     $("#userEmail").textContent = user.email || "";
 
+    gtag('event', 'login_success', {
+      method: 'session_restored',
+      funnel_step: 'login_complete',
+      lang: currentLang
+    });
+
+    const loginEventKey = "ga_login_success_sent";
+    if (!sessionStorage.getItem(loginEventKey)) {
+      gtag('event', 'login_success', {
+        method: 'session_restored',
+        funnel_step: 'login_complete',
+        lang: currentLang
+      });
+      sessionStorage.setItem(loginEventKey, "1");
+    }
+
     const currentEmailEl = $("#currentEmailText");
     if (currentEmailEl){
       currentEmailEl.textContent = user.email || "";
