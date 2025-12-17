@@ -920,6 +920,11 @@
 
   const $ = (s)=>document.querySelector(s);
   const debugOn = new URL(location.href).searchParams.get("debug")==="1";
+
+  if (debugOn) {
+    gtag('set', 'debug_mode', true);
+  }
+  
   const log = (...a)=>{
     if(!debugOn) return;
     const el=$("#dbg");
