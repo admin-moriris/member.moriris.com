@@ -9,7 +9,9 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-HWRX6Q9K3E');
+    gtag('config', 'G-HWRX6Q9K3E', {
+      linker: { domains: ['official.moriris.com', 'member.moriris.com'] }
+    });
   </script>
   
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
@@ -924,6 +926,11 @@
     el.classList.remove("hidden");
     el.textContent += a.map(x=>typeof x==="string"?x:JSON.stringify(x,null,2)).join(" ") + "\n";
   };
+
+  function gaEvent(name, params = {}) {
+    if (typeof window.gtag !== "function") return;
+    window.gtag("event", name, params);
+  }
 
   const I18N = {
     ja:{
@@ -2139,7 +2146,17 @@
       [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
         if (!b) return;
         b.classList.remove("hidden");
-        b.onclick = ()=>createCheckout(user.id);
+        b.onclick = ()=>{
+          gaEvent("membership_cta_click", {
+            cta_name: "standard_start",
+            plan: "standard",
+            page: "members",
+            lang: currentLang,
+            destination: "stripe_checkout",
+            outbound: 1
+          });
+          createCheckout(user.id);
+        };
       });
       if (btnCancel){
         btnCancel.classList.add("hidden");
@@ -2161,6 +2178,17 @@
       renderVideosForPlan("free", videoSortMode);
     }else{
       state.plan = "standard";
+      
+      const key = `ga_standard_started_${user.id}`;
+      if (!localStorage.getItem(key)) {
+        gaEvent("standard_started", {
+          plan: "standard",
+          page: "members",
+          lang: currentLang
+        });
+        localStorage.setItem(key, "1");
+      }
+            
       state.statusCode = "loading";
       applyLang(currentLang);
     
