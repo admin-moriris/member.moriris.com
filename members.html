@@ -891,9 +891,6 @@
   </div>
 
 <script>
-  const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
-  const debugOn = isLocal && new URL(location.href).searchParams.get("debug")==="1";
-
   const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
   const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
@@ -915,7 +912,8 @@
   const PRICE_ID_STANDARD = "price_1SZ4pbJBnnPY5Sg2uplAWUVc";
 
   const $ = (s)=>document.querySelector(s);
-  const debugOn = new URL(location.href).searchParams.get("debug")==="1";
+  const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
+  const debugOn = isLocal && new URL(location.href).searchParams.get("debug")==="1";
 
   if (debugOn) {
     gtag('set', 'debug_mode', true);
