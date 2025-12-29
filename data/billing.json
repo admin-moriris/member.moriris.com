@@ -1,7 +1,7 @@
 {
   "stripe": {
     "standard": {
-      "price_id": "price_1SjkybQt8oBthclH5Q8IpvCi"
+      "payment_link_url": "https://buy.stripe.com/test_dRm6oJcg38ts4kN1UI1Fe05"
     }
   }
 }
