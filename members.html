@@ -305,6 +305,138 @@
       font-weight:600;
     }
 
+    .book-sort{
+      margin-top:6px;
+      margin-bottom:6px;
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .book-sort-btn{
+      border-radius:999px;
+      border:1px solid #ccc;
+      background:#fff;
+      padding:4px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .book-sort-btn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+
+    .book-list{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+      margin-top:10px;
+    }
+    .book-entry{
+      width:100%;
+    }
+    .book-item{
+      background:#f5ffe9;
+      border-radius:16px;
+      padding:12px 14px 14px;
+    }
+    .book-title{
+      font-weight:600;
+      margin-bottom:4px;
+    }
+
+    .book-viewer{
+      margin:12px 0 0;
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      background:#000;
+      width:100%;
+      max-width:none;
+    }
+    .book-viewer-inner img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+
+    .book-viewer-nav{
+      display:flex;
+      align-items:center;
+      padding:6px 12px;
+      font-size:12px;
+      background:rgba(0,0,0,.7);
+      color:#ffffff;
+      position:relative; 
+    }
+    .book-viewer-nav-left{
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .book-viewer-nav-right{
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .book-viewer-btn{
+      border:none;
+      background:transparent;
+      color:#ffffff;
+      font-size:18px;
+      cursor:pointer;
+      padding:4px 10px;
+    }
+
+    .book-viewer-btn:focus{
+      outline:2px solid rgba(255,255,255,.6);
+      outline-offset:2px;
+    }
+
+    .book-viewer-page{
+      font-size:12px;
+      position:absolute; 
+      left:50%;
+      transform:translateX(-50%);  
+    }
+
+    .book-meta{
+      margin-top:6px;
+      font-size:13px;
+    }
+
+    .book-full-btn{
+      border:none;
+      background:transparent;
+      cursor:pointer;
+      padding:4px 8px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .book-full-btn:focus{
+      outline:2px solid rgba(255,255,255,.6);
+      outline-offset:2px;
+    }
+    .book-full-icon{
+      width:20px;
+      height:20px;
+      display:block;
+    }
+
+    .book-viewer:fullscreen{
+      border-radius:0;
+    }
+    .book-viewer:fullscreen .book-viewer-inner img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
     a{color:#0d6b45;text-decoration:none;}
     a:hover{text-decoration:underline;}
 
@@ -429,6 +561,7 @@
       <nav class="tabs">
         <button class="tab-btn active" data-tab="home" data-i18n="tab_home">HOME</button>
         <button class="tab-btn" data-tab="animation" data-i18n="tab_animation">ANIMATION</button>
+        <button class="tab-btn" data-tab="book" data-i18n="tab_book">PICTUREBOOK</button>
         <button class="tab-btn" data-tab="account" data-i18n="tab_account">ACCOUNT</button>
       </nav>
     </div>
@@ -479,6 +612,9 @@
             <li data-i18n="home_how_1">
               ANIMATIONタブからメンバー限定アニメを視聴できます。
             </li>
+            <li data-i18n="home_how_2">
+              PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。
+            </li>
             <li data-i18n="home_how_3">
               プランの確認や変更は ACCOUNTタブからいつでも行うことができます。
             </li>
@@ -512,6 +648,47 @@
         </div>
 
         <div id="videos" class="video-grid"></div>
+      </div>
+    </section>
+
+    <!-- PICTUREBOOK -->
+    <section id="tab-book" class="tab-pane">
+      <div class="card">
+        <h2 data-i18n="book_title">デジタル絵本</h2>
+        <p class="muted" id="bookIntro">
+          デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。
+        </p>
+
+        <button id="btnSubscribeBook"
+                class="btn btn-primary hidden add-gap"
+                data-i18n="btn_subscribe">
+          Standardプランに登録する
+        </button>
+
+        <div class="book-sort hidden" id="bookSortRow">
+          <span data-i18n="book_sort_label">表示順：</span>
+          <button type="button" class="book-sort-btn active" data-sort="episode" data-i18n="book_sort_episode">
+            エピソード順
+          </button>
+          <button type="button" class="book-sort-btn" data-sort="new" data-i18n="book_sort_new">
+            新着順
+          </button>
+        </div>
+
+        <!-- JSON から生成するので中身は空 -->
+        <div class="book-list hidden" id="bookList"></div>
+
+        <!-- Kindle 説明文＋リンク（共通・一箇所だけ） -->
+        <div id="bookCommonMeta" class="book-meta hidden">
+          <p class="muted" data-i18n="book_common_desc">
+            森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。
+          </p>
+          <a href="https://www.amazon.co.jp/s?i=digital-text&rh=p_27%3AMoriris%2BStudio&s=relevancerank&text=Moriris+Studio&ref=dp_byline_sr_ebooks_1"
+             target="_blank" rel="noopener noreferrer"
+             data-i18n="book_kindle_link">
+            Kindle ストアで見る
+          </a>
+        </div>
       </div>
     </section>
 
@@ -759,6 +936,7 @@
       logout:"ログアウト",
       tab_home:"HOME",
       tab_animation:"ANIMATION",
+      tab_book:"PICTUREBOOK",
       tab_account:"ACCOUNT",
       status_not_logged:"未ログインか、ブラウザが変わったためログイン情報を確認できませんでした。もう一度ログインを行ってください。",
       not_logged_back_link:"ログイン画面に戻る",
@@ -767,6 +945,7 @@
       home_intro:"メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。",
       home_how_title:"メンバーエリアの楽しみ方",
       home_how_1:"ANIMATIONタブからメンバー限定アニメを視聴できます。",
+      home_how_2:"PICTUREBOOKタブからデジタル絵本や関連コンテンツを読むことができます。",
       home_how_3:"プランの確認や変更は ACCOUNTタブからいつでも行うことができます。",
       pw_home_notice_title:"パスワードの設定をお願いします",
       pw_home_notice_body:"初回登録ではメール認証のみでした。ACCOUNTタブの「パスワードの設定」から、今後ログインに使うパスワードを登録してください。",
@@ -776,6 +955,7 @@
       plan_free:"Free",
       plan_standard:"Standard",
       status_checking:"ログイン状態を確認しています…",
+      status_not_logged:"未ログインか、ブラウザが変わったためログイン情報を確認できませんでした。もう一度ログインを行ってください。",
       status_free:"ただいま有効なサブスクリプションがありません。",
       status_loading:"動画を読み込み中…",
       status_ready:"コンテンツをお楽しみください。",
@@ -796,6 +976,14 @@
       video_sort_label:"表示順：",
       video_sort_episode:"エピソード順",
       video_sort_new:"新着順",
+      book_title:"デジタル絵本",
+      book_intro_free:"デジタル絵本の閲覧は Standard プラン登録後にご利用いただけます。",
+      book_intro_std:"モリリスの世界を絵本でもお楽しみいただけます。",
+      book_common_desc:"森で始まる小さな冒険の物語。Kindle ストアでもお読みいただけます。",
+      book_kindle_link:"Kindle ストアで見る",
+      book_sort_label:"表示順：",
+      book_sort_episode:"エピソード順",
+      book_sort_new:"新着順",
       footer_note:"最新情報は各種SNSでお知らせします。",
       legal_note:
         '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a> / ' +
@@ -841,6 +1029,7 @@
       logout:"Logout",
       tab_home:"HOME",
       tab_animation:"ANIMATION",
+      tab_book:"PICTUREBOOK",
       tab_account:"ACCOUNT",
       status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
       not_logged_back_link:"Back to login page",
@@ -849,6 +1038,7 @@
       home_intro:"Enjoy members-only animations and digital picture books from this page.",
       home_how_title:"How to use this area",
       home_how_1:"Watch members-only animations from the ANIMATION tab.",
+      home_how_2:"Read digital picture books and extras from the PICTUREBOOK tab.",
       home_how_3:"You can check or change your plan anytime from the ACCOUNT tab.",
       pw_home_notice_title:"Please set your password",
       pw_home_notice_body:"You initially registered with email verification only. From the ACCOUNT tab (“Set password”), please register the password you will use for login.",
@@ -858,6 +1048,7 @@
       plan_free:"Free",
       plan_standard:"Standard",
       status_checking:"Checking your login status…",
+      status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
       status_free:"You don't have an active subscription yet.",
       status_loading:"Loading videos…",
       status_ready:"Enjoy the content!",
@@ -878,6 +1069,14 @@
       video_sort_label:"Order:",
       video_sort_episode:"By episode",
       video_sort_new:"Newest first",
+      book_title:"Digital Picture Books",
+      book_intro_free:"Digital picture books are available with the Standard plan.",
+      book_intro_std:"Enjoy the world of Moriris as picture books.",
+      book_common_desc:"A small adventure that begins in the forest. Also available on Kindle.",
+      book_kindle_link:"View on Kindle Store",
+      book_sort_label:"Order:",
+      book_sort_episode:"By episode",
+      book_sort_new:"Newest first",
       footer_note:"Follow Moriris on social media for the latest updates.",
       legal_note:
         '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> / ' +
@@ -933,6 +1132,10 @@
   let VIDEO_EPISODES = [];
   let videoSortMode = "episode";
 
+  const BOOK_JSON_URL = "/data/book.json";
+  let BOOK_EPISODES = [];
+  const bookState = {}; // { [bookId]: currentIndex }
+
   async function loadVideoEpisodes(){
     try{
       const res = await fetch(VIDEO_JSON_URL);
@@ -945,6 +1148,132 @@
     }catch(e){
       console.error("video json load error", e);
       VIDEO_EPISODES = [];
+    }
+  }
+
+  async function loadBookEpisodes(){
+    try{
+      const res = await fetch(BOOK_JSON_URL);
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      BOOK_EPISODES = Array.isArray(data)
+        ? data.filter(ep => ep.visible !== false)
+        : [];
+      BOOK_EPISODES.forEach(ep => {
+        if (typeof bookState[ep.id] !== "number"){
+          bookState[ep.id] = 0;
+        }
+      });
+      renderBookList();
+      updateBookTitlesForLang();
+    }catch(e){
+      console.error("book json load error", e);
+      BOOK_EPISODES = [];
+    }
+  }
+
+  function getBookEpisodeById(id){
+    return BOOK_EPISODES.find(ep => ep.id === id);
+  }
+
+  function renderBookList(){
+    const list = $("#bookList");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    for (const ep of BOOK_EPISODES){
+      const viewerId = `bookViewer_${ep.id}`;
+      const imgId    = `bookImage_${ep.id}`;
+      const pageId   = `bookPage_${ep.id}`;
+      const epNum    = ep.ep || 0;
+      const pages    = ep.pages || 0;
+
+      const entry = document.createElement("div");
+      entry.className = "book-entry";
+      entry.dataset.ep     = String(epNum);
+      entry.dataset.bookId = ep.id;
+
+      const altTitle = ep.title_en || ep.title_ja || ep.id;
+
+      entry.innerHTML = `
+        <div class="book-item">
+          <div class="book-title"></div>
+          <div class="book-viewer" id="${viewerId}">
+            <div class="book-viewer-inner">
+              <img
+                id="${imgId}"
+                src="${ep.base_path}/1.png"
+                alt="${altTitle} page 1"
+              />
+            </div>
+            <div class="book-viewer-nav">
+              <div class="book-viewer-nav-left">
+                <button type="button"
+                        class="book-viewer-btn"
+                        data-book="${ep.id}"
+                        data-dir="prev">←</button>
+              </div>
+              <div class="book-viewer-page" id="${pageId}">1 / ${pages}</div>
+              <div class="book-viewer-nav-right">
+                <button type="button"
+                        class="book-viewer-btn"
+                        data-book="${ep.id}"
+                        data-dir="next">→</button>
+                <button type="button"
+                        class="book-full-btn"
+                        data-viewer="${viewerId}"
+                        title="Full Screen"
+                        aria-label="Full Screen">
+                  <img src="/assets/expansion_icon.png" alt="" class="book-full-icon">
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      list.appendChild(entry);
+      updateBookViewer(ep.id);
+    }
+  }
+
+  function updateBookViewer(bookId){
+    const ep = getBookEpisodeById(bookId);
+    if (!ep) return;
+
+    const total = ep.pages || 0;
+    if (!total) return;
+
+    let idx = bookState[bookId];
+    if (typeof idx !== "number" || idx < 0 || idx >= total){
+      idx = 0;
+      bookState[bookId] = 0;
+    }
+
+    const img = document.getElementById(`bookImage_${bookId}`);
+    const indicator = document.getElementById(`bookPage_${bookId}`);
+    if (!img || !indicator) return;
+
+    const pageNum = idx + 1;
+    img.src = `${ep.base_path}/${pageNum}.png`;
+    indicator.textContent = `${pageNum} / ${total}`;
+  }
+
+  function updateBookTitlesForLang(){
+    const lang = currentLang;
+    for (const ep of BOOK_EPISODES){
+      const title =
+        lang === "ja"
+          ? (ep.title_ja || ep.title_en || ep.id)
+          : (ep.title_en || ep.title_ja || ep.id);
+
+      const titleEl = document.querySelector(
+        `.book-entry[data-book-id="${ep.id}"] .book-title`
+      );
+      if (titleEl){
+        titleEl.textContent = title;
+      }
     }
   }
 
@@ -997,8 +1326,35 @@
         : t.anim_gate_free;
     }
 
+    const bookIntro = $("#bookIntro");
+    if (bookIntro){
+      bookIntro.textContent = state.plan === "standard"
+        ? t.book_intro_std
+        : t.book_intro_free;
+    }
+
+    const bookList = $("#bookList");
+    const bookSortRow = $("#bookSortRow");
+    const bookCommonMeta = $("#bookCommonMeta");
+    
+    if (bookList){
+      if (state.plan === "standard"){
+        bookList.classList.remove("hidden");
+        bookSortRow.classList.remove("hidden");
+      }else{
+        bookList.classList.add("hidden");
+        bookSortRow.classList.add("hidden");
+      }
+      if (bookCommonMeta){
+        bookCommonMeta.classList.remove("hidden");
+      }
+    }
+
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
+
+    // 絵本タイトル（JSON）の言語切り替え
+    updateBookTitlesForLang();
   }
 
   $("#btn-ja").onclick = ()=>applyLang("ja");
@@ -1015,6 +1371,47 @@
   });
 
   document.addEventListener("click", (e)=>{
+    const viewerBtn = e.target.closest(".book-viewer-btn");
+    if (viewerBtn){
+      const dir    = viewerBtn.dataset.dir;
+      const bookId = viewerBtn.dataset.book;
+      if (!dir || !bookId) return;
+
+      const ep = getBookEpisodeById(bookId);
+      if (!ep || !ep.pages) return;
+
+      const total   = ep.pages;
+      const current = bookState[bookId] ?? 0;
+
+      if (dir === "prev"){
+        bookState[bookId] = (current - 1 + total) % total;
+      }else{
+        bookState[bookId] = (current + 1) % total;
+      }
+
+      updateBookViewer(bookId);
+      return;
+    }
+
+    const fullBtn = e.target.closest(".book-full-btn");
+    if (fullBtn){
+      const viewerId = fullBtn.dataset.viewer;
+      if (viewerId){
+        toggleBookFullscreen(viewerId);
+      }
+      return;
+    }
+
+    const bookSortBtn = e.target.closest(".book-sort-btn");
+    if (bookSortBtn){
+      const mode = bookSortBtn.dataset.sort || "episode";
+      document.querySelectorAll(".book-sort-btn").forEach(b=>{
+        b.classList.toggle("active", b===bookSortBtn);
+      });
+      sortBookEntries(mode);
+      return;
+    }
+
     const videoSortBtn = e.target.closest(".video-sort-btn");
     if (videoSortBtn){
       const mode = videoSortBtn.dataset.sort || "episode";
@@ -1025,6 +1422,63 @@
       return;
     }
   });
+
+  function sortBookEntries(mode){
+    const list = $("#bookList");
+    if (!list) return;
+    const entries = Array.from(list.querySelectorAll(".book-entry"));
+    entries.sort((a,b)=>{
+      const ea = Number(a.dataset.ep || "0");
+      const eb = Number(b.dataset.ep || "0");
+      if (mode === "new"){
+        return eb - ea;
+      }
+      return ea - eb;
+    });
+    entries.forEach(el=>list.appendChild(el));
+  }
+
+  function toggleBookFullscreen(viewerId){
+    const el = document.getElementById(viewerId);
+    if (!el) return;
+
+    if (document.fullscreenElement === el){
+      if (document.exitFullscreen){
+        document.exitFullscreen();
+      }else if (document.webkitExitFullscreen){
+        document.webkitExitFullscreen();
+      }
+      return;
+    }
+
+    if (el.requestFullscreen){
+      el.requestFullscreen();
+    }else if (el.webkitRequestFullscreen){
+      el.webkitRequestFullscreen();
+    }else{
+      alert("Fullscreen is not supported in this browser.");
+    }
+  }
+
+  function updateFullscreenButtons(){
+    const current = document.fullscreenElement;
+    document.querySelectorAll(".book-full-btn").forEach(btn=>{
+      const viewerId = btn.dataset.viewer;
+      const img = btn.querySelector("img.book-full-icon");
+      if (!img) return;
+      if (current && current.id === viewerId){
+        img.src = "/assets/reduction_icon.png";
+        btn.title = "Exit Full Screen";
+        btn.setAttribute("aria-label", "Exit Full Screen");
+      }else{
+        img.src = "/assets/expansion_icon.png";
+        btn.title = "Full Screen";
+        btn.setAttribute("aria-label", "Full Screen");
+      }
+    });
+  }
+  document.addEventListener("fullscreenchange", updateFullscreenButtons);
+  document.addEventListener("webkitfullscreenchange", updateFullscreenButtons);
 
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
@@ -1281,7 +1735,10 @@
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
 
+    updateFullscreenButtons();
+
     await loadVideoEpisodes();
+    await loadBookEpisodes();
 
     state.statusCode = "checking";
     applyLang(currentLang);
@@ -1689,10 +2146,11 @@
     
       const btnSubMain  = $("#btnSubscribe");
       const btnSubAnim  = $("#btnSubscribeAnim");
+      const btnSubBook  = $("#btnSubscribeBook");
       const btnCancel   = $("#btnCancel");
       const btnDelete   = $("#btnDeleteAccount");
     
-      [btnSubMain, btnSubAnim].forEach(b=>{
+      [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
         if (!b) return;
         b.classList.remove("hidden");
         b.onclick = ()=>{
@@ -1743,10 +2201,11 @@
     
       const btnSubMain  = $("#btnSubscribe");
       const btnSubAnim  = $("#btnSubscribeAnim");
+      const btnSubBook  = $("#btnSubscribeBook");
       const btnCancel   = $("#btnCancel");
       const btnDelete   = $("#btnDeleteAccount");
     
-      [btnSubMain, btnSubAnim].forEach(b=>{
+      [btnSubMain, btnSubAnim, btnSubBook].forEach(b=>{
         if (!b) return;
         b.classList.add("hidden");
         b.onclick = null;
@@ -1770,6 +2229,8 @@
     
       state.statusCode = "ready";
       applyLang(currentLang);
+    
+      sortBookEntries("episode");
     }
 
     $("#logout").onclick = async ()=>{
