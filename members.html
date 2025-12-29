@@ -7,11 +7,9 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
   <script>
     const isDebug = new URLSearchParams(location.search).get('debug') === '1';
-
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-HWRX6Q9K3E', {
       debug_mode: isDebug,
       linker: { domains: ['official.moriris.com', 'member.moriris.com'] }
@@ -19,7 +17,8 @@
   </script>
 
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Moriris for Facilities</title>
+  <title>MORIRIS MEMBERSHIP</title>
+
   <style>
     :root{
       --bg:#faf8f4;
@@ -126,7 +125,9 @@
       cursor:pointer;
       font-size:13px;
       color:var(--ink);
+      user-select:none;
     }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
     .btn-primary{
       background:var(--accent);
       border-color:transparent;
@@ -211,13 +212,31 @@
       flex-wrap:wrap;
       gap:10px;
       margin-top:10px;
+      align-items:center;
     }
 
+    /* ===== Videos ===== */
+
     .video-grid{
+      margin-top:12px;
+    }
+
+    /* 表示形式（list / grid） */
+    .video-grid.mode-list{
       display:flex;
       flex-direction:column;
       gap:22px;
-      margin-top:12px;
+    }
+    .video-grid.mode-grid{
+      display:grid;
+      gap:14px;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+    }
+    @media (max-width: 1024px){
+      .video-grid.mode-grid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 640px){
+      .video-grid.mode-grid{ grid-template-columns:repeat(1, minmax(0, 1fr)); }
     }
 
     .video-card{
@@ -236,51 +255,42 @@
       font-weight:600;
     }
 
-    .video-sort{
+    .video-controls{
       margin-top:6px;
-      margin-bottom:6px;
+      margin-bottom:10px;
       font-size:13px;
       display:flex;
       align-items:center;
-      gap:8px;
+      gap:10px;
       flex-wrap:wrap;
     }
-    .video-sort-btn{
+    .video-controls .label{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .video-sort-btn, .chip, .view-btn{
       border-radius:999px;
       border:1px solid #ccc;
       background:#fff;
       padding:4px 10px;
       font-size:12px;
       cursor:pointer;
+      user-select:none;
     }
-    .video-sort-btn.active{
+    .video-sort-btn.active,
+    .chip.active,
+    .view-btn.active{
       background:var(--accent);
       border-color:var(--accent);
       color:var(--accent-dark);
       font-weight:600;
     }
 
-    /* 将来の目的別フィルタ（今は hidden のままでもOK） */
     .video-filter{
-      margin-top:10px;
       display:flex;
       gap:8px;
       flex-wrap:wrap;
       align-items:center;
-    }
-    .video-filter .chip{
-      border-radius:999px;
-      border:1px solid #ccc;
-      background:#fff;
-      padding:4px 10px;
-      font-size:12px;
-      cursor:pointer;
-    }
-    .video-filter .chip.active{
-      background:var(--accent);
-      border-color:var(--accent);
-      color:var(--accent-dark);
-      font-weight:600;
     }
 
     a{color:#0d6b45;text-decoration:none;}
@@ -354,6 +364,7 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
   <header class="site-header">
     <div class="page header-inner">
@@ -447,20 +458,22 @@
           Standardプランに登録する
         </button>
 
-        <div class="video-sort" id="videoSortRow">
-          <span data-i18n="video_sort_label">表示順：</span>
-          <button type="button" class="video-sort-btn active" data-sort="episode" data-i18n="video_sort_episode">
-            エピソード順
-          </button>
-          <button type="button" class="video-sort-btn" data-sort="new" data-i18n="video_sort_new">
-            新着順
-          </button>
+        <!-- コントロール行：並び替え + 表示形式 -->
+        <div class="video-controls" id="videoControlsRow">
+          <span class="label" data-i18n="sort_label">並び替え：</span>
+          <button type="button" class="video-sort-btn active" data-sort="newest" data-i18n="sort_newest">新しい順</button>
+          <button type="button" class="video-sort-btn" data-sort="oldest" data-i18n="sort_oldest">古い順</button>
+
+          <span class="label" style="margin-left:8px;" data-i18n="view_label">表示：</span>
+          <button type="button" class="view-btn active" data-view="list" data-i18n="view_list">リスト</button>
+          <button type="button" class="view-btn" data-view="grid" data-i18n="view_grid">グリッド</button>
         </div>
 
-        <!-- 将来の目的別フィルタ（episode.title から自動抽出も可能 / 今は未使用でもOK） -->
-        <div class="video-filter hidden" id="videoFilterRow" aria-label="Video filters"></div>
+        <!-- 複数選択フィルタ -->
+        <div class="video-filter" id="videoFilterRow" aria-label="Video filters"></div>
 
-        <div id="videos" class="video-grid"></div>
+        <!-- 動画一覧 -->
+        <div id="videos" class="video-grid mode-list"></div>
       </div>
     </section>
 
@@ -624,9 +637,7 @@
   const $ = (s)=>document.querySelector(s);
   const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
   const debugOn = isLocal && new URL(location.href).searchParams.get("debug")==="1";
-
   if (debugOn) { gtag('set', 'debug_mode', true); }
-
   const log = (...a)=>{ if(!debugOn) return; console.log("[debug]", ...a); };
 
   function gaEvent(name, params = {}) {
@@ -656,7 +667,6 @@
       plan_free:"Free",
       plan_standard:"Standard",
       status_checking:"ログイン状態を確認しています…",
-      status_not_logged:"未ログインか、ブラウザが変わったためログイン情報を確認できませんでした。もう一度ログインを行ってください。",
       status_free:"ただいま有効なサブスクリプションがありません。",
       status_loading:"動画を読み込み中…",
       status_ready:"コンテンツをお楽しみください。",
@@ -675,9 +685,6 @@
       videos_gate_free:"Standard プランに登録いただくと、すべての動画が視聴可能になります。",
       videos_gate_std:"メンバー限定動画をお楽しみいただけます。",
       videos_empty:"現在、視聴可能な動画がありません。",
-      video_sort_label:"表示順：",
-      video_sort_episode:"エピソード順",
-      video_sort_new:"新着順",
 
       footer_note:"最新情報は各種SNSでお知らせします。",
       legal_note:
@@ -714,7 +721,20 @@
       pw_change_desc:"現在ログインしているアカウントのパスワードを変更できます。古いパスワードの入力は不要です。",
       pw_change_note:"セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。",
       pw_change_btn:"パスワードを変更する",
-      pw_change_success:"パスワードを変更しました。次回からは新しいパスワードでログインしてください。"
+      pw_change_success:"パスワードを変更しました。次回からは新しいパスワードでログインしてください。",
+
+      sort_label:"並び替え：",
+      sort_newest:"新しい順",
+      sort_oldest:"古い順",
+
+      view_label:"表示：",
+      view_list:"リスト",
+      view_grid:"グリッド",
+
+      filter_title:"用途フィルター：",
+      filter_clear:"クリア",
+      tag_sleep:"睡眠導入",
+      tag_focus:"集中"
     },
     en:{
       brand_meta:"MEMBERSHIP",
@@ -756,9 +776,6 @@
       videos_gate_free:"By subscribing to the Standard plan, you can watch all videos.",
       videos_gate_std:"You can now watch all members-only videos.",
       videos_empty:"There are no videos available yet.",
-      video_sort_label:"Order:",
-      video_sort_episode:"By episode",
-      video_sort_new:"Newest first",
 
       footer_note:"Follow Moriris on social media for the latest updates.",
       legal_note:
@@ -795,7 +812,20 @@
       pw_change_desc:"You can change the password for the account you are currently logged in with. You do not need to enter your old password.",
       pw_change_note:"For security, we recommend at least 8 characters and not reusing passwords from other services.",
       pw_change_btn:"Change password",
-      pw_change_success:"Your password has been changed. Please use the new password the next time you log in."
+      pw_change_success:"Your password has been changed. Please use the new password the next time you log in.",
+
+      sort_label:"Sort:",
+      sort_newest:"Newest",
+      sort_oldest:"Oldest",
+
+      view_label:"View:",
+      view_list:"List",
+      view_grid:"Grid",
+
+      filter_title:"Filter:",
+      filter_clear:"Clear",
+      tag_sleep:"For Sleep",
+      tag_focus:"For Focus"
     }
   };
 
@@ -810,15 +840,36 @@
 
   let currentUser = null;
 
-  // 外出しJSON（Cloudflare Stream対応）
-  // 指定どおり member.moriris.com/data/video.json を使う
+  // JSON
   const VIDEO_JSON_URL = "https://member.moriris.com/data/video.json";
   let VIDEO_CONFIG = { cloudflare:null, episodes:[] };
-  let videoSortMode = "episode";
 
-  // 将来の目的別フィルタ用（今は title 先頭 "For Sleep" などから自動抽出）
-  let videoFilter = "all"; // "all" | "For Sleep" | "For Focus" ...
-  let videoFilterOptions = [];
+  // sort/view/filter state
+  let videoSortMode = "newest"; // newest | oldest
+  let viewMode = "list";        // list | grid
+  const selectedTags = new Set();
+  let tagOptions = [];
+
+  function tagLabel(tag){
+    const t = I18N[currentLang] || I18N["ja"];
+    const key = `tag_${tag}`;
+    return t[key] || tag;
+  }
+
+  function applyViewMode(mode){
+    viewMode = mode;
+    localStorage.setItem("moriris_view_mode", mode);
+
+    const wrap = document.getElementById("videos");
+    if (wrap){
+      wrap.classList.toggle("mode-list", mode === "list");
+      wrap.classList.toggle("mode-grid", mode === "grid");
+    }
+
+    document.querySelectorAll(".view-btn").forEach(b=>{
+      b.classList.toggle("active", b.dataset.view === mode);
+    });
+  }
 
   async function loadVideoConfig(){
     try{
@@ -828,90 +879,123 @@
 
       const cloudflare = data?.cloudflare || null;
       const episodesRaw = Array.isArray(data?.episodes) ? data.episodes : [];
-      const episodes = episodesRaw.filter(ep => ep && (ep.visible !== false));
+      const episodes = episodesRaw.filter(v => v && (v.visible !== false));
 
       VIDEO_CONFIG = { cloudflare, episodes };
       log("video json loaded", VIDEO_CONFIG);
 
-      rebuildVideoFilterOptions();
+      rebuildTagOptions();
     }catch(e){
       console.error("video json load error", e);
       VIDEO_CONFIG = { cloudflare:null, episodes:[] };
-      videoFilterOptions = [];
+      tagOptions = [];
+      renderTagFilterUI();
     }
   }
 
-  function extractPurposeFromTitle(title){
-    // 例: "For Sleep 00001" -> "For Sleep"
-    if (!title) return "";
-    const m = String(title).match(/^(For\s+\w+)/i);
-    return m ? m[1] : "";
-  }
-
-  function rebuildVideoFilterOptions(){
+  function rebuildTagOptions(){
     const set = new Set();
-    for (const ep of VIDEO_CONFIG.episodes){
-      const p = extractPurposeFromTitle(ep.title);
-      if (p) set.add(p);
+    for (const v of VIDEO_CONFIG.episodes){
+      const tags = Array.isArray(v.tags) ? v.tags : [];
+      tags.forEach(tag => set.add(tag));
     }
-    videoFilterOptions = Array.from(set);
-    renderVideoFilterUI();
+    tagOptions = Array.from(set);
+    renderTagFilterUI();
   }
 
-  function renderVideoFilterUI(){
+  function renderTagFilterUI(){
     const row = document.getElementById("videoFilterRow");
     if (!row) return;
 
-    // 目的別が1個以下ならUIは出さない（将来増えたら自然に表示される）
-    if (!videoFilterOptions || videoFilterOptions.length <= 1){
+    const t = I18N[currentLang] || I18N["ja"];
+
+    row.innerHTML = "";
+
+    if (!tagOptions || tagOptions.length === 0){
       row.classList.add("hidden");
-      row.innerHTML = "";
-      videoFilter = "all";
+      selectedTags.clear();
       return;
     }
 
     row.classList.remove("hidden");
-    row.innerHTML = "";
 
-    const makeChip = (label, value)=>{
+    const title = document.createElement("span");
+    title.className = "muted";
+    title.style.fontSize = "12px";
+    title.textContent = t.filter_title || "Filter:";
+    row.appendChild(title);
+
+    const makeChip = (tag)=>{
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "chip";
-      btn.textContent = label;
-      btn.dataset.filter = value;
-      btn.classList.toggle("active", videoFilter === value);
+      btn.textContent = tagLabel(tag);
+      btn.dataset.tag = tag;
+      btn.classList.toggle("active", selectedTags.has(tag));
       btn.addEventListener("click", ()=>{
-        videoFilter = value;
-        Array.from(row.querySelectorAll(".chip")).forEach(c=>{
-          c.classList.toggle("active", c.dataset.filter === value);
+        if (selectedTags.has(tag)) selectedTags.delete(tag);
+        else selectedTags.add(tag);
+        btn.classList.toggle("active", selectedTags.has(tag));
+
+        gaEvent("video_filter_toggle", {
+          tag,
+          active: selectedTags.has(tag) ? 1 : 0,
+          plan: state.plan,
+          lang: currentLang
         });
+
         renderVideosForPlan(state.plan, videoSortMode);
       });
       return btn;
     };
 
-    const allLabel = currentLang === "ja" ? "すべて" : "All";
-    row.appendChild(makeChip(allLabel, "all"));
-    for (const opt of videoFilterOptions){
-      row.appendChild(makeChip(opt, opt));
-    }
+    tagOptions.forEach(tag => row.appendChild(makeChip(tag)));
+
+    const clear = document.createElement("button");
+    clear.type = "button";
+    clear.className = "chip";
+    clear.textContent = t.filter_clear || "Clear";
+    clear.style.marginLeft = "6px";
+    clear.addEventListener("click", ()=>{
+      selectedTags.clear();
+      Array.from(row.querySelectorAll(".chip")).forEach(c=>{
+        const tg = c.dataset.tag;
+        if (tg) c.classList.remove("active");
+      });
+
+      gaEvent("video_filter_clear", { plan: state.plan, lang: currentLang });
+
+      renderVideosForPlan(state.plan, videoSortMode);
+    });
+    row.appendChild(clear);
   }
 
-  function buildCloudflareEmbedUrl(cf){
-    // cf: { customer_code, iframe_params }
-    const customer = cf?.customer_code;
-    const params = cf?.iframe_params || "";
-    if (!customer) return null;
-    // "customer-xxxx.cloudflarestream.com"
-    return `https://${customer}/`;
+  function getTitle(v){
+    if (v?.title && typeof v.title === "object"){
+      return (v.title[currentLang] || v.title["en"] || v.title["ja"] || "").trim();
+    }
+    return String(v?.title || "").trim();
+  }
+
+  function toTime(v){
+    const s = v?.published_at;
+    const n = Date.parse(s);
+    return Number.isFinite(n) ? n : 0;
+  }
+
+  function matchSelectedTags(v){
+    if (selectedTags.size === 0) return true;
+    const tags = Array.isArray(v.tags) ? v.tags : [];
+    for (const t of selectedTags){
+      if (tags.includes(t)) return true; // OR条件
+    }
+    return false;
   }
 
   function buildCloudflareIframeSrc(cf, uid){
     const customer = cf?.customer_code;
     if (!customer || !uid) return null;
-  
     const qp = cf?.iframe_params ? `?${cf.iframe_params}` : "";
-    // ★ /iframe を必ず付ける
     return `https://${customer}/${encodeURIComponent(uid)}/iframe${qp}`;
   }
 
@@ -967,8 +1051,8 @@
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
 
-    // フィルタUIの文言（All/すべて）を更新したいので再描画
-    renderVideoFilterUI();
+    // フィルタの表示名などを更新
+    renderTagFilterUI();
   }
 
   $("#btn-ja").onclick = ()=>applyLang("ja");
@@ -985,13 +1069,27 @@
   });
 
   document.addEventListener("click", (e)=>{
-    const videoSortBtn = e.target.closest(".video-sort-btn");
-    if (videoSortBtn){
-      const mode = videoSortBtn.dataset.sort || "episode";
+    const sortBtn = e.target.closest(".video-sort-btn");
+    if (sortBtn){
+      const mode = sortBtn.dataset.sort || "newest";
       document.querySelectorAll(".video-sort-btn").forEach(b=>{
-        b.classList.toggle("active", b===videoSortBtn);
+        b.classList.toggle("active", b===sortBtn);
       });
-      renderVideosForPlan(state.plan, mode);
+      videoSortMode = mode;
+
+      gaEvent("video_sort_change", { mode, plan: state.plan, lang: currentLang });
+
+      renderVideosForPlan(state.plan, videoSortMode);
+      return;
+    }
+
+    const viewBtn = e.target.closest(".view-btn");
+    if (viewBtn){
+      const mode = viewBtn.dataset.view || "list";
+      applyViewMode(mode);
+
+      gaEvent("video_view_change", { mode, plan: state.plan, lang: currentLang });
+
       return;
     }
   });
@@ -1190,26 +1288,23 @@
 
   function renderVideosForPlan(plan, mode = videoSortMode){
     videoSortMode = mode;
-  
+
     const wrap = $("#videos");
     if (!wrap) return;
     wrap.innerHTML = "";
-  
+
     const t = I18N[currentLang] || I18N["ja"];
     const cf = VIDEO_CONFIG.cloudflare;
-  
+
     let episodes = VIDEO_CONFIG.episodes.filter(v => (plan === "standard") ? true : v.tier === "free");
-  
-    // 目的別フィルタ（title から抽出）
-    if (videoFilter && videoFilter !== "all"){
-      episodes = episodes.filter(v => extractPurposeFromTitle(v.title) === videoFilter);
-    }
-  
+    episodes = episodes.filter(matchSelectedTags);
+
     episodes.sort((a,b)=>{
-      if (mode === "new") return (b.ep || 0) - (a.ep || 0);
-      return (a.ep || 0) - (b.ep || 0);
+      const ta = toTime(a), tb = toTime(b);
+      if (videoSortMode === "oldest") return ta - tb;
+      return tb - ta; // newest
     });
-  
+
     if (!episodes.length){
       const p = document.createElement("p");
       p.className = "muted";
@@ -1217,19 +1312,15 @@
       wrap.appendChild(p);
       return;
     }
-  
+
     for (const v of episodes){
       const card = document.createElement("div");
       card.className = "video-card";
-  
-      const title = v.title || `Episode ${v.ep || ""}`.trim();
+
+      const title = getTitle(v) || "Video";
       const uid = v.cf_uid;
       const src = buildCloudflareIframeSrc(cf, uid);
-  
-      if (!src){
-        console.warn("Missing Cloudflare config or uid", { cf, episode: v });
-      }
-  
+
       const playerHtml = src
         ? `
           <div style="position:relative;background:#000;aspect-ratio:16/9;">
@@ -1249,7 +1340,7 @@
             <div style="font-size:13px;opacity:.85;">Player config is missing.</div>
           </div>
         `;
-  
+
       card.innerHTML = `
         ${playerHtml}
         <div class="video-title">${title}</div>
@@ -1263,6 +1354,10 @@
     const storedLang = localStorage.getItem(langKey);
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
+
+    // 表示形式の初期値（保存済みがあれば反映）
+    const storedView = localStorage.getItem("moriris_view_mode");
+    applyViewMode(storedView === "grid" ? "grid" : "list");
 
     await loadVideoConfig();
 
