@@ -907,11 +907,12 @@
   }
 
   function buildCloudflareIframeSrc(cf, uid){
-    const base = buildCloudflareEmbedUrl(cf);
-    if (!base || !uid) return null;
+    const customer = cf?.customer_code;
+    if (!customer || !uid) return null;
+  
     const qp = cf?.iframe_params ? `?${cf.iframe_params}` : "";
-    // Cloudflare Stream embed path
-    return `${base}${encodeURIComponent(uid)}${qp}`;
+    // ★ /iframe を必ず付ける
+    return `https://${customer}/${encodeURIComponent(uid)}/iframe${qp}`;
   }
 
   function applyLang(lang){
@@ -1220,11 +1221,15 @@
     for (const v of episodes){
       const card = document.createElement("div");
       card.className = "video-card";
-
+    
       const title = v.title || `Episode ${v.ep || ""}`.trim();
-      const src = `https://${customer_code}/${uid}/iframe?${iframe_params}`;
-
-      // JSONの cf_uid / cloudflare.customer_code が揃っていない場合は、空表示（安全）
+      const uid = v.cf_uid;
+      const src = buildCloudflareIframeSrc(cf, uid);
+    
+      if (!src){
+        console.warn("Missing Cloudflare config or uid", { cf, episode: v });
+      }
+    
       const playerHtml = src
         ? `
           <div style="position:relative;background:#000;aspect-ratio:16/9;">
@@ -1244,14 +1249,13 @@
             <div style="font-size:13px;opacity:.85;">Player config is missing.</div>
           </div>
         `;
-
+    
       card.innerHTML = `
         ${playerHtml}
         <div class="video-title">${title}</div>
       `;
       wrap.appendChild(card);
     }
-  }
 
   async function main(){
     const urlLang = new URL(location.href).searchParams.get("lang");
