@@ -21,7 +21,7 @@
       "tags": ["sleep", "focus"],
       "published_at": "2026-01-04T23:00:00Z",
       "visible": true
-    }
+    },
     {
       "id": "focus-00001",
       "title": { "ja": "集中 00001", "en": "For Focus 00001" },
@@ -30,6 +30,6 @@
       "tags": ["focus"],
       "published_at": "2026-01-07T23:00:00Z",
       "visible": true
-    },
+    }
   ]
 }
