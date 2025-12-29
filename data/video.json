@@ -5,8 +5,8 @@
   },
   "episodes": [
     {
-      "id": "sleep-00001",
-      "title": { "ja": "睡眠導入 00001", "en": "For Sleep 00001" },
+      "id": "000001",
+      "title": { "ja": "睡眠導入", "en": "For Sleep" },
       "tier": "free",
       "cf_uid": "91d726e107418999e95982ad09ff8c27",
       "tags": ["sleep", "quiet"],
@@ -14,8 +14,8 @@
       "visible": true
     },
     {
-      "id": "sleep-focus-00001",
-      "title": { "ja": "睡眠＋集中 00001", "en": "Sleep + Focus 00001" },
+      "id": "000002",
+      "title": { "ja": "睡眠＋集中", "en": "Sleep + Focus" },
       "tier": "standard",
       "cf_uid": "b6f93970518a2632c02222b94116ee40",
       "tags": ["sleep", "focus", "quiet"],
@@ -23,8 +23,8 @@
       "visible": true
     },
     {
-      "id": "focus-00001",
-      "title": { "ja": "集中 00001", "en": "For Focus 00001" },
+      "id": "000003",
+      "title": { "ja": "集中", "en": "For Focus" },
       "tier": "standard",
       "cf_uid": "48869bc9e6bd91dd20f801e652f6c77e",
       "tags": ["focus"],
