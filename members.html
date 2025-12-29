@@ -465,8 +465,9 @@
           <button type="button" class="video-sort-btn" data-sort="oldest" data-i18n="sort_oldest">古い順</button>
 
           <span class="label" style="margin-left:8px;" data-i18n="view_label">表示：</span>
-          <button type="button" class="view-btn active" data-view="list" data-i18n="view_list">リスト</button>
+          <!-- ★順番変更：グリッド → リスト -->
           <button type="button" class="view-btn" data-view="grid" data-i18n="view_grid">グリッド</button>
+          <button type="button" class="view-btn active" data-view="list" data-i18n="view_list">リスト</button>
         </div>
 
         <!-- 複数選択フィルタ -->
@@ -731,10 +732,12 @@
       view_list:"リスト",
       view_grid:"グリッド",
 
-      filter_title:"用途フィルター：",
-      filter_clear:"クリア",
+      /* ★フィルターUI（全て＋追加タグ） */
+      filter_title:"用途：",
+      filter_all:"全て",
       tag_sleep:"睡眠導入",
-      tag_focus:"集中"
+      tag_focus:"集中",
+      tag_quiet:"静かな空間"
     },
     en:{
       brand_meta:"For Facilities",
@@ -822,10 +825,12 @@
       view_list:"List",
       view_grid:"Grid",
 
+      /* ★フィルターUI（all + quiet） */
       filter_title:"Filter:",
-      filter_clear:"Clear",
+      filter_all:"All",
       tag_sleep:"For Sleep",
-      tag_focus:"For Focus"
+      tag_focus:"For Focus",
+      tag_quiet:"Quiet Space"
     }
   };
 
@@ -847,7 +852,7 @@
   // sort/view/filter state
   let videoSortMode = "newest"; // newest | oldest
   let viewMode = "list";        // list | grid
-  const selectedTags = new Set();
+  const selectedTags = new Set(); // OR条件の複数選択
   let tagOptions = [];
 
   function tagLabel(tag){
@@ -894,12 +899,8 @@
   }
 
   function rebuildTagOptions(){
-    const set = new Set();
-    for (const v of VIDEO_CONFIG.episodes){
-      const tags = Array.isArray(v.tags) ? v.tags : [];
-      tags.forEach(tag => set.add(tag));
-    }
-    tagOptions = Array.from(set);
+    // 表示したいタグを固定（左から「全て」「sleep」「focus」「quiet」）
+    tagOptions = ["sleep", "focus", "quiet"];
     renderTagFilterUI();
   }
 
@@ -908,15 +909,7 @@
     if (!row) return;
 
     const t = I18N[currentLang] || I18N["ja"];
-
     row.innerHTML = "";
-
-    if (!tagOptions || tagOptions.length === 0){
-      row.classList.add("hidden");
-      selectedTags.clear();
-      return;
-    }
-
     row.classList.remove("hidden");
 
     const title = document.createElement("span");
@@ -925,6 +918,22 @@
     title.textContent = t.filter_title || "Filter:";
     row.appendChild(title);
 
+    // ★「全て」チップ（左端固定）
+    const allBtn = document.createElement("button");
+    allBtn.type = "button";
+    allBtn.className = "chip";
+    allBtn.textContent = t.filter_all || "All";
+    allBtn.dataset.tag = "__all__";
+    allBtn.classList.toggle("active", selectedTags.size === 0);
+    allBtn.addEventListener("click", ()=>{
+      selectedTags.clear();
+      renderTagFilterUI();
+      gaEvent("video_filter_all", { plan: state.plan, lang: currentLang });
+      renderVideosForPlan(state.plan, videoSortMode);
+    });
+    row.appendChild(allBtn);
+
+    // タグチップ（複数選択 / OR）
     const makeChip = (tag)=>{
       const btn = document.createElement("button");
       btn.type = "button";
@@ -935,7 +944,9 @@
       btn.addEventListener("click", ()=>{
         if (selectedTags.has(tag)) selectedTags.delete(tag);
         else selectedTags.add(tag);
-        btn.classList.toggle("active", selectedTags.has(tag));
+
+        // 「全て」状態の見た目も含めて再描画
+        renderTagFilterUI();
 
         gaEvent("video_filter_toggle", {
           tag,
@@ -950,24 +961,6 @@
     };
 
     tagOptions.forEach(tag => row.appendChild(makeChip(tag)));
-
-    const clear = document.createElement("button");
-    clear.type = "button";
-    clear.className = "chip";
-    clear.textContent = t.filter_clear || "Clear";
-    clear.style.marginLeft = "6px";
-    clear.addEventListener("click", ()=>{
-      selectedTags.clear();
-      Array.from(row.querySelectorAll(".chip")).forEach(c=>{
-        const tg = c.dataset.tag;
-        if (tg) c.classList.remove("active");
-      });
-
-      gaEvent("video_filter_clear", { plan: state.plan, lang: currentLang });
-
-      renderVideosForPlan(state.plan, videoSortMode);
-    });
-    row.appendChild(clear);
   }
 
   function getTitle(v){
@@ -984,7 +977,9 @@
   }
 
   function matchSelectedTags(v){
+    // 「全て」＝ selectedTags が空
     if (selectedTags.size === 0) return true;
+
     const tags = Array.isArray(v.tags) ? v.tags : [];
     for (const t of selectedTags){
       if (tags.includes(t)) return true; // OR条件
@@ -1051,7 +1046,7 @@
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
 
-    // フィルタの表示名などを更新
+    // ★フィルタやタグ表示の言語を更新
     renderTagFilterUI();
   }
 
@@ -1357,6 +1352,7 @@
 
     // 表示形式の初期値（保存済みがあれば反映）
     const storedView = localStorage.getItem("moriris_view_mode");
+    // ★ボタン順はグリッド→リストだが、初期値は従来通り list を優先
     applyViewMode(storedView === "grid" ? "grid" : "list");
 
     await loadVideoConfig();
