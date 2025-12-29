@@ -6,21 +6,21 @@
   "episodes": [
     {
       "ep": 1,
-      "title": "For Sleep 00001",
+      "title": { "ja": "睡眠導入 00001", "en": "For Sleep 00001" },
       "cf_uid": "91d726e107418999e95982ad09ff8c27",
       "tier": "free",
       "visible": true
     },
     {
       "ep": 2,
-      "title": "For Sleep 00002",
+      "title": { "ja": "集中用 00001", "en": "For Focus 00001" },
       "cf_uid": "b6f93970518a2632c02222b94116ee40",
       "tier": "standard",
       "visible": true
     },
     {
       "ep": 3,
-      "title": "For Focus 00001",
+      "title": { "ja": "睡眠導入 00002", "en": "For Sleep 00002" },
       "cf_uid": "cccccccccccccccccccccccccccccccc",
       "tier": "standard",
       "visible": true
