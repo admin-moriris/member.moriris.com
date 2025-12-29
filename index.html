@@ -1,41 +1,37 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8"/>
+
   <!-- Google tag (gtag.js)  -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
   <script>
+    const isDebug = new URLSearchParams(location.search).get('debug') === '1';
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
     gtag('config', 'G-HWRX6Q9K3E', {
+      debug_mode: isDebug,
       linker: { domains: ['official.moriris.com', 'member.moriris.com'] }
     });
   </script>
-  
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MORIRIS MEMBERSHIP</title>
 
   <style>
     :root{
       --bg:#faf8f4;
       --panel:#ffffff;
-      --ink:#1d1b16;
+      --ink:#24311c;
       --muted:#6b6964;
       --accent:#75c29c;
       --accent-dark:#0b5130;
-      --r:18px;
-      --sh:0 10px 30px rgba(0,0,0,.18);
+      --radius:20px;
+      --shadow:0 10px 32px rgba(0,0,0,.18);
     }
-
-    *{ box-sizing:border-box; }
-
-    html,body{
-      margin:0;
-      height:100%;
-    }
-
+    *{box-sizing:border-box;}
+    html,body{ margin:0; height:100%; }
     body{
       min-height:100vh;
       background-color:#faf8f4;
@@ -44,544 +40,662 @@
       background-size:cover;
       background-position:center;
       background-attachment:fixed;
-
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
-      display:flex;
-      align-items:flex-start;
-      justify-content:center;
-      padding:24px 0 40px;
+    }
+    .page{ max-width:1120px; margin:0 auto; padding:0 18px 32px; }
+
+    .header-wrap{
+      position:sticky; top:0; z-index:100; padding-bottom:10px;
+      background: linear-gradient(to bottom, rgba(250,248,244,1) 0%, rgba(250,248,244,.95) 70%, rgba(250,248,244,0) 100%);
+      backdrop-filter:blur(4px);
     }
 
-    .wrap{
+    .topbar{ display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+    .brand{ display:flex; align-items:center; gap:18px; }
+    .brand img{ max-width:220px; height:auto; display:block; filter:drop-shadow(0 4px 12px rgba(0,0,0,.18)); }
+    .brand-title{ display:flex; align-items:center; }
+    .brand-title span{ font-size:20px; letter-spacing:.22em; text-transform:uppercase; color:#666666; font-weight:500; white-space:nowrap; }
+
+    .lang{ display:flex; gap:8px; align-items:center; }
+    .lang button{
+      border:1px solid #ddd; background:#fff; border-radius:999px;
+      padding:6px 12px; cursor:pointer; font-size:13px;
+    }
+    .lang .active{ border-color:var(--accent); color:var(--accent-dark); font-weight:600; }
+
+    .pw-banner{
+      background:#ffe7e3; border:1px solid #ffb3a7; color:#8b1a07;
+      border-radius:12px; padding:10px 14px; margin-bottom:16px;
+      font-size:14px; font-weight:600; cursor:pointer;
+    }
+
+    .user-box{ display:flex; align-items:center; gap:10px; font-size:13px; color:var(--muted); justify-content:flex-end; }
+    .pill{ border-radius:999px; background:#ffffff; padding:4px 10px; border:1px solid rgba(0,0,0,.08); }
+    .btn{
+      border-radius:999px; border:1px solid #ddd; background:#fff;
+      padding:7px 12px; cursor:pointer; font-size:13px; color:var(--ink);
+    }
+    .btn-primary{ background:var(--accent); border-color:transparent; color:var(--accent-dark); font-weight:600; }
+    .btn-outline{ background:#fff; color:var(--ink); }
+    .btn-danger{ background:#ffe7e3; border-color:#ffb3a7; color:#8b1a07; font-weight:600; }
+    .input{
+      border-radius:999px; border:1px solid #ddd; background:#fff;
+      padding:7px 10px; font-size:13px; min-width:220px;
+    }
+
+    .tabs{
+      margin-top:8px;
+      background:rgba(255,255,255,.95);
+      border-radius:999px;
+      box-shadow:0 4px 18px rgba(0,0,0,.08);
+      padding:4px;
+      display:flex;
+      gap:4px;
+      overflow:auto;
+    }
+    .tab-btn{
+      flex:1; min-width:0; border:none; background:transparent;
+      border-radius:999px; padding:10px 12px; font-size:14px;
+      cursor:pointer; letter-spacing:.12em;
+    }
+    .tab-btn.active{ background:var(--accent); color:var(--accent-dark); font-weight:600; }
+    .add-gap { margin-bottom: 20px; }
+
+    main{ margin-top:40px; }
+    .card{ background:var(--panel); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px 20px 24px; margin-bottom:18px; }
+    .tab-pane{display:none;}
+    .tab-pane.active{display:block;}
+
+    h2{ margin:0 0 10px; font-size:20px; }
+    h3{ margin:0 0 6px; font-size:16px; }
+    p{ margin:6px 0; line-height:1.7; font-size:14px; }
+    .muted{color:var(--muted);}
+
+    .home-layout{ display:flex; flex-direction:column; gap:18px; }
+    .status-box{
+      background:#f5ffe9;
+      border-radius:16px;
+      padding:12px 14px;
+      font-size:13px;
+      margin-top:8px;
+      border:1px solid #d7e8c4;
+    }
+    .cta-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+
+    .video-grid{ display:flex; flex-direction:column; gap:22px; margin-top:12px; }
+    .video-card{
+      background:var(--panel);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
       width:100%;
-      max-width:960px;
-      padding:24px 20px 40px;
-    }
-
-    header{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin-bottom:18px;
-      flex-wrap:wrap;       /* 画面幅が狭いときに折り返し */
-      gap:12px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:20px;
-      flex-wrap:wrap;       /* ロゴと MEMBERSHIP を折り返し可能に */
-    }
-
-    .brand img{
-      display:block;
-      height:144px;
-      border-radius:0;
-      box-shadow:none;
-    }
-
-    .brand h1{
+      max-width:none;
       margin:0;
-      font-size:24px;
-      font-weight:500;
-      letter-spacing:0.22em;
-      text-transform:uppercase;
-      color:#666666;
     }
+    .video-title{ padding:10px 12px 12px; font-size:14px; font-weight:600; }
 
-    .lang{
+    .video-sort{
+      margin-top:6px;
+      margin-bottom:6px;
+      font-size:13px;
       display:flex;
+      align-items:center;
       gap:8px;
     }
-
-    .lang button{
-      border:1px solid #cfcfcf;
-      background:#ffffff; 
+    .video-sort-btn{
       border-radius:999px;
-      padding:6px 14px;
+      border:1px solid #ccc;
+      background:#fff;
+      padding:4px 10px;
+      font-size:12px;
       cursor:pointer;
-      font-size:14px;
-      color:#222;
-      transition:background 0.2s, color 0.2s, border-color 0.2s;
     }
-
-    .lang button.active{
-      border-color:#75c29c;
-      background:#ffffff;
-      color:#0b5130;
-      font-weight:600;
-    }
-
-    .card{
-      background:var(--panel);
-      border-radius:var(--r);
-      box-shadow:var(--sh);
-      padding:28px 32px 32px;
-    }
-
-    .form-block{
-      max-width:520px;
-      margin:0 auto;
-    }
-
-    .section-title{
-      margin:0 0 16px;
-      font-size:20px;
-      font-weight:600;
-      text-align:center;
-    }
-
-    .section-note{
-      margin:0 0 12px;
-      font-size:14px;
-      color:var(--muted);
-      line-height:1.5;
-      text-align:center;
-      white-space:pre-line;
-    }
-
-    .row{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      width:100%;
-      margin-bottom:16px;
-    }
-
-    input,button{
-      padding:12px 14px;
-      font-size:16px;
-      border-radius:12px;
-      border:1px solid #ddd;
-    }
-
-    input{
-      width:100%;
-    }
-
-    input[type="checkbox"]{
-      width:auto;
-      padding:0;
-      margin:0 6px 0 0;
-      border:none;
-    }
-
-    button.primary{
-      width:100%;
+    .video-sort-btn.active{
       background:var(--accent);
-      color:#05361f;
-      border-color:transparent;
-      cursor:pointer;
+      border-color:var(--accent);
+      color:var(--accent-dark);
       font-weight:600;
     }
 
-    button.primary:disabled{
-      opacity:0.5;
-      cursor:not-allowed;
-    }
-
-    hr{
-      width:100%;
-      border:none;
-      border-top:1px solid #e3e0d7;
-      margin:24px 0;
-    }
-
-    .agree-row{
-      width:100%;
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
-      margin-bottom:16px;
-      font-size:13px;
-      color:#8a8a8a;
-      line-height:1.5;
-    }
-    .agree-label{
-      display:flex;
-      align-items:center;
-    }
-    .agree-label input[type="checkbox"]{
-      margin:0 6px 0 0;
-    }
-
-    .agree-label span{
-      font-size:13px;
-      color:#8a8a8a;
-      line-height:1.5;
-    }
+    a{color:#0d6b45;text-decoration:none;}
+    a:hover{text-decoration:underline;}
 
     footer{
-      margin-top:16px;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.6;
+      margin-top:24px;
       text-align:center;
+      font-size:12px;
+      color:var(--muted);
     }
-
-    .show-pw-row{
+    .sns-row{
+      display:flex;
+      justify-content:center;
+      gap:16px;
+      margin:10px 0 6px;
+    }
+    .sns-icon{
+      width:40px;
+      height:40px;
+      border-radius:999px;
+      background:#ffffff;
+      box-shadow:0 4px 12px rgba(0,0,0,.12);
       display:flex;
       align-items:center;
-      gap:6px;
-      font-size:14px;
-      color:#555;
-      margin-top:-6px;
+      justify-content:center;
+      cursor:pointer;
+      text-decoration:none;
     }
+    .sns-icon svg{ width:20px; height:20px; fill:#3f6f4b; }
+    .hidden{display:none;}
 
-    a{ color:#0d6b45; }
+    .site-header{
+      position:fixed;
+      top:0; left:0; right:0;
+      z-index:100;
+      background: linear-gradient(to bottom, rgba(250,248,244,1) 0%, rgba(250,248,244,.95) 70%, rgba(250,248,244,0) 100%);
+      backdrop-filter:blur(4px);
+    }
+    .main-page{ padding-top:180px; }
 
-    /* メッセージ表示用 */
-    .form-message{
-      margin:6px 2px 0;
-      font-size:13px;
-      line-height:1.4;
-      min-height:1.2em;
-      color:var(--muted);
-    }
-    .form-message.error{
-      color:#b3261e;
-    }
-    .form-message.success{
-      color:#0b5130;
-    }
-
-    /* スマホ用調整 */
-    @media (max-width:600px){
-      .wrap{
-        padding:16px 12px 32px;
+    @media (max-width: 768px){
+      .topbar{ flex-direction:column; align-items:flex-start; gap:8px; }
+      .brand{ gap:10px; }
+      .brand img{ max-width:180px; }
+      .brand-title span{ font-size:16px; letter-spacing:.16em; }
+      .user-box{ justify-content:flex-start; flex-wrap:wrap; }
+      .lang{ justify-content:flex-start; }
+      .tabs{
+        border-radius:16px;
+        padding:4px 6px;
+        gap:6px;
+        -webkit-overflow-scrolling:touch;
       }
-      .brand img{
-        height:120px;
+      .tab-btn{
+        flex:0 0 auto;
+        white-space:nowrap;
+        font-size:12px;
+        letter-spacing:.08em;
+        padding:8px 10px;
       }
-      .brand h1{
-        font-size:18px;
-        letter-spacing:0.18em;
-      }
-      .lang{
-        margin-left:auto;  /* 右寄せ */
-      }
+      .main-page{ padding-top:210px; }
     }
   </style>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
-  <div class="wrap">
+  <header class="site-header">
+    <div class="page header-inner">
+      <div class="topbar">
+        <div class="brand">
+          <img src="/assets/logo-moriris.png" alt="Moriris" />
+          <div class="brand-title">
+            <span data-i18n="brand_meta">MEMBERSHIP</span>
+          </div>
+        </div>
 
-    <header>
-      <div class="brand">
-        <img src="/assets/logo-moriris.png" alt="Moriris" />
-        <h1 id="t_title">MEMBERSHIP</h1>
+        <div>
+          <div class="user-box">
+            <span data-i18n="logged_in_label">ログイン中：</span>
+            <span id="userEmail" class="pill"></span>
+            <button id="logout" class="btn btn-outline" data-i18n="logout">ログアウト</button>
+          </div>
+          <div class="lang" style="margin-top:6px;justify-content:flex-end;">
+            <button id="btn-en">EN</button>
+            <button id="btn-ja" class="active">JP</button>
+          </div>
+        </div>
       </div>
 
-      <div class="lang">
-        <button id="btn-en">EN</button>
-        <button id="btn-ja" class="active">JP</button>
-      </div>
-    </header>
-
-    <!-- カード本体 -->
-    <div class="card">
-
-      <!-- 1. パスワードログイン -->
-      <section class="form-block" aria-label="password login">
-        <h2 class="section-title" id="t_pw_title">パスワードでログイン</h2>
-        <p class="section-note" id="t_pw_desc">
-          すでにパスワードを設定済みの方はこちらからログインしてください。
-        </p>
-
-        <div class="row">
-          <input id="pw-email" type="email" placeholder="you@example.com" aria-label="email" />
-          <input id="pw-password" type="password" placeholder="Password" aria-label="password" />
-          <label class="show-pw-row">
-            <input type="checkbox" id="show-password">
-            <span id="t_show_pw">Show Password</span>
-          </label>
-        </div>
-        <div class="row">
-          <button id="btn-login-pw" class="primary">ログイン</button>
-          <!-- パスワードログイン用メッセージ表示場所 -->
-          <p id="pw-message" class="form-message" aria-live="polite"></p>
-        </div>
-      </section>
-
-      <hr />
-
-      <!-- 2. 新規会員登録 / パスワード再設定 -->
-      <section id="magic-block" class="form-block" aria-label="signup and reset">
-        <h2 class="section-title" id="t_magic_title">新規会員登録 / パスワード再設定</h2>
-        <p class="section-note" id="t_magic_desc">
-          メールアドレスを認証してアカウントを作成します。
-すでにアカウントがある場合は、このリンクからパスワード再設定も行えます。
-        </p>
-
-        <div class="agree-row">
-          <label class="agree-label">
-            <input type="checkbox" id="agree">
-            <span id="t_agree_text">
-              「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および
-              「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」
-              を読んで同意しました。
-            </span>
-          </label>
-        </div>
-
-        <div class="row">
-          <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
-          <button id="btn-magic" class="primary" disabled>メールを送る</button>
-          <!-- 新規登録 / パスワード再設定用メッセージ表示場所 -->
-          <p id="magic-message" class="form-message" aria-live="polite"></p>
-        </div>
-      </section>
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="home" data-i18n="tab_home">HOME</button>
+        <button class="tab-btn" data-tab="animation" data-i18n="tab_animation">ANIMATION</button>
+        <button class="tab-btn" data-tab="account" data-i18n="tab_account">ACCOUNT</button>
+      </nav>
     </div>
+  </header>
+
+  <div class="page main-page">
+    <main>
+      <!-- 未ログイン時に表示する案内 -->
+      <div id="notLoggedAlert" class="card hidden" style="background:#fff7e0;border:1px solid #f3d38a;">
+        <p id="notLoggedText" class="muted" style="font-size:14px;margin-bottom:8px;" data-i18n="status_not_logged"></p>
+        <a id="notLoggedLink" href="./" style="font-size:14px;" data-i18n="not_logged_back_link">ログイン画面に戻る</a>
+      </div>
+
+      <!-- HOME -->
+      <section id="tab-home" class="tab-pane active">
+        <div class="card home-layout">
+          <div id="pwBanner" class="pw-banner hidden" data-i18n="pw_banner_text">
+            パスワードが未設定です。こちらをクリックして設定してください。
+          </div>
+
+          <div>
+            <h2 data-i18n="home_title">ようこそ、モリリス メンバーシップへ</h2>
+            <p class="muted" data-i18n="home_intro">メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。</p>
+            <img
+              src="https://member.moriris.com/assets/home-img.png"
+              alt="Moriris members home illustration"
+              style="width:100%;max-width:720px;border-radius:16px;margin:16px 0;"
+            />
+          </div>
+
+          <div>
+            <h3 data-i18n="home_how_title">メンバーシップの楽しみ方</h3>
+            <ul style="margin:4px 0 0;padding-left:18px;font-size:13px;line-height:1.7;">
+              <li data-i18n="home_how_1">ANIMATIONタブからメンバー限定アニメを視聴できます。</li>
+              <li data-i18n="home_how_3">プランの確認や変更は ACCOUNTタブからいつでも行うことができます。</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ANIMATION -->
+      <section id="tab-animation" class="tab-pane">
+        <div class="card">
+          <h2 data-i18n="anim_title">メンバー限定アニメ</h2>
+          <p class="muted" id="animGateText">Standardプランに登録すると、メンバー限定のアニメを視聴できます。</p>
+
+          <button id="btnSubscribeAnim" class="btn btn-primary hidden add-gap" data-i18n="btn_subscribe">
+            Standardプランに登録する
+          </button>
+
+          <div class="video-sort" id="videoSortRow">
+            <span data-i18n="video_sort_label">表示順：</span>
+            <button type="button" class="video-sort-btn active" data-sort="episode" data-i18n="video_sort_episode">エピソード順</button>
+            <button type="button" class="video-sort-btn" data-sort="new" data-i18n="video_sort_new">新着順</button>
+          </div>
+
+          <div id="videos" class="video-grid"></div>
+        </div>
+      </section>
+
+      <!-- ACCOUNT -->
+      <section id="tab-account" class="tab-pane">
+        <div class="card">
+          <h2 data-i18n="account_title">アカウント・プラン情報</h2>
+          <p class="muted" data-i18n="account_intro">現在のプランやサブスクリプションの変更・解約は、このページから行うことができます。</p>
+
+          <div class="status-box">
+            <div>
+              <span data-i18n="plan_label">現在のプラン：</span>
+              <span id="planLabelText">Free</span>
+            </div>
+            <p id="statusText" class="muted" style="margin-top:6px;">ログイン状態を確認しています…</p>
+          </div>
+
+          <div class="cta-row">
+            <button id="btnSubscribe" class="btn btn-primary hidden" data-i18n="btn_subscribe">Standardプランに登録する</button>
+            <button id="btnCancel" class="btn btn-danger hidden" data-i18n="btn_cancel">サブスクを解約する</button>
+            <button id="btnDeleteAccount" class="btn btn-danger hidden" data-i18n="btn_delete">アカウントを削除する</button>
+          </div>
+
+          <div id="deleteConfirmBox" class="status-box hidden" style="margin-top:12px;background:#ffe7e3;border-color:#ffb3a7;color:#8b1a07;">
+            <p id="deleteConfirmText" style="margin-bottom:8px;" data-i18n="delete_confirm">本当にアカウントを削除しますか？この操作は取り消せません。</p>
+            <div class="cta-row">
+              <button id="btnDeleteConfirm" class="btn btn-danger" data-i18n="delete_confirm_yes">はい、削除します</button>
+              <button id="btnDeleteCancel" class="btn btn-outline" data-i18n="delete_confirm_no">キャンセル</button>
+            </div>
+            <p id="deleteStatusMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+          </div>
+
+          <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
+
+          <h3 data-i18n="email_change_title">メールアドレスの変更</h3>
+          <p class="muted" data-i18n="email_change_desc">新しいメールアドレスを入力すると、確認メールを送信します。メール内のリンクから変更を完了してください。</p>
+
+          <p style="font-size:13px;margin-top:8px;">
+            <span data-i18n="email_change_current">現在のメールアドレス：</span>
+            <strong id="currentEmailText"></strong>
+          </p>
+
+          <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
+            <input id="emailNew" type="email" class="input" placeholder="new-address@example.com"/>
+            <button id="btnChangeEmail" class="btn btn-outline" data-i18n="email_change_btn">変更用メールを送信</button>
+          </div>
+
+          <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+
+          <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
+
+          <div id="pwSection" class="hidden">
+            <h3 data-i18n="pw_setup_title">パスワードの設定</h3>
+            <p class="muted" data-i18n="pw_setup_desc">初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。</p>
+            <small data-i18n="pw_setup_note">セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。</small>
+
+            <form id="pwForm" class="pw-form" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
+              <input id="pwNew" type="password" class="input" data-i18n-placeholder="pw_placeholder_new" placeholder="新しいパスワード（8文字以上）"/>
+              <input id="pwNew2" type="password" class="input" data-i18n-placeholder="pw_placeholder_confirm" placeholder="確認のため、同じパスワードをもう一度"/>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <input type="checkbox" id="pwShowSetup" />
+                <label for="pwShowSetup" style="font-size:13px;" data-i18n="pw_show_label">パスワードを表示する</label>
+              </div>
+              <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">パスワードを設定する</button>
+            </form>
+            <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+          </div>
+
+          <div id="pwChangeSection" class="hidden" style="margin-top:18px;">
+            <h3 data-i18n="pw_change_title">パスワードの変更</h3>
+            <p class="muted" data-i18n="pw_change_desc">現在ログインしているアカウントのパスワードを変更できます。古いパスワードの入力は不要です。</p>
+            <small data-i18n="pw_change_note">セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。</small>
+
+            <form id="pwChangeForm" class="pw-form" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
+              <input id="pwChangeNew" type="password" class="input" data-i18n-placeholder="pw_placeholder_new" placeholder="新しいパスワード（8文字以上）"/>
+              <input id="pwChangeNew2" type="password" class="input" data-i18n-placeholder="pw_placeholder_confirm" placeholder="確認のため、同じパスワードをもう一度"/>
+              <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
+                <input type="checkbox" id="pwShowChange" />
+                <label for="pwShowChange" style="font-size:13px;" data-i18n="pw_show_label">パスワードを表示する</label>
+              </div>
+              <button id="pwChangeSubmit" type="submit" class="btn btn-outline" data-i18n="pw_change_btn">パスワードを変更する</button>
+            </form>
+            <p id="pwChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
+          </div>
+        </div>
+      </section>
+    </main>
 
     <footer>
-      <span id="t_note">メールが届かない場合は迷惑メールフォルダをご確認ください。</span>
+      <div class="sns-row">
+        <a class="sns-icon" href="https://www.youtube.com/@moriris_world" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/></svg>
+        </a>
+        <a class="sns-icon" href="https://x.com/moriris_world" target="_blank" rel="noopener noreferrer" aria-label="X">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 4H16.4L12.9 8.3 10 4H5.1l5.2 7.4L5 20h2.5l3.8-4.7L14 20h4.9l-5.5-7.9L18.9 4zm-3 14-6-8.7L9.2 7h.9l6 8.7.7 1.3z"/></svg>
+        </a>
+        <a class="sns-icon" href="https://www.tiktok.com/@moriris_world_" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.5 7.3a4.4 4.4 0 0 1-2.7-1V14a4.9 4.9 0 1 1-4.9-4.9 5 5 0 0 1 1 .1v2.1a2.8 2.8 0 0 0-1-.2 2.8 2.8 0 1 0 2.8 2.8V3.9h2.2a4.4 4.4 0 0 0 2.6 2.5z"/></svg>
+        </a>
+        <a class="sns-icon" href="https://www.pinterest.com/moriris_world/" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.9 2 3 5.4 3 10.2c0 3.2 1.8 5.8 4.6 6.9-.1-.6-.3-1.5 0-2.2.2-.6 1.4-5.8 1.4-5.8s-.3-.7-.3-1.6c0-1.5.9-2.6 2-2.6.9 0 1.4.7 1.4 1.6 0 1-.6 2.4-.9 3.7-.3 1.1.6 2.1 1.7 2.1 2 0 3.6-2.1 3.6-5.1 0-2.7-1.9-4.6-4.7-4.6-3.2 0-5.1 2.4-5.1 4.9 0 1 .4 2 .9 2.6.1.1.1.2.1.4-.1.4-.3 1.1-.4 1.3-.1.2-.2.3-.4.2-1.5-.7-2.4-2.9-2.4-4.7 0-3.8 2.8-7.3 8-7.3 4.2 0 7.4 3 7.4 6.9 0 4.1-2.6 7.4-6.2 7.4-1.2 0-2.3-.6-2.7-1.4l-.7 2.6c-.3 1-.9 2.3-1.3 3.1.9.3 1.8.4 2.8.4 5.1 0 9-3.4 9-8.8C21 5.6 17.1 2 12 2z"/></svg>
+        </a>
+      </div>
+      <div data-i18n="footer_note">最新情報は各種SNSでお知らせします。</div>
+      <div id="legalLinks" style="margin-top:4px;font-size:11px;"></div>
     </footer>
   </div>
 
+<script>
+  const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
+  const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+  const SITE_TOP_URL = "https://member.moriris.com/";
+  const PRICE_ID_STANDARD = "price_1SZ4pbJBnnPY5Sg2uplAWUVc";
 
-  <script>
-    /***** Supabase クライアント *****/
-    const SUPABASE_URL = "https://sqwyfscumunyhsvsvejv.supabase.co";
-    const SUPABASE_ANON_KEY =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxd3lmc2N1bXVueWhzdnN2ZWp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0ODM4NDQsImV4cCI6MjA3NzA1OTg0NH0.P_6eP5E_Du82IEI1gzn4PKQjnqlVGoptmZZR9aIiXNU";
+  const sb = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
+    {
+      auth: { persistSession:true, autoRefreshToken:true, detectSessionInUrl:true }
+    }
+  );
 
-    const sb = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY,
+  const $ = (s)=>document.querySelector(s);
+  const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
+  const debugOn = isLocal && new URL(location.href).searchParams.get("debug")==="1";
+  if (debugOn) gtag('set', 'debug_mode', true);
+
+  const log = (...a)=>{ if(!debugOn) return; console.log("[debug]", ...a); };
+  function gaEvent(name, params = {}) { if (typeof window.gtag !== "function") return; window.gtag("event", name, params); }
+
+  const I18N = /* ここはあなたの既存I18Nをそのまま */ window.I18N || null;
+</script>
+
+<script>
+  // ==== 既存I18Nをそのまま貼る（省略せずに実運用ではあなたのI18N定義を置いてください） ====
+  // ※この回答では長文化しすぎるため、あなたのI18N定義を「変更なしでそのまま」残してください。
+</script>
+
+<script>
+  // ===== ここから：Cloudflare Stream + 外出しJSON で動画を描画 =====
+
+  const state = { plan:"free", statusCode:"checking", hasPassword:false };
+  let currentLang = "ja";
+  const langKey = "moriris_lang_members";
+  let currentUser = null;
+
+  // 外出しJSON
+  const VIDEO_JSON_URL = "/data/video.json";
+
+  // JSONから埋め込み情報を受け取る
+  const videoConfig = {
+    cloudflare: { customer_code:"", iframe_params:"controls=true&loop=true&preload=metadata" },
+    episodes: []
+  };
+
+  // tokenキャッシュ（同一セッション内での連続描画を軽くする）
+  const tokenCacheKey = (uid)=>`cf_stream_token_${uid}`;
+
+  async function loadVideoConfig(){
+    try{
+      const res = await fetch(VIDEO_JSON_URL, { cache:"no-store" });
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+
+      if (data?.cloudflare?.customer_code) videoConfig.cloudflare.customer_code = String(data.cloudflare.customer_code);
+      if (data?.cloudflare?.iframe_params) videoConfig.cloudflare.iframe_params = String(data.cloudflare.iframe_params);
+
+      const eps = Array.isArray(data?.episodes) ? data.episodes : [];
+      videoConfig.episodes = eps.filter(ep => !Object.prototype.hasOwnProperty.call(ep, "visible") || ep.visible !== false);
+
+      log("video config loaded", videoConfig);
+    }catch(e){
+      console.error("video json load error", e);
+      videoConfig.episodes = [];
+    }
+  }
+
+  function getCfBase(){
+    const code = videoConfig.cloudflare.customer_code;
+    // code は "customer-xxxx" の形式
+    return `https://${code}.cloudflarestream.com`;
+  }
+
+  async function getSignedTokenForUid(videoUid){
+    // まずセッション内キャッシュ
+    const cached = sessionStorage.getItem(tokenCacheKey(videoUid));
+    if (cached) return cached;
+
+    const { data:sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+    if (!token) throw new Error("no supabase access token");
+
+    // Supabase Edge Function（後述）へ
+    const res = await fetch(
+      "https://sqwyfscumunyhsvsvejv.functions.supabase.co/get-stream-token",
       {
-        auth: {
-          persistSession: true,        // セッションを localStorage に保存
-          autoRefreshToken: true,      // トークン自動更新
-          detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "Authorization":`Bearer ${token}`
         },
+        body: JSON.stringify({ video_uid: videoUid })
       }
     );
-
-    /***** 多言語テキスト *****/
-    const I18N = {
-      ja:{
-        title:"MEMBERSHIP",
-        pwTitle:"パスワードでログイン",
-        pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
-        pwButton:"ログイン",
-        magicTitle:"新規会員登録 / パスワード再設定",
-        magicDesc:"メールアドレスを認証してアカウントを作成します。\nすでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
-        magicButton:"メールを送る",
-        hint:"メールが届かない場合は迷惑メールフォルダをご確認ください。",
-        needEmail:"メールアドレスを入力してください。",
-        needPassword:"パスワードを入力してください。",
-        needAgree:"利用規約とプライバシーポリシーへの同意が必要です。",
-        invalidEmail:"メールアドレスの形式が正しくありません。",
-        sent:"認証メールを送信しました。",
-        pwLoginFailed:"ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。",
-        errorPrefix:"エラー：",
-        agreeText:
-          '「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および ' +
-          '「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」 を読んで同意しました。'
-      },
-      en:{
-        title:"MEMBERSHIP",
-        pwTitle:"Log in with password",
-        pwDesc:"If you have already set a password, you can log in here.",
-        pwButton:"Log in",
-        magicTitle:"Sign up / Reset password",
-        magicDesc:"Verify your email address to create an account.\nIf you already have an account, you can also reset your password using this link.",
-        magicButton:"Send email",
-        hint:"If you don't see the email, please check your spam folder.",
-        needEmail:"Please enter your email address.",
-        needPassword:"Please enter your password.",
-        needAgree:"Please read and agree to the Terms of Service and Privacy Policy.",
-        invalidEmail:"The email format is invalid.",
-        sent:"A verification email has been sent.",
-        pwLoginFailed:"Login failed. Please check your email and password.",
-        errorPrefix:"Error: ",
-        agreeText:
-          'I have read and agree to the <a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> ' +
-          'and <a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a>.'
-      }
-    };
-
-    /***** DOM 取得 *****/
-    const $ = (s)=>document.querySelector(s);
-
-    const agreeCheckbox = $("#agree");
-    const magicBtn = $("#btn-magic");
-    const pwLoginBtn = $("#btn-login-pw");
-    const pwMsg = $("#pw-message");
-    const magicMsg = $("#magic-message");
-
-    const btnJa = $("#btn-ja");
-    const btnEn = $("#btn-en");
-
-    /***** メッセージ表示ヘルパ *****/
-    function showPwMessage(text, type = "error"){
-      if(!pwMsg) return;
-      pwMsg.textContent = text || "";
-      pwMsg.classList.remove("error","success");
-      if(text){
-        pwMsg.classList.add(type);
-      }
+    if (!res.ok){
+      const t = await res.text().catch(()=> "");
+      throw new Error(`get-stream-token failed: ${res.status} ${t}`);
     }
+    const data = await res.json();
+    if (!data?.token) throw new Error("token missing");
+    sessionStorage.setItem(tokenCacheKey(videoUid), data.token);
+    return data.token;
+  }
 
-    function showMagicMessage(text, type = "error"){
-      if(!magicMsg) return;
-      magicMsg.textContent = text || "";
-      magicMsg.classList.remove("error","success");
-      if(text){
-        magicMsg.classList.add(type);
-      }
-    }
+  async function buildIframeSrc(videoUid){
+    const token = await getSignedTokenForUid(videoUid);
+    const base = getCfBase();
+    const qs = videoConfig.cloudflare.iframe_params || "controls=true&loop=true&preload=metadata";
+    return `${base}/${encodeURIComponent(token)}/iframe?${qs}`;
+  }
 
-    /***** 利用規約チェック制御 *****/
-    function updateMagicDisabled(){
-      magicBtn.disabled = !agreeCheckbox.checked;
-    }
-    agreeCheckbox.addEventListener("change", updateMagicDisabled);
+  // ==== ここから下は、あなたの既存ロジックを“最小変更”で繋ぐ ====
 
-    /***** 言語切り替え *****/
-    const langKey = "moriris_lang";
+  // 既存の applyLang / タブ切替 / sort などは、あなたの元コードをそのまま使用してください。
+  // ここでは「renderVideosForPlan」だけ差し替えます。
 
-    function setLang(lang){
-      localStorage.setItem(langKey, lang);
-      const t = I18N[lang];
+  let videoSortMode = "episode";
 
-      $("#t_title").textContent = t.title;
-      $("#t_pw_title").textContent = t.pwTitle;
-      $("#t_pw_desc").textContent = t.pwDesc;
-      $("#btn-login-pw").textContent = t.pwButton;
-      $("#t_magic_title").textContent = t.magicTitle;
-      $("#t_magic_desc").textContent = t.magicDesc;
-      $("#btn-magic").textContent = t.magicButton;
-      $("#t_note").textContent = t.hint;
-      $("#t_agree_text").innerHTML = t.agreeText;
+  function renderVideosForPlan(plan, mode = videoSortMode){
+    videoSortMode = mode;
+    const wrap = document.getElementById("videos");
+    if (!wrap) return;
+    wrap.innerHTML = "";
 
-      btnJa.classList.toggle("active", lang === "ja");
-      btnEn.classList.toggle("active", lang === "en");
+    // tierフィルタ
+    let episodes = videoConfig.episodes.filter(v => (plan === "standard") ? true : v.tier === "free");
 
-      updateMagicDisabled();
-    }
-
-    btnJa.onclick = ()=>setLang("ja");
-    btnEn.onclick = ()=>setLang("en");
-
-    setLang(
-      localStorage.getItem(langKey) ||
-      ((navigator.language||"ja").startsWith("ja") ? "ja":"en")
-    );
-
-    /***** メール形式チェック *****/
-    function validateEmail(email){
-      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-    }
-
-    function currentText(){
-      return I18N[localStorage.getItem(langKey) || "ja"];
-    }
-
-    /***** Show Password（パスワード表示切替） *****/
-    const showPw = $("#show-password");
-    const pwField = $("#pw-password");
-    
-    showPw.addEventListener("change", ()=>{
-      pwField.type = showPw.checked ? "text" : "password";
+    // sort
+    episodes.sort((a,b)=>{
+      if (mode === "new") return (b.ep||0) - (a.ep||0);
+      return (a.ep||0) - (b.ep||0);
     });
 
-    /***** フォーカス時にメッセージをクリア *****/
-    $("#pw-email").addEventListener("input", ()=>showPwMessage(""));
-    $("#pw-password").addEventListener("input", ()=>showPwMessage(""));
-    $("#magic-email").addEventListener("input", ()=>showMagicMessage(""));
+    if (!episodes.length){
+      const p = document.createElement("p");
+      p.className = "muted";
+      p.textContent = (window.I18N && window.I18N[currentLang]?.anim_empty) ? window.I18N[currentLang].anim_empty : "現在、視聴可能な動画がありません。";
+      wrap.appendChild(p);
+      return;
+    }
 
-    /***** パスワードログイン *****/
-    pwLoginBtn.onclick = async ()=>{
-      const t = currentText();
-      const lang = localStorage.getItem(langKey) || "ja";
-      const email = $("#pw-email").value.trim();
-      const password = $("#pw-password").value;
+    for (const v of episodes){
+      const card = document.createElement("div");
+      card.className = "video-card";
 
-      showPwMessage(""); // いったんクリア
+      const title = v.title || `Episode ${v.ep || ""}`;
+      const uid = v.cf_uid;
 
-      if(!email){
-        showPwMessage(t.needEmail, "error");
-        return;
-      }
-      if(!validateEmail(email)){
-        showPwMessage(t.invalidEmail, "error");
-        return;
-      }
-      if(!password){
-        showPwMessage(t.needPassword, "error");
-        return;
-      }
+      // 先に“読み込み中”枠を出す
+      card.innerHTML = `
+        <div style="position:relative;background:#000;aspect-ratio:16/9;">
+          <div class="muted" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;">
+            Loading…
+          </div>
+        </div>
+        <div class="video-title">${title}</div>
+      `;
+      wrap.appendChild(card);
 
-      pwLoginBtn.disabled = true;
+      // 署名URLを取得して iframe に差し替え
+      (async ()=>{
+        try{
+          if (!uid) throw new Error("cf_uid missing in json");
+          const src = await buildIframeSrc(uid);
 
-      const { error } = await sb.auth.signInWithPassword({ email, password });
+          const frameWrap = card.querySelector("div[style*='aspect-ratio']");
+          if (!frameWrap) return;
 
-      pwLoginBtn.disabled = false;
-
-      if(error){
-        console.error("Login error:", error.message);
-        showPwMessage(t.pwLoginFailed, "error");
-        return;
-      }
-
-      showPwMessage("", "success");
-
-      gtag('event', 'login_success', {
-        method: 'password',
-        funnel_step: 'login_complete',
-        lang: lang
-      });
-      
-      window.location.href = `/members.html?lang=${lang}`;
-    };
-
-    /***** メール認証（新規 / PWリセット） *****/
-    magicBtn.onclick = async ()=>{
-      const t = currentText();
-      const lang = localStorage.getItem(langKey) || "ja";
-      const email = $("#magic-email").value.trim();
-
-      showMagicMessage(""); // いったんクリア
-
-      if(!email){
-        showMagicMessage(t.needEmail, "error");
-        return;
-      }
-      if(!validateEmail(email)){
-        showMagicMessage(t.invalidEmail, "error");
-        return;
-      }
-      if(!agreeCheckbox.checked){
-        showMagicMessage(t.needAgree, "error");
-        return;
-      }
-
-      magicBtn.disabled = true;
-
-      const { error } = await sb.auth.signInWithOtp({
-        email,
-        options:{
-          shouldCreateUser:true,
-          emailRedirectTo:`https://member.moriris.com/members.html?lang=${lang}`
+          frameWrap.innerHTML = `
+            <iframe
+              src="${src}"
+              title="${title}"
+              frameborder="0"
+              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+              allowfullscreen
+              loading="lazy"
+              style="width:100%;height:100%;position:absolute;inset:0;border:none;"
+            ></iframe>
+          `;
+        }catch(e){
+          console.error(e);
+          const frameWrap = card.querySelector("div[style*='aspect-ratio']");
+          if (frameWrap){
+            frameWrap.innerHTML = `
+              <div class="muted" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;">
+                Failed to load
+              </div>
+            `;
+          }
         }
+      })();
+    }
+  }
+
+  // sortボタン
+  document.addEventListener("click", (e)=>{
+    const videoSortBtn = e.target.closest(".video-sort-btn");
+    if (videoSortBtn){
+      const mode = videoSortBtn.dataset.sort || "episode";
+      document.querySelectorAll(".video-sort-btn").forEach(b=> b.classList.toggle("active", b===videoSortBtn));
+      renderVideosForPlan(state.plan, mode);
+    }
+  });
+
+  // タブ切替
+  document.querySelectorAll(".tab-btn").forEach(btn=>{
+    btn.addEventListener("click", ()=>{
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active", b===btn));
+      document.querySelectorAll(".tab-pane").forEach(p=>{
+        p.classList.toggle("active", p.id === "tab-"+tab);
       });
+    });
+  });
 
-      magicBtn.disabled = false;
+  const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
-      if(error){
-        console.error("Magic link error:", error.message);
-        showMagicMessage(t.errorPrefix + error.message, "error");
-      } else {
-        showMagicMessage(t.sent, "success");
-      }
+  async function getUserWithRetry({tries=40, interval=150}={}){
+    try{ await sb.auth.exchangeCodeForSession(window.location.href); }catch(e){ log("exchange_err", String(e)); }
+    for(let i=0;i<tries;i++){
+      const { data:{ user } } = await sb.auth.getUser();
+      if (user) return user;
+      await sleep(interval);
+    }
+    return null;
+  }
+
+  async function loadProfileOrCreate(userId){
+    let { data:prof, error } = await sb.from("profiles").select("id,tier,is_active,has_password").eq("id", userId).single();
+    const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
+    if (notFound){
+      const up = await sb.from("profiles").upsert({ id:userId, tier:"free", is_active:false, has_password:false }, { onConflict:"id" });
+      if (up.error) return { data:null, error:up.error };
+      ({ data:prof, error } = await sb.from("profiles").select("id,tier,is_active,has_password").eq("id", userId).single());
+    }
+    return { data:prof, error };
+  }
+
+  async function main(){
+    // ここはあなたの既存 applyLang をそのまま使ってOK
+    // 先に動画JSONを読み込み
+    await loadVideoConfig();
+
+    const user = await getUserWithRetry();
+    if (!user){
+      document.getElementById("userEmail").textContent = "-";
+      const alertBox = document.getElementById("notLoggedAlert");
+      if (alertBox) alertBox.classList.remove("hidden");
+      return;
+    }
+
+    currentUser = user;
+    document.getElementById("userEmail").textContent = user.email || "";
+
+    const profRes = await loadProfileOrCreate(user.id);
+    if (profRes.error || !profRes.data) return;
+
+    const prof = profRes.data;
+    const tier = (prof.tier || "free").toLowerCase();
+    const isActive = !!prof.is_active;
+
+    if (!isActive || tier==="free"){
+      state.plan = "free";
+      renderVideosForPlan("free", videoSortMode);
+    }else{
+      state.plan = "standard";
+      renderVideosForPlan("standard", videoSortMode);
+    }
+
+    document.getElementById("logout").onclick = async ()=>{
+      try{ await sb.auth.signOut(); }catch{}
+      location.replace("./");
     };
-  </script>
+  }
+
+  main();
+</script>
 
 </body>
 </html>
