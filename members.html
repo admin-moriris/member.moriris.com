@@ -628,7 +628,8 @@
     }
   );
 
-  const PRICE_ID_STANDARD = "price_1SZ4pbJBnnPY5Sg2uplAWUVc";
+  const BILLING_JSON_URL = "https://member.moriris.com/data/billing.json";
+  let BILLING_CONFIG = { stripe: { standard: { price_id: null } } };
 
   const $ = (s)=>document.querySelector(s);
   const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
@@ -870,6 +871,18 @@
     });
   }
 
+  async function loadBillingConfig(){
+    try{
+      const res = await fetch(BILLING_JSON_URL, { cache: "no-store" });
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      BILLING_CONFIG = data || BILLING_CONFIG;
+      log("billing json loaded", BILLING_CONFIG);
+    }catch(e){
+      console.error("billing json load error", e);
+    }
+  }
+  
   async function loadVideoConfig(){
     try{
       const res = await fetch(VIDEO_JSON_URL, { cache: "no-store" });
@@ -888,6 +901,19 @@
       console.error("video json load error", e);
       VIDEO_CONFIG = { cloudflare:null, episodes:[] };
       renderTagFilterUI();
+    }
+  }
+
+  async function loadBillingConfig(){
+    try{
+      const res = await fetch(BILLING_JSON_URL, { cache: "no-store" });
+      if(!res.ok) throw new Error("HTTP " + res.status);
+      const data = await res.json();
+      BILLING_CONFIG = data || BILLING_CONFIG;
+      log("billing json loaded", BILLING_CONFIG);
+    }catch(e){
+      console.error("billing json load error", e);
+      BILLING_CONFIG = { stripe: { standard: { price_id: null } } };
     }
   }
 
@@ -1125,6 +1151,13 @@
     const token = sess?.session?.access_token;
     const i18n = I18N[currentLang] || I18N["ja"] || {};
 
+    const priceId = BILLING_CONFIG?.stripe?.standard?.price_id;
+    if (!priceId){
+      console.error("missing price_id in billing.json", BILLING_CONFIG);
+      alert("課金設定の読み込みに失敗しました（billing.json を確認してください）");
+      return;
+    }
+    
     const res = await fetch(
       "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
       {
@@ -1135,13 +1168,13 @@
         },
         body:JSON.stringify({
           user_id:userId,
-          price_id:PRICE_ID_STANDARD,
+          price_id: priceId,
           success_url: window.location.href,
           cancel_url: window.location.href
         })
       }
     );
-
+    
     if (!res.ok){
       const bodyText = await res.text().catch(()=> "");
       console.error("createCheckout failed:", res.status, bodyText);
@@ -1383,7 +1416,9 @@
     document.querySelectorAll(".view-btn").forEach(b=>{
       b.classList.toggle("active", b.dataset.view === viewMode);
     });
-
+　　　
+    await loadBillingConfig();
+    
     await loadVideoConfig();
 
     state.statusCode = "checking";
