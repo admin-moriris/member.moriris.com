@@ -1,7 +1,7 @@
 {
   "cloudflare": {
     "customer_code": "customer-gm6ub8zzgd4gin4w.cloudflarestream.com",
-    "iframe_params": "controls=true&loop=true&preload=true"
+    "iframe_params": "controls=true&muted=true&loop=true"
   },
   "episodes": [
     {
