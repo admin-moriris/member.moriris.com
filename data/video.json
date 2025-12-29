@@ -4,9 +4,26 @@
     "iframe_params": "controls=true&loop=true&preload=metadata"
   },
   "episodes": [
-    { "ep": 1, "title": "For Sleep 00001", "cf_uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "tier": "free", "visible": true },
-    { "ep": 2, "title": "For Sleep 00002", "cf_uid": "b6f93970518a2632c02222b94116ee40", "tier": "standard", "visible": true },
-    { "ep": 3, "title": "For Sleep 00003", "cf_uid": "cccccccccccccccccccccccccccccccc", "tier": "standard", "visible": true },
-    { "ep": 4, "title": "For Sleep 00004", "cf_uid": "dddddddddddddddddddddddddddddddd", "tier": "standard", "visible": true }
+    {
+      "ep": 1,
+      "title": "For Sleep 00001",
+      "cf_uid": "91d726e107418999e95982ad09ff8c27",
+      "tier": "free",
+      "visible": true
+    },
+    {
+      "ep": 2,
+      "title": "For Sleep 00002",
+      "cf_uid": "b6f93970518a2632c02222b94116ee40",
+      "tier": "standard",
+      "visible": true
+    },
+    {
+      "ep": 3,
+      "title": "For Focus 00001",
+      "cf_uid": "cccccccccccccccccccccccccccccccc",
+      "tier": "standard",
+      "visible": true
+    }
   ]
 }
