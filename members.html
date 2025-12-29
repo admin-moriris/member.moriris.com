@@ -1222,7 +1222,7 @@
       card.className = "video-card";
 
       const title = v.title || `Episode ${v.ep || ""}`.trim();
-      const src = buildCloudflareIframeSrc(cf, v.cf_uid);
+      const src = `https://${customer_code}/${uid}/iframe?${iframe_params}`;
 
       // JSONの cf_uid / cloudflare.customer_code が揃っていない場合は、空表示（安全）
       const playerHtml = src
