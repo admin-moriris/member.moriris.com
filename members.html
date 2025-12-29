@@ -448,7 +448,7 @@
 </script>
 
 <script>
-  // ===== ここから：Cloudflare Stream + 外出しJSON で動画を描画 =====
+  // ===== Cloudflare Stream + 外出しJSON で動画を描画（軽量化＆表示修正込み） =====
 
   const state = { plan:"free", statusCode:"checking", hasPassword:false };
   let currentLang = "ja";
@@ -488,12 +488,10 @@
 
   function getCfBase(){
     const code = videoConfig.cloudflare.customer_code;
-    // code は "customer-xxxx" の形式
     return `https://${code}.cloudflarestream.com`;
   }
 
   async function getSignedTokenForUid(videoUid){
-    // まずセッション内キャッシュ
     const cached = sessionStorage.getItem(tokenCacheKey(videoUid));
     if (cached) return cached;
 
@@ -501,7 +499,6 @@
     const token = sess?.session?.access_token;
     if (!token) throw new Error("no supabase access token");
 
-    // Supabase Edge Function（後述）へ
     const res = await fetch(
       "https://sqwyfscumunyhsvsvejv.functions.supabase.co/get-stream-token",
       {
@@ -530,11 +527,6 @@
     return `${base}/${encodeURIComponent(token)}/iframe?${qs}`;
   }
 
-  // ==== ここから下は、あなたの既存ロジックを“最小変更”で繋ぐ ====
-
-  // 既存の applyLang / タブ切替 / sort などは、あなたの元コードをそのまま使用してください。
-  // ここでは「renderVideosForPlan」だけ差し替えます。
-
   let videoSortMode = "episode";
 
   function renderVideosForPlan(plan, mode = videoSortMode){
@@ -543,10 +535,8 @@
     if (!wrap) return;
     wrap.innerHTML = "";
 
-    // tierフィルタ
     let episodes = videoConfig.episodes.filter(v => (plan === "standard") ? true : v.tier === "free");
 
-    // sort
     episodes.sort((a,b)=>{
       if (mode === "new") return (b.ep||0) - (a.ep||0);
       return (a.ep||0) - (b.ep||0);
@@ -567,7 +557,6 @@
       const title = v.title || `Episode ${v.ep || ""}`;
       const uid = v.cf_uid;
 
-      // 先に“読み込み中”枠を出す
       card.innerHTML = `
         <div style="position:relative;background:#000;aspect-ratio:16/9;">
           <div class="muted" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;">
@@ -578,7 +567,6 @@
       `;
       wrap.appendChild(card);
 
-      // 署名URLを取得して iframe に差し替え
       (async ()=>{
         try{
           if (!uid) throw new Error("cf_uid missing in json");
@@ -619,32 +607,32 @@
     if (videoSortBtn){
       const mode = videoSortBtn.dataset.sort || "episode";
       document.querySelectorAll(".video-sort-btn").forEach(b=> b.classList.toggle("active", b===videoSortBtn));
-      renderVideosForPlan(state.plan, mode);
+      // ANIMATIONタブでのみ再描画（軽量化）
+      if (document.getElementById("tab-animation")?.classList.contains("active")){
+        renderVideosForPlan(state.plan, mode);
+      }else{
+        videoSortMode = mode;
+      }
     }
   });
 
-  // タブ切替
+  // タブ切替（ANIMATION開いた時だけ動画描画）
+  let videoRendered = false;
   document.querySelectorAll(".tab-btn").forEach(btn=>{
     btn.addEventListener("click", ()=>{
       const tab = btn.dataset.tab;
+
       document.querySelectorAll(".tab-btn").forEach(b=>b.classList.toggle("active", b===btn));
       document.querySelectorAll(".tab-pane").forEach(p=>{
         p.classList.toggle("active", p.id === "tab-"+tab);
       });
+
+      if (tab === "animation" && !videoRendered){
+        renderVideosForPlan(state.plan, videoSortMode);
+        videoRendered = true;
+      }
     });
   });
-
-  const sleep = ms => new Promise(r=>setTimeout(r,ms));
-
-  async function getUserWithRetry({tries=40, interval=150}={}){
-    try{ await sb.auth.exchangeCodeForSession(window.location.href); }catch(e){ log("exchange_err", String(e)); }
-    for(let i=0;i<tries;i++){
-      const { data:{ user } } = await sb.auth.getUser();
-      if (user) return user;
-      await sleep(interval);
-    }
-    return null;
-  }
 
   async function loadProfileOrCreate(userId){
     let { data:prof, error } = await sb.from("profiles").select("id,tier,is_active,has_password").eq("id", userId).single();
@@ -657,12 +645,17 @@
     return { data:prof, error };
   }
 
+  async function getUserOnce(){
+    try{ await sb.auth.exchangeCodeForSession(window.location.href); }catch(e){ log("exchange_err", String(e)); }
+    const { data:{ user } } = await sb.auth.getUser();
+    return user || null;
+  }
+
   async function main(){
-    // ここはあなたの既存 applyLang をそのまま使ってOK
-    // 先に動画JSONを読み込み
+    // 動画JSONは先に読み込む（軽い）
     await loadVideoConfig();
 
-    const user = await getUserWithRetry();
+    const user = await getUserOnce();
     if (!user){
       document.getElementById("userEmail").textContent = "-";
       const alertBox = document.getElementById("notLoggedAlert");
@@ -672,20 +665,34 @@
 
     currentUser = user;
     document.getElementById("userEmail").textContent = user.email || "";
+    const currentEmailText = document.getElementById("currentEmailText");
+    if (currentEmailText) currentEmailText.textContent = user.email || "";
 
     const profRes = await loadProfileOrCreate(user.id);
-    if (profRes.error || !profRes.data) return;
+    if (profRes.error || !profRes.data){
+      console.error("profile load error", profRes.error);
+      const statusText = document.getElementById("statusText");
+      if (statusText) statusText.textContent = "プロフィール情報の取得に失敗しました。";
+      return;
+    }
 
     const prof = profRes.data;
     const tier = (prof.tier || "free").toLowerCase();
     const isActive = !!prof.is_active;
 
+    const planLabel = document.getElementById("planLabelText");
+    const statusText = document.getElementById("statusText");
+
     if (!isActive || tier==="free"){
       state.plan = "free";
-      renderVideosForPlan("free", videoSortMode);
+      if (planLabel) planLabel.textContent = "Free";
+      if (statusText) statusText.textContent = "Freeプランでログイン中です。";
+      // ※初期ロードでは動画を描画しない（ANIMATION開いた時だけ）
     }else{
       state.plan = "standard";
-      renderVideosForPlan("standard", videoSortMode);
+      if (planLabel) planLabel.textContent = "Standard";
+      if (statusText) statusText.textContent = "Standardプランでログイン中です。";
+      // ※初期ロードでは動画を描画しない（ANIMATION開いた時だけ）
     }
 
     document.getElementById("logout").onclick = async ()=>{
