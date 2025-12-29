@@ -7,17 +7,17 @@
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
   <script>
     const isDebug = new URLSearchParams(location.search).get('debug') === '1';
-  
+
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-  
+
     gtag('config', 'G-HWRX6Q9K3E', {
       debug_mode: isDebug,
       linker: { domains: ['official.moriris.com', 'member.moriris.com'] }
     });
   </script>
-  
+
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>MORIRIS MEMBERSHIP</title>
   <style>
@@ -32,10 +32,7 @@
       --shadow:0 10px 32px rgba(0,0,0,.18);
     }
     *{box-sizing:border-box;}
-    html,body{
-      margin:0;
-      height:100%;
-    }
+    html,body{ margin:0; height:100%; }
     body{
       min-height:100vh;
       background-color:#faf8f4;
@@ -47,19 +44,12 @@
       color:var(--ink);
       font-family:system-ui,-apple-system,"Segoe UI",Roboto;
     }
-    .page{
-      max-width:1120px;
-      margin:0 auto;
-      padding:0 18px 32px;
-    }
+    .page{ max-width:1120px; margin:0 auto; padding:0 18px 32px; }
 
     .header-wrap{
-      position:sticky;
-      top:0;
-      z-index:100;
+      position:sticky; top:0; z-index:100;
       padding-bottom:10px;
-      background:
-        linear-gradient(to bottom, rgba(250,248,244,1) 0%, rgba(250,248,244,.95) 70%, rgba(250,248,244,0) 100%);
+      background: linear-gradient(to bottom, rgba(250,248,244,1) 0%, rgba(250,248,244,.95) 70%, rgba(250,248,244,0) 100%);
       backdrop-filter:blur(4px);
     }
 
@@ -70,21 +60,14 @@
       gap:16px;
       margin-bottom:18px;
     }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:18px;
-    }
+    .brand{ display:flex; align-items:center; gap:18px; }
     .brand img{
       max-width:220px;
       height:auto;
       display:block;
       filter:drop-shadow(0 4px 12px rgba(0,0,0,.18));
     }
-    .brand-title{
-      display:flex;
-      align-items:center;
-    }
+    .brand-title{ display:flex; align-items:center; }
     .brand-title span{
       font-size:20px;
       letter-spacing:.22em;
@@ -94,11 +77,7 @@
       white-space:nowrap;
     }
 
-    .lang{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
+    .lang{ display:flex; gap:8px; align-items:center; }
     .lang button{
       border:1px solid #ddd;
       background:#fff;
@@ -124,7 +103,7 @@
       font-weight:600;
       cursor:pointer;
     }
-    
+
     .user-box{
       display:flex;
       align-items:center;
@@ -154,10 +133,7 @@
       color:var(--accent-dark);
       font-weight:600;
     }
-    .btn-outline{ 
-      background:#fff; 
-      color:var(--ink);
-    }
+    .btn-outline{ background:#fff; color:var(--ink); }
     .btn-danger{
       background:#ffe7e3;
       border-color:#ffb3a7;
@@ -199,9 +175,7 @@
       color:var(--accent-dark);
       font-weight:600;
     }
-    .add-gap {
-      margin-bottom: 20px;
-    }
+    .add-gap { margin-bottom: 20px; }
 
     main{ margin-top:40px; }
     .card{
@@ -231,26 +205,6 @@
       font-size:13px;
       margin-top:8px;
       border:1px solid #d7e8c4;
-    }
-    .plan-badge{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding:4px 10px;
-      border-radius:999px;
-      background:#fff;
-      border:1px solid rgba(0,0,0,.05);
-      font-size:13px;
-    }
-    .plan-pill{
-      display:inline-block;
-      padding:2px 8px;
-      border-radius:999px;
-      background:#e9f8ef;
-      color:#0b5130;
-      font-size:11px;
-      text-transform:uppercase;
-      letter-spacing:.16em;
     }
     .cta-row{
       display:flex;
@@ -289,6 +243,7 @@
       display:flex;
       align-items:center;
       gap:8px;
+      flex-wrap:wrap;
     }
     .video-sort-btn{
       border-radius:999px;
@@ -299,6 +254,29 @@
       cursor:pointer;
     }
     .video-sort-btn.active{
+      background:var(--accent);
+      border-color:var(--accent);
+      color:var(--accent-dark);
+      font-weight:600;
+    }
+
+    /* 将来の目的別フィルタ（今は hidden のままでもOK） */
+    .video-filter{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .video-filter .chip{
+      border-radius:999px;
+      border:1px solid #ccc;
+      background:#fff;
+      padding:4px 10px;
+      font-size:12px;
+      cursor:pointer;
+    }
+    .video-filter .chip.active{
       background:var(--accent);
       border-color:var(--accent);
       color:var(--accent-dark);
@@ -342,45 +320,21 @@
 
     .site-header{
       position:fixed;
-      top:0;
-      left:0;
-      right:0;
+      top:0; left:0; right:0;
       z-index:100;
-      background:
-        linear-gradient(to bottom,
-          rgba(250,248,244,1) 0%,
-          rgba(250,248,244,.95) 70%,
-          rgba(250,248,244,0) 100%);
+      background: linear-gradient(to bottom, rgba(250,248,244,1) 0%, rgba(250,248,244,.95) 70%, rgba(250,248,244,0) 100%);
       backdrop-filter:blur(4px);
     }
 
-    .main-page{
-      padding-top:180px;
-    }
+    .main-page{ padding-top:180px; }
 
     @media (max-width: 768px){
-      .topbar{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:8px;
-      }
-      .brand{
-        gap:10px;
-      }
-      .brand img{
-        max-width:180px;
-      }
-      .brand-title span{
-        font-size:16px;
-        letter-spacing:.16em;
-      }
-      .user-box{
-        justify-content:flex-start;
-        flex-wrap:wrap;
-      }
-      .lang{
-        justify-content:flex-start;
-      }
+      .topbar{ flex-direction:column; align-items:flex-start; gap:8px; }
+      .brand{ gap:10px; }
+      .brand img{ max-width:180px; }
+      .brand-title span{ font-size:16px; letter-spacing:.16em; }
+      .user-box{ justify-content:flex-start; flex-wrap:wrap; }
+      .lang{ justify-content:flex-start; }
       .tabs{
         border-radius:16px;
         padding:4px 6px;
@@ -394,9 +348,7 @@
         letter-spacing:.08em;
         padding:8px 10px;
       }
-      .main-page{
-        padding-top:210px;
-      }
+      .main-page{ padding-top:210px; }
     }
   </style>
 
@@ -428,7 +380,7 @@
 
       <nav class="tabs">
         <button class="tab-btn active" data-tab="home" data-i18n="tab_home">HOME</button>
-        <button class="tab-btn" data-tab="animation" data-i18n="tab_animation">ANIMATION</button>
+        <button class="tab-btn" data-tab="videos" data-i18n="tab_videos">VIDEOS</button>
         <button class="tab-btn" data-tab="account" data-i18n="tab_account">ACCOUNT</button>
       </nav>
     </div>
@@ -442,7 +394,7 @@
          class="muted"
          style="font-size:14px;margin-bottom:8px;"
          data-i18n="status_not_logged"></p>
-    
+
       <a id="notLoggedLink"
          href="./"
          style="font-size:14px;"
@@ -461,7 +413,7 @@
         <div>
           <h2 data-i18n="home_title">ようこそ、モリリス メンバーシップへ</h2>
           <p class="muted" data-i18n="home_intro">
-            メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。
+            メンバー限定の動画を、このページからお楽しみいただけます。
           </p>
 
           <img
@@ -472,30 +424,24 @@
         </div>
 
         <div>
-          <h3 data-i18n="home_how_title">
-            メンバーシップの楽しみ方
-          </h3>
+          <h3 data-i18n="home_how_title">メンバーエリアの楽しみ方</h3>
           <ul style="margin:4px 0 0;padding-left:18px;font-size:13px;line-height:1.7;">
-            <li data-i18n="home_how_1">
-              ANIMATIONタブからメンバー限定アニメを視聴できます。
-            </li>
-            <li data-i18n="home_how_3">
-              プランの確認や変更は ACCOUNTタブからいつでも行うことができます。
-            </li>
+            <li data-i18n="home_how_1">VIDEOSタブからメンバー限定動画を視聴できます。</li>
+            <li data-i18n="home_how_2">プランの確認や変更は ACCOUNTタブからいつでも行うことができます。</li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- ANIMATION -->
-    <section id="tab-animation" class="tab-pane">
+    <!-- VIDEOS -->
+    <section id="tab-videos" class="tab-pane">
       <div class="card">
-        <h2 data-i18n="anim_title">メンバー限定アニメ</h2>
-        <p class="muted" id="animGateText">
-          Standardプランに登録すると、メンバー限定のアニメを視聴できます。
+        <h2 data-i18n="videos_title">メンバー限定動画</h2>
+        <p class="muted" id="videoGateText">
+          Standardプランに登録すると、メンバー限定の動画を視聴できます。
         </p>
 
-        <button id="btnSubscribeAnim"
+        <button id="btnSubscribeVideos"
                 class="btn btn-primary hidden add-gap"
                 data-i18n="btn_subscribe">
           Standardプランに登録する
@@ -510,6 +456,9 @@
             新着順
           </button>
         </div>
+
+        <!-- 将来の目的別フィルタ（episode.title から自動抽出も可能 / 今は未使用でもOK） -->
+        <div class="video-filter hidden" id="videoFilterRow" aria-label="Video filters"></div>
 
         <div id="videos" class="video-grid"></div>
       </div>
@@ -528,11 +477,7 @@
             <span data-i18n="plan_label">現在のプラン：</span>
             <span id="planLabelText">Free</span>
           </div>
-          <p id="statusText"
-             class="muted"
-             style="margin-top:6px;">
-            ログイン状態を確認しています…
-          </p>
+          <p id="statusText" class="muted" style="margin-top:6px;">ログイン状態を確認しています…</p>
         </div>
 
         <div class="cta-row">
@@ -551,18 +496,12 @@
         <div id="deleteConfirmBox"
              class="status-box hidden"
              style="margin-top:12px;background:#ffe7e3;border-color:#ffb3a7;color:#8b1a07;">
-          <p id="deleteConfirmText"
-             style="margin-bottom:8px;"
-             data-i18n="delete_confirm">
+          <p id="deleteConfirmText" style="margin-bottom:8px;" data-i18n="delete_confirm">
             本当にアカウントを削除しますか？この操作は取り消せません。
           </p>
           <div class="cta-row">
-            <button id="btnDeleteConfirm" class="btn btn-danger" data-i18n="delete_confirm_yes">
-              はい、削除します
-            </button>
-            <button id="btnDeleteCancel" class="btn btn-outline" data-i18n="delete_confirm_no">
-              キャンセル
-            </button>
+            <button id="btnDeleteConfirm" class="btn btn-danger" data-i18n="delete_confirm_yes">はい、削除します</button>
+            <button id="btnDeleteCancel" class="btn btn-outline" data-i18n="delete_confirm_no">キャンセル</button>
           </div>
           <p id="deleteStatusMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
         </div>
@@ -580,55 +519,30 @@
         </p>
 
         <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;">
-          <input
-            id="emailNew"
-            type="email"
-            class="input"
-            placeholder="new-address@example.com"
-          />
-          <button id="btnChangeEmail" class="btn btn-outline" data-i18n="email_change_btn">
-            変更用メールを送信
-          </button>
+          <input id="emailNew" type="email" class="input" placeholder="new-address@example.com" />
+          <button id="btnChangeEmail" class="btn btn-outline" data-i18n="email_change_btn">変更用メールを送信</button>
         </div>
 
         <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
 
-        <!-- has_password=FALSE のときだけ表示するパスワード設定欄 -->
         <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
 
+        <!-- has_password=FALSE のときだけ表示するパスワード設定欄 -->
         <div id="pwSection" class="hidden">
           <h3 data-i18n="pw_setup_title">パスワードの設定</h3>
           <p class="muted" data-i18n="pw_setup_desc">
             初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
           </p>
-          <small data-i18n="pw_setup_note">
-            セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。
-          </small>
+          <small data-i18n="pw_setup_note">セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。</small>
 
-          <form id="pwForm" class="pw-form" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
-            <input
-              id="pwNew"
-              type="password"
-              class="input"
-              data-i18n-placeholder="pw_placeholder_new"
-              placeholder="新しいパスワード（8文字以上）"
-            />
-            <input
-              id="pwNew2"
-              type="password"
-              class="input"
-              data-i18n-placeholder="pw_placeholder_confirm"
-              placeholder="確認のため、同じパスワードをもう一度"
-            />
+          <form id="pwForm" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
+            <input id="pwNew"  type="password" class="input" data-i18n-placeholder="pw_placeholder_new" placeholder="新しいパスワード（8文字以上）" />
+            <input id="pwNew2" type="password" class="input" data-i18n-placeholder="pw_placeholder_confirm" placeholder="確認のため、同じパスワードをもう一度" />
             <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
               <input type="checkbox" id="pwShowSetup" />
-              <label for="pwShowSetup" style="font-size:13px;" data-i18n="pw_show_label">
-                パスワードを表示する
-              </label>
+              <label for="pwShowSetup" style="font-size:13px;" data-i18n="pw_show_label">パスワードを表示する</label>
             </div>
-            <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">
-              パスワードを設定する
-            </button>
+            <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">パスワードを設定する</button>
           </form>
 
           <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
@@ -640,34 +554,16 @@
           <p class="muted" data-i18n="pw_change_desc">
             現在ログインしているアカウントのパスワードを変更できます。古いパスワードの入力は不要です。
           </p>
-          <small data-i18n="pw_change_note">
-            セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。
-          </small>
+          <small data-i18n="pw_change_note">セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。</small>
 
-          <form id="pwChangeForm" class="pw-form" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
-            <input
-              id="pwChangeNew"
-              type="password"
-              class="input"
-              data-i18n-placeholder="pw_placeholder_new"
-              placeholder="新しいパスワード（8文字以上）"
-            />
-            <input
-              id="pwChangeNew2"
-              type="password"
-              class="input"
-              data-i18n-placeholder="pw_placeholder_confirm"
-              placeholder="確認のため、同じパスワードをもう一度"
-            />
+          <form id="pwChangeForm" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
+            <input id="pwChangeNew"  type="password" class="input" data-i18n-placeholder="pw_placeholder_new" placeholder="新しいパスワード（8文字以上）" />
+            <input id="pwChangeNew2" type="password" class="input" data-i18n-placeholder="pw_placeholder_confirm" placeholder="確認のため、同じパスワードをもう一度" />
             <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
               <input type="checkbox" id="pwShowChange" />
-              <label for="pwShowChange" style="font-size:13px;" data-i18n="pw_show_label">
-                パスワードを表示する
-              </label>
+              <label for="pwShowChange" style="font-size:13px;" data-i18n="pw_show_label">パスワードを表示する</label>
             </div>
-            <button id="pwChangeSubmit" type="submit" class="btn btn-outline" data-i18n="pw_change_btn">
-              パスワードを変更する
-            </button>
+            <button id="pwChangeSubmit" type="submit" class="btn btn-outline" data-i18n="pw_change_btn">パスワードを変更する</button>
           </form>
 
           <p id="pwChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
@@ -678,37 +574,28 @@
 
   <footer>
     <div class="sns-row">
-      <a class="sns-icon" href="https://www.youtube.com/@moriris_world"
-         target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+      <a class="sns-icon" href="https://www.youtube.com/@moriris_world" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/>
         </svg>
       </a>
-      <a class="sns-icon" href="https://x.com/moriris_world"
-         target="_blank" rel="noopener noreferrer" aria-label="X">
+      <a class="sns-icon" href="https://x.com/moriris_world" target="_blank" rel="noopener noreferrer" aria-label="X">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M18.9 4H16.4L12.9 8.3 10 4H5.1l5.2 7.4L5 20h2.5l3.8-4.7L14 20h4.9l-5.5-7.9L18.9 4zm-3 14-6-8.7L9.2 7h.9l6 8.7.7 1.3z"/>
         </svg>
       </a>
-      <a class="sns-icon" href="https://www.tiktok.com/@moriris_world_"
-         target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+      <a class="sns-icon" href="https://www.tiktok.com/@moriris_world_" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M18.5 7.3a4.4 4.4 0 0 1-2.7-1V14a4.9 4.9 0 1 1-4.9-4.9 5 5 0 0 1 1 .1v2.1a2.8 2.8 0 0 0-1-.2 2.8 2.8 0 1 0 2.8 2.8V3.9h2.2a4.4 4.4 0 0 0 2.6 2.5z"/>
         </svg>
       </a>
-      <a class="sns-icon"
-         href="https://www.pinterest.com/moriris_world/"
-         target="_blank"
-         rel="noopener noreferrer"
-         aria-label="Pinterest">
+      <a class="sns-icon" href="https://www.pinterest.com/moriris_world/" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
         <svg viewBox="0 0 24 24" aria-hidden="true">
           <path d="M12 2C6.9 2 3 5.4 3 10.2c0 3.2 1.8 5.8 4.6 6.9-.1-.6-.3-1.5 0-2.2.2-.6 1.4-5.8 1.4-5.8s-.3-.7-.3-1.6c0-1.5.9-2.6 2-2.6.9 0 1.4.7 1.4 1.6 0 1-.6 2.4-.9 3.7-.3 1.1.6 2.1 1.7 2.1 2 0 3.6-2.1 3.6-5.1 0-2.7-1.9-4.6-4.7-4.6-3.2 0-5.1 2.4-5.1 4.9 0 1 .4 2 .9 2.6.1.1.1.2.1.4-.1.4-.3 1.1-.4 1.3-.1.2-.2.3-.4.2-1.5-.7-2.4-2.9-2.4-4.7 0-3.8 2.8-7.3 8-7.3 4.2 0 7.4 3 7.4 6.9 0 4.1-2.6 7.4-6.2 7.4-1.2 0-2.3-.6-2.7-1.4l-.7 2.6c-.3 1-.9 2.3-1.3 3.1.9.3 1.8.4 2.8.4 5.1 0 9-3.4 9-8.8C21 5.6 17.1 2 12 2z"/>
         </svg>
       </a>
     </div>
-    <div data-i18n="footer_note">
-      最新情報は各種SNSでお知らせします。
-    </div>
+    <div data-i18n="footer_note">最新情報は各種SNSでお知らせします。</div>
     <div id="legalLinks" style="margin-top:4px;font-size:11px;"></div>
   </footer>
   </div>
@@ -738,14 +625,9 @@
   const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
   const debugOn = isLocal && new URL(location.href).searchParams.get("debug")==="1";
 
-  if (debugOn) {
-    gtag('set', 'debug_mode', true);
-  }
-  
-  const log = (...a)=>{
-    if(!debugOn) return;
-    console.log("[debug]", ...a);
-  };
+  if (debugOn) { gtag('set', 'debug_mode', true); }
+
+  const log = (...a)=>{ if(!debugOn) return; console.log("[debug]", ...a); };
 
   function gaEvent(name, params = {}) {
     if (typeof window.gtag !== "function") return;
@@ -758,18 +640,16 @@
       logged_in_label:"ログイン中：",
       logout:"ログアウト",
       tab_home:"HOME",
-      tab_animation:"ANIMATION",
+      tab_videos:"VIDEOS",
       tab_account:"ACCOUNT",
       status_not_logged:"未ログインか、ブラウザが変わったためログイン情報を確認できませんでした。もう一度ログインを行ってください。",
       not_logged_back_link:"ログイン画面に戻る",
       pw_banner_text:"パスワードが未設定です。こちらをクリックして設定してください。",
       home_title:"ようこそ、モリリスメンバーズへ",
-      home_intro:"メンバー限定のアニメやデジタル絵本を、このページからお楽しみいただけます。",
+      home_intro:"メンバー限定の動画を、このページからお楽しみいただけます。",
       home_how_title:"メンバーエリアの楽しみ方",
-      home_how_1:"ANIMATIONタブからメンバー限定アニメを視聴できます。",
-      home_how_3:"プランの確認や変更は ACCOUNTタブからいつでも行うことができます。",
-      pw_home_notice_title:"パスワードの設定をお願いします",
-      pw_home_notice_body:"初回登録ではメール認証のみでした。ACCOUNTタブの「パスワードの設定」から、今後ログインに使うパスワードを登録してください。",
+      home_how_1:"VIDEOSタブからメンバー限定動画を視聴できます。",
+      home_how_2:"プランの確認や変更は ACCOUNTタブからいつでも行うことができます。",
       account_title:"アカウント・プラン情報",
       account_intro:"現在のプランやサブスクリプションの変更・解約は、このページから行うことができます。",
       plan_label:"現在のプラン：",
@@ -790,18 +670,21 @@
       delete_processing:"アカウントを削除しています…",
       delete_done:"アカウントを削除しました。ご利用ありがとうございました。",
       delete_error:"アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。",
-      anim_title:"メンバー限定アニメ",
-      anim_gate_free:"Standard プランに登録いただくと、すべてのエピソードが視聴可能になります。",
-      anim_gate_std:"メンバー限定アニメをお楽しみいただけます。",
-      anim_empty:"現在、視聴可能な動画がありません。",
+
+      videos_title:"メンバー限定動画",
+      videos_gate_free:"Standard プランに登録いただくと、すべての動画が視聴可能になります。",
+      videos_gate_std:"メンバー限定動画をお楽しみいただけます。",
+      videos_empty:"現在、視聴可能な動画がありません。",
       video_sort_label:"表示順：",
       video_sort_episode:"エピソード順",
       video_sort_new:"新着順",
+
       footer_note:"最新情報は各種SNSでお知らせします。",
       legal_note:
         '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a> / ' +
         '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a> / '+
         '<a href="https://member.moriris.com/legal.html" target="_blank" rel="noopener">特定商取引法に基づく表記</a>',
+
       email_change_title:"メールアドレスの変更",
       email_change_desc:"新しいメールアドレスを入力すると、確認メールを送信します。メール内のリンクから変更を完了してください。",
       email_change_current:"現在のメールアドレス：",
@@ -813,7 +696,6 @@
       checkout_error:"お手続き中にエラーが発生しました。時間をおいて再度お試しください。",
       portal_error:"サブスクリプション管理ページを開けませんでした。時間をおいて再度お試しください。",
 
-      /* パスワード設定まわり */
       pw_setup_title:"パスワードの設定",
       pw_setup_desc:"初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。",
       pw_setup_note:"セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。",
@@ -827,32 +709,28 @@
       pw_placeholder_new:"新しいパスワード（8文字以上）",
       pw_placeholder_confirm:"確認のため、同じパスワードをもう一度",
       pw_show_label:"パスワードを表示する",
-      
-      /* パスワード変更まわり（has_password=TRUE 向け） */
+
       pw_change_title:"パスワードの変更",
       pw_change_desc:"現在ログインしているアカウントのパスワードを変更できます。古いパスワードの入力は不要です。",
       pw_change_note:"セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。",
       pw_change_btn:"パスワードを変更する",
       pw_change_success:"パスワードを変更しました。次回からは新しいパスワードでログインしてください。"
-      
     },
     en:{
       brand_meta:"MEMBERSHIP",
       logged_in_label:"Logged in as",
       logout:"Logout",
       tab_home:"HOME",
-      tab_animation:"ANIMATION",
+      tab_videos:"VIDEOS",
       tab_account:"ACCOUNT",
       status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
       not_logged_back_link:"Back to login page",
       pw_banner_text:"You haven't set a password yet. Click here to set it.",
       home_title:"Welcome to MORIRIS MEMBERSHIP",
-      home_intro:"Enjoy members-only animations and digital picture books from this page.",
+      home_intro:"Enjoy members-only videos from this page.",
       home_how_title:"How to use this area",
-      home_how_1:"Watch members-only animations from the ANIMATION tab.",
-      home_how_3:"You can check or change your plan anytime from the ACCOUNT tab.",
-      pw_home_notice_title:"Please set your password",
-      pw_home_notice_body:"You initially registered with email verification only. From the ACCOUNT tab (“Set password”), please register the password you will use for login.",
+      home_how_1:"Watch members-only videos from the VIDEOS tab.",
+      home_how_2:"You can check or change your plan anytime from the ACCOUNT tab.",
       account_title:"Account & Plan",
       account_intro:"Check your current plan, subscribe, or cancel from this page.",
       plan_label:"Current plan:",
@@ -873,18 +751,21 @@
       delete_processing:"Deleting your account…",
       delete_done:"Your account has been deleted. Thank you for using Moriris.",
       delete_error:"An error occurred while deleting your account. Please try again later.",
-      anim_title:"Members-only Animation",
-      anim_gate_free:"By subscribing to the Standard plan, you can watch all episodes.",
-      anim_gate_std:"You can now watch all members-only episodes.",
-      anim_empty:"There are no videos available yet.",
+
+      videos_title:"Members-only Videos",
+      videos_gate_free:"By subscribing to the Standard plan, you can watch all videos.",
+      videos_gate_std:"You can now watch all members-only videos.",
+      videos_empty:"There are no videos available yet.",
       video_sort_label:"Order:",
       video_sort_episode:"By episode",
       video_sort_new:"Newest first",
+
       footer_note:"Follow Moriris on social media for the latest updates.",
       legal_note:
         '<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> / ' +
         '<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">Privacy Policy</a> / '+
         '<a href="https://member.moriris.com/legal.html" target="_blank" rel="noopener">Legal Notice</a>',
+
       email_change_title:"Change Email Address",
       email_change_desc:"Enter a new email address and we will send a confirmation email. Please use the link in that email to complete the change.",
       email_change_current:"Current email:",
@@ -896,7 +777,6 @@
       checkout_error:"Something went wrong while processing your request. Please try again later.",
       portal_error:"We couldn’t open the subscription management page. Please try again later.",
 
-      /* password setup */
       pw_setup_title:"Set your password",
       pw_setup_desc:"You initially registered with email verification only. To log in with your email and password from now on, please set a password here.",
       pw_setup_note:"For security, we recommend at least 8 characters and not reusing passwords from other services.",
@@ -911,7 +791,6 @@
       pw_placeholder_confirm:"Re-enter the same password",
       pw_show_label:"Show password",
 
-      /* password change */
       pw_change_title:"Change password",
       pw_change_desc:"You can change the password for the account you are currently logged in with. You do not need to enter your old password.",
       pw_change_note:"For security, we recommend at least 8 characters and not reusing passwords from other services.",
@@ -931,23 +810,108 @@
 
   let currentUser = null;
 
-  const VIDEO_JSON_URL = "/data/video.json";
-  let VIDEO_EPISODES = [];
+  // 外出しJSON（Cloudflare Stream対応）
+  // 指定どおり member.moriris.com/data/video.json を使う
+  const VIDEO_JSON_URL = "https://member.moriris.com/data/video.json";
+  let VIDEO_CONFIG = { cloudflare:null, episodes:[] };
   let videoSortMode = "episode";
 
-  async function loadVideoEpisodes(){
+  // 将来の目的別フィルタ用（今は title 先頭 "For Sleep" などから自動抽出）
+  let videoFilter = "all"; // "all" | "For Sleep" | "For Focus" ...
+  let videoFilterOptions = [];
+
+  async function loadVideoConfig(){
     try{
-      const res = await fetch(VIDEO_JSON_URL);
+      const res = await fetch(VIDEO_JSON_URL, { cache: "no-store" });
       if(!res.ok) throw new Error("HTTP " + res.status);
       const data = await res.json();
-      VIDEO_EPISODES = Array.isArray(data)
-        ? data.filter(ep => !Object.prototype.hasOwnProperty.call(ep, "visible") || ep.visible !== false)
-        : [];
-      log("video json loaded", VIDEO_EPISODES);
+
+      const cloudflare = data?.cloudflare || null;
+      const episodesRaw = Array.isArray(data?.episodes) ? data.episodes : [];
+      const episodes = episodesRaw.filter(ep => ep && (ep.visible !== false));
+
+      VIDEO_CONFIG = { cloudflare, episodes };
+      log("video json loaded", VIDEO_CONFIG);
+
+      rebuildVideoFilterOptions();
     }catch(e){
       console.error("video json load error", e);
-      VIDEO_EPISODES = [];
+      VIDEO_CONFIG = { cloudflare:null, episodes:[] };
+      videoFilterOptions = [];
     }
+  }
+
+  function extractPurposeFromTitle(title){
+    // 例: "For Sleep 00001" -> "For Sleep"
+    if (!title) return "";
+    const m = String(title).match(/^(For\s+\w+)/i);
+    return m ? m[1] : "";
+  }
+
+  function rebuildVideoFilterOptions(){
+    const set = new Set();
+    for (const ep of VIDEO_CONFIG.episodes){
+      const p = extractPurposeFromTitle(ep.title);
+      if (p) set.add(p);
+    }
+    videoFilterOptions = Array.from(set);
+    renderVideoFilterUI();
+  }
+
+  function renderVideoFilterUI(){
+    const row = document.getElementById("videoFilterRow");
+    if (!row) return;
+
+    // 目的別が1個以下ならUIは出さない（将来増えたら自然に表示される）
+    if (!videoFilterOptions || videoFilterOptions.length <= 1){
+      row.classList.add("hidden");
+      row.innerHTML = "";
+      videoFilter = "all";
+      return;
+    }
+
+    row.classList.remove("hidden");
+    row.innerHTML = "";
+
+    const makeChip = (label, value)=>{
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "chip";
+      btn.textContent = label;
+      btn.dataset.filter = value;
+      btn.classList.toggle("active", videoFilter === value);
+      btn.addEventListener("click", ()=>{
+        videoFilter = value;
+        Array.from(row.querySelectorAll(".chip")).forEach(c=>{
+          c.classList.toggle("active", c.dataset.filter === value);
+        });
+        renderVideosForPlan(state.plan, videoSortMode);
+      });
+      return btn;
+    };
+
+    const allLabel = currentLang === "ja" ? "すべて" : "All";
+    row.appendChild(makeChip(allLabel, "all"));
+    for (const opt of videoFilterOptions){
+      row.appendChild(makeChip(opt, opt));
+    }
+  }
+
+  function buildCloudflareEmbedUrl(cf){
+    // cf: { customer_code, iframe_params }
+    const customer = cf?.customer_code;
+    const params = cf?.iframe_params || "";
+    if (!customer) return null;
+    // "customer-xxxx.cloudflarestream.com"
+    return `https://${customer}/`;
+  }
+
+  function buildCloudflareIframeSrc(cf, uid){
+    const base = buildCloudflareEmbedUrl(cf);
+    if (!base || !uid) return null;
+    const qp = cf?.iframe_params ? `?${cf.iframe_params}` : "";
+    // Cloudflare Stream embed path
+    return `${base}${encodeURIComponent(uid)}${qp}`;
   }
 
   function applyLang(lang){
@@ -992,15 +956,18 @@
       statusEl.textContent = t[k];
     }
 
-    const animGate = $("#animGateText");
-    if (animGate){
-      animGate.textContent = state.plan === "standard"
-        ? t.anim_gate_std
-        : t.anim_gate_free;
+    const gate = $("#videoGateText");
+    if (gate){
+      gate.textContent = state.plan === "standard"
+        ? t.videos_gate_std
+        : t.videos_gate_free;
     }
 
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
+
+    // フィルタUIの文言（All/すべて）を更新したいので再描画
+    renderVideoFilterUI();
   }
 
   $("#btn-ja").onclick = ()=>applyLang("ja");
@@ -1031,9 +998,8 @@
   const sleep = ms => new Promise(r=>setTimeout(r,ms));
 
   async function getUserWithRetry({tries=40, interval=150}={}){
-    try{
-      await sb.auth.exchangeCodeForSession(window.location.href);
-    }catch(e){ log("exchange_err", String(e)); }
+    try{ await sb.auth.exchangeCodeForSession(window.location.href); }
+    catch(e){ log("exchange_err", String(e)); }
 
     for(let i=0;i<tries;i++){
       const { data:{ user } } = await sb.auth.getUser();
@@ -1049,7 +1015,7 @@
       .select("id,tier,is_active,has_password")
       .eq("id", userId)
       .single();
-  
+
     const notFound = error && (error.code==="PGRST116" || error.details?.includes("0 rows"));
     if (notFound){
       const up = await sb.from("profiles").upsert(
@@ -1060,7 +1026,7 @@
         log("profiles upsert failed", up.error);
         return { data:null, error:up.error };
       }
-  
+
       ({ data:prof, error } = await sb
         .from("profiles")
         .select("id,tier,is_active,has_password")
@@ -1146,7 +1112,7 @@
     try{
       const { data:sess } = await sb.auth.getSession();
       const token = sess?.session?.access_token;
-  
+
       const res = await fetch(
         "https://sqwyfscumunyhsvsvejv.functions.supabase.co/update-stripe-email",
         {
@@ -1158,7 +1124,7 @@
           body: JSON.stringify({ user_id: userId, new_email: newEmail })
         }
       );
-  
+
       if (!res.ok){
         const t = await res.text().catch(()=> "");
         console.error("updateStripeEmail failed:", res.status, t);
@@ -1173,48 +1139,38 @@
 
   async function handleDeleteAccount() {
     if (!currentUser) return;
-  
+
     const i18n = I18N[currentLang] || I18N["ja"] || {};
     const statusEl = document.getElementById("deleteStatusMsg");
-  
+
     if (statusEl){
       statusEl.style.color = "#6b6964";
       statusEl.textContent = i18n.delete_processing || "アカウントを削除しています…";
     }
-  
+
     try {
       const { data: sess } = await sb.auth.getSession();
       const token = sess?.session?.access_token;
       if (!token) throw new Error("no access token");
-  
+
       const res = await fetch(
         "https://sqwyfscumunyhsvsvejv.functions.supabase.co/delete-account",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+        { method: "POST", headers: { Authorization: `Bearer ${token}` } },
       );
-  
+
       if (!res.ok) {
         const bodyText = await res.text().catch(() => "");
         console.error("delete-account failed:", res.status, bodyText);
-  
-        const baseMsg =
-          i18n.delete_error ||
-          "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
-  
+
+        const baseMsg = i18n.delete_error || "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
         if (statusEl){
           statusEl.textContent = baseMsg;
           statusEl.style.color = "#b00020";
         }
         return;
       }
-  
-      const doneMsg =
-        i18n.delete_done || "アカウントを削除しました。トップページに戻ります。";
-  
+
+      const doneMsg = i18n.delete_done || "アカウントを削除しました。トップページに戻ります。";
       if (statusEl){
         statusEl.textContent = doneMsg;
         statusEl.style.color = "#6b6964";
@@ -1223,11 +1179,7 @@
       location.href = "./";
     } catch (e) {
       console.error("handleDeleteAccount error:", e);
-  
-      const baseMsg =
-        i18n.delete_error ||
-        "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
-  
+      const baseMsg = i18n.delete_error || "アカウント削除中にエラーが発生しました。時間をおいて再度お試しください。";
       if (statusEl){
         statusEl.textContent = baseMsg;
         statusEl.style.color = "#b00020";
@@ -1237,24 +1189,30 @@
 
   function renderVideosForPlan(plan, mode = videoSortMode){
     videoSortMode = mode;
+
     const wrap = $("#videos");
+    if (!wrap) return;
     wrap.innerHTML = "";
 
-    let episodes = VIDEO_EPISODES.filter(v =>
-      plan === "standard" ? true : v.tier === "free"
-    );
+    const t = I18N[currentLang] || I18N["ja"];
+    const cf = VIDEO_CONFIG.cloudflare;
+
+    let episodes = VIDEO_CONFIG.episodes.filter(v => (plan === "standard") ? true : v.tier === "free");
+
+    // 目的別フィルタ（title から抽出）
+    if (videoFilter && videoFilter !== "all"){
+      episodes = episodes.filter(v => extractPurposeFromTitle(v.title) === videoFilter);
+    }
 
     episodes.sort((a,b)=>{
-      if (mode === "new"){
-        return b.ep - a.ep;
-      }
-      return a.ep - b.ep;
+      if (mode === "new") return (b.ep || 0) - (a.ep || 0);
+      return (a.ep || 0) - (b.ep || 0);
     });
 
     if (!episodes.length){
       const p = document.createElement("p");
       p.className = "muted";
-      p.textContent = I18N[currentLang].anim_empty;
+      p.textContent = t.videos_empty;
       wrap.appendChild(p);
       return;
     }
@@ -1262,16 +1220,34 @@
     for (const v of episodes){
       const card = document.createElement("div");
       card.className = "video-card";
-      const src =
-        `https://www.youtube-nocookie.com/embed/${encodeURIComponent(v.yt_id)}?rel=0&modestbranding=1&playsinline=1`;
+
+      const title = v.title || `Episode ${v.ep || ""}`.trim();
+      const src = buildCloudflareIframeSrc(cf, v.cf_uid);
+
+      // JSONの cf_uid / cloudflare.customer_code が揃っていない場合は、空表示（安全）
+      const playerHtml = src
+        ? `
+          <div style="position:relative;background:#000;aspect-ratio:16/9;">
+            <iframe
+              src="${src}"
+              title="${title}"
+              frameborder="0"
+              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+              loading="lazy"
+              style="width:100%;height:100%;position:absolute;inset:0;">
+            </iframe>
+          </div>
+        `
+        : `
+          <div style="padding:14px;color:#fff;background:#111;">
+            <div style="font-size:13px;opacity:.85;">Player config is missing.</div>
+          </div>
+        `;
+
       card.innerHTML = `
-        <div style="position:relative;background:#000;aspect-ratio:16/9;">
-          <iframe src="${src}" title="${v.title}" frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen loading="lazy"
-            style="width:100%;height:100%;position:absolute;inset:0;"></iframe>
-        </div>
-        <div class="video-title">${v.title}</div>
+        ${playerHtml}
+        <div class="video-title">${title}</div>
       `;
       wrap.appendChild(card);
     }
@@ -1283,7 +1259,7 @@
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
 
-    await loadVideoEpisodes();
+    await loadVideoConfig();
 
     state.statusCode = "checking";
     applyLang(currentLang);
@@ -1293,11 +1269,8 @@
       state.statusCode = "not_logged";
       applyLang(currentLang);
       $("#userEmail").textContent = "-";
-    
       const alertBox = $("#notLoggedAlert");
-      if (alertBox){
-        alertBox.classList.remove("hidden");
-      }
+      if (alertBox) alertBox.classList.remove("hidden");
       return;
     }
 
@@ -1313,11 +1286,9 @@
       });
       sessionStorage.setItem(loginEventKey, "1");
     }
-    
+
     const currentEmailEl = $("#currentEmailText");
-    if (currentEmailEl){
-      currentEmailEl.textContent = user.email || "";
-    }
+    if (currentEmailEl) currentEmailEl.textContent = user.email || "";
 
     const btnChangeEmail = $("#btnChangeEmail");
     if (btnChangeEmail){
@@ -1325,75 +1296,63 @@
         const input = $("#emailNew");
         const msgEl = $("#emailChangeMsg");
         if (!input || !msgEl) return;
-    
+
         msgEl.style.color = "#6b6964";
         const t = I18N[currentLang] || I18N["ja"];
-    
+
         const newEmail = input.value.trim();
         const currentEmail = currentUser?.email || "";
-    
+
         if (!newEmail){
           msgEl.textContent = t.email_change_invalid;
           msgEl.style.color = "#b00020";
           return;
         }
-    
+
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailPattern.test(newEmail)){
           msgEl.textContent = t.email_change_invalid;
           msgEl.style.color = "#b00020";
           return;
         }
-    
+
         if (newEmail.toLowerCase() === currentEmail.toLowerCase()){
           msgEl.textContent = t.email_change_same;
           msgEl.style.color = "#b00020";
           return;
         }
-    
-        if (!currentUser){
-          msgEl.textContent = "ログイン情報を取得できませんでした。";
-          msgEl.style.color = "#b00020";
-          return;
-        }
-    
+
         btnChangeEmail.disabled = true;
         msgEl.textContent = "";
-    
+
         try{
-          const { data, error } = await sb.auth.updateUser(
+          const { error } = await sb.auth.updateUser(
             { email: newEmail },
-            {
-              emailRedirectTo: SITE_TOP_URL
-            }
+            { emailRedirectTo: SITE_TOP_URL }
           );
-    
+
           if (error){
             console.error("updateUser ERROR:", error);
-            msgEl.textContent =
-              t.email_change_error ||
-              "メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。";
+            msgEl.textContent = t.email_change_error;
             msgEl.style.color = "#b00020";
             return;
           }
-    
+
           updateStripeEmail(currentUser.id, newEmail);
-    
+
           msgEl.textContent = t.email_change_sent;
           msgEl.style.color = "#6b6964";
           input.value = "";
         }catch(e){
           console.error("updateUser exception:", e);
-          msgEl.textContent =
-            t.email_change_error ||
-            "メールアドレスの変更中にエラーが発生しました。時間をおいて再度お試しください。";
+          msgEl.textContent = t.email_change_error;
           msgEl.style.color = "#b00020";
         }finally{
           btnChangeEmail.disabled = false;
         }
       };
     }
-    
+
     const profRes = await loadProfileOrCreate(user.id);
     if (profRes.error || !profRes.data){
       state.statusCode = "error";
@@ -1405,39 +1364,21 @@
     log("profile", prof);
 
     state.hasPassword = !!prof.has_password;
-    const hasPassword = state.hasPassword;
-    
+
     const pwSection       = document.getElementById("pwSection");
     const pwChangeSection = document.getElementById("pwChangeSection");
-    const pwHomeNotice    = document.getElementById("pwHomeNotice");
     const pwBanner        = document.getElementById("pwBanner");
-    
+
     if (pwSection){
-      if (hasPassword){
-        pwSection.classList.add("hidden");
-      }else{
-        pwSection.classList.remove("hidden");
-      }
+      pwSection.classList.toggle("hidden", state.hasPassword);
     }
     if (pwChangeSection){
-      if (hasPassword){
-        pwChangeSection.classList.remove("hidden");
-      }else{
-        pwChangeSection.classList.add("hidden");
-      }
+      pwChangeSection.classList.toggle("hidden", !state.hasPassword);
     }
-    if (pwHomeNotice){
-      if (hasPassword){
-        pwHomeNotice.classList.add("hidden");
-      }else{
-        pwHomeNotice.classList.remove("hidden");
-      }
-    }
-    
+
     if (!state.hasPassword) {
       if (pwBanner) {
         pwBanner.classList.remove("hidden");
-    
         pwBanner.onclick = ()=>{
           document.querySelectorAll(".tab-btn").forEach(btn=>{
             btn.classList.toggle("active", btn.dataset.tab === "account");
@@ -1445,68 +1386,31 @@
           document.querySelectorAll(".tab-pane").forEach(pane=>{
             pane.classList.toggle("active", pane.id === "tab-account");
           });
-
           const target = document.getElementById("pwSection");
-          if (target){
-            target.scrollIntoView({ behavior:"smooth", block:"center" });
-          }
+          if (target) target.scrollIntoView({ behavior:"smooth", block:"center" });
         };
       }
     } else {
-      if (pwBanner){
-        pwBanner.classList.add("hidden");
-      }
+      if (pwBanner) pwBanner.classList.add("hidden");
     }
-    
-    const pwChangeForm = document.getElementById("pwChangeForm");
-    const pwChangeMsg  = document.getElementById("pwChangeMsg");
 
     const pwForm = document.getElementById("pwForm");
     const pwMsg  = document.getElementById("pwMsg");
-
     if (pwForm){
       pwForm.onsubmit = async (e)=>{
         e.preventDefault();
         if (!currentUser) return;
 
         const t = I18N[currentLang] || I18N["ja"];
-
-        if (pwMsg){
-          pwMsg.textContent = "";
-          pwMsg.style.color = "#6b6964";
-        }
+        if (pwMsg){ pwMsg.textContent = ""; pwMsg.style.color = "#6b6964"; }
 
         const p1 = (document.getElementById("pwNew")?.value || "").trim();
         const p2 = (document.getElementById("pwNew2")?.value || "").trim();
 
-        if (!p1){
-          if (pwMsg){
-            pwMsg.textContent = t.pw_setup_need_password;
-            pwMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (!p2){
-          if (pwMsg){
-            pwMsg.textContent = t.pw_setup_need_confirm;
-            pwMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (p1.length < 8){
-          if (pwMsg){
-            pwMsg.textContent = t.pw_setup_short;
-            pwMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (p1 !== p2){
-          if (pwMsg){
-            pwMsg.textContent = t.pw_setup_mismatch;
-            pwMsg.style.color = "#b00020";
-          }
-          return;
-        }
+        if (!p1){ if (pwMsg){ pwMsg.textContent = t.pw_setup_need_password; pwMsg.style.color = "#b00020"; } return; }
+        if (!p2){ if (pwMsg){ pwMsg.textContent = t.pw_setup_need_confirm; pwMsg.style.color = "#b00020"; } return; }
+        if (p1.length < 8){ if (pwMsg){ pwMsg.textContent = t.pw_setup_short; pwMsg.style.color = "#b00020"; } return; }
+        if (p1 !== p2){ if (pwMsg){ pwMsg.textContent = t.pw_setup_mismatch; pwMsg.style.color = "#b00020"; } return; }
 
         const btn = document.getElementById("pwSubmit");
         if (btn) btn.disabled = true;
@@ -1515,33 +1419,22 @@
           const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
           if (updateErr){
             console.error("updateUser(set password) error:", updateErr);
-            if (pwMsg){
-              pwMsg.textContent = t.pw_setup_error;
-              pwMsg.style.color = "#b00020";
-            }
+            if (pwMsg){ pwMsg.textContent = t.pw_setup_error; pwMsg.style.color = "#b00020"; }
             return;
           }
 
           try{
-            await sb
-              .from("profiles")
-              .update({ has_password:true })
-              .eq("id", currentUser.id);
+            await sb.from("profiles").update({ has_password:true }).eq("id", currentUser.id);
           }catch(e2){
             console.warn("profiles.has_password update error:", e2);
           }
 
           state.hasPassword = true;
-
-          if (pwSection)       pwSection.classList.add("hidden");
+          if (pwSection) pwSection.classList.add("hidden");
           if (pwChangeSection) pwChangeSection.classList.remove("hidden");
-          if (pwHomeNotice)    pwHomeNotice.classList.add("hidden");
-          if (pwBanner)        pwBanner.classList.add("hidden");
+          if (pwBanner) pwBanner.classList.add("hidden");
 
-          if (pwMsg){
-            pwMsg.textContent = t.pw_setup_success;
-            pwMsg.style.color = "#6b6964";
-          }
+          if (pwMsg){ pwMsg.textContent = t.pw_setup_success; pwMsg.style.color = "#6b6964"; }
 
           const input1 = document.getElementById("pwNew");
           const input2 = document.getElementById("pwNew2");
@@ -1549,59 +1442,30 @@
           if (input2) input2.value = "";
         }catch(e){
           console.error("pw setup exception:", e);
-          if (pwMsg){
-            pwMsg.textContent = t.pw_setup_error;
-            pwMsg.style.color = "#b00020";
-          }
+          if (pwMsg){ pwMsg.textContent = t.pw_setup_error; pwMsg.style.color = "#b00020"; }
         }finally{
           if (btn) btn.disabled = false;
         }
       };
     }
 
+    const pwChangeForm = document.getElementById("pwChangeForm");
+    const pwChangeMsg  = document.getElementById("pwChangeMsg");
     if (pwChangeForm){
       pwChangeForm.onsubmit = async (e)=>{
         e.preventDefault();
         if (!currentUser) return;
 
         const t = I18N[currentLang] || I18N["ja"];
-
-        if (pwChangeMsg){
-          pwChangeMsg.textContent = "";
-          pwChangeMsg.style.color = "#6b6964";
-        }
+        if (pwChangeMsg){ pwChangeMsg.textContent = ""; pwChangeMsg.style.color = "#6b6964"; }
 
         const p1 = (document.getElementById("pwChangeNew")?.value || "").trim();
         const p2 = (document.getElementById("pwChangeNew2")?.value || "").trim();
 
-        if (!p1){
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_need_password;
-            pwChangeMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (!p2){
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_need_confirm;
-            pwChangeMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (p1.length < 8){
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_short;
-            pwChangeMsg.style.color = "#b00020";
-          }
-          return;
-        }
-        if (p1 !== p2){
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_mismatch;
-            pwChangeMsg.style.color = "#b00020";
-          }
-          return;
-        }
+        if (!p1){ if (pwChangeMsg){ pwChangeMsg.textContent = t.pw_setup_need_password; pwChangeMsg.style.color = "#b00020"; } return; }
+        if (!p2){ if (pwChangeMsg){ pwChangeMsg.textContent = t.pw_setup_need_confirm; pwChangeMsg.style.color = "#b00020"; } return; }
+        if (p1.length < 8){ if (pwChangeMsg){ pwChangeMsg.textContent = t.pw_setup_short; pwChangeMsg.style.color = "#b00020"; } return; }
+        if (p1 !== p2){ if (pwChangeMsg){ pwChangeMsg.textContent = t.pw_setup_mismatch; pwChangeMsg.style.color = "#b00020"; } return; }
 
         const btn = document.getElementById("pwChangeSubmit");
         if (btn) btn.disabled = true;
@@ -1610,10 +1474,7 @@
           const { error:updateErr } = await sb.auth.updateUser({ password:p1 });
           if (updateErr){
             console.error("updateUser(change password) error:", updateErr);
-            if (pwChangeMsg){
-              pwChangeMsg.textContent = t.pw_setup_error;
-              pwChangeMsg.style.color = "#b00020";
-            }
+            if (pwChangeMsg){ pwChangeMsg.textContent = t.pw_setup_error; pwChangeMsg.style.color = "#b00020"; }
             return;
           }
 
@@ -1628,10 +1489,7 @@
           if (input2) input2.value = "";
         }catch(e){
           console.error("pw change exception:", e);
-          if (pwChangeMsg){
-            pwChangeMsg.textContent = t.pw_setup_error;
-            pwChangeMsg.style.color = "#b00020";
-          }
+          if (pwChangeMsg){ pwChangeMsg.textContent = t.pw_setup_error; pwChangeMsg.style.color = "#b00020"; }
         }finally{
           if (btn) btn.disabled = false;
         }
@@ -1648,7 +1506,7 @@
         if (f2) f2.type = type;
       });
     }
-    
+
     const pwShowChange = document.getElementById("pwShowChange");
     if (pwShowChange){
       pwShowChange.addEventListener("change", ()=>{
@@ -1668,19 +1526,11 @@
     const btnDeleteConfirm = document.getElementById("btnDeleteConfirm");
     const btnDeleteCancel  = document.getElementById("btnDeleteCancel");
 
-    if (btnDeleteConfirm){
-      btnDeleteConfirm.onclick = ()=>{
-        handleDeleteAccount();
-      };
-    }
+    if (btnDeleteConfirm) btnDeleteConfirm.onclick = ()=>handleDeleteAccount();
     if (btnDeleteCancel){
       btnDeleteCancel.onclick = ()=>{
-        if (deleteBox){
-          deleteBox.classList.add("hidden");
-        }
-        if (deleteStatusMsg){
-          deleteStatusMsg.textContent = "";
-        }
+        if (deleteBox) deleteBox.classList.add("hidden");
+        if (deleteStatusMsg) deleteStatusMsg.textContent = "";
       };
     }
 
@@ -1688,13 +1538,13 @@
       state.plan = "free";
       state.statusCode = "free";
       applyLang(currentLang);
-    
-      const btnSubMain  = $("#btnSubscribe");
-      const btnSubAnim  = $("#btnSubscribeAnim");
-      const btnCancel   = $("#btnCancel");
-      const btnDelete   = $("#btnDeleteAccount");
-    
-      [btnSubMain, btnSubAnim].forEach(b=>{
+
+      const btnSubMain   = $("#btnSubscribe");
+      const btnSubVideos = $("#btnSubscribeVideos");
+      const btnCancel    = $("#btnCancel");
+      const btnDelete    = $("#btnDeleteAccount");
+
+      [btnSubMain, btnSubVideos].forEach(b=>{
         if (!b) return;
         b.classList.remove("hidden");
         b.onclick = ()=>{
@@ -1709,67 +1559,53 @@
           createCheckout(user.id);
         };
       });
-      if (btnCancel){
-        btnCancel.classList.add("hidden");
-        btnCancel.onclick = null;
-      }
+
+      if (btnCancel){ btnCancel.classList.add("hidden"); btnCancel.onclick = null; }
       if (btnDelete){
         btnDelete.classList.remove("hidden");
         btnDelete.onclick = ()=>{
-          if (deleteBox){
-            deleteBox.classList.remove("hidden");
-          }
+          if (deleteBox) deleteBox.classList.remove("hidden");
           if (deleteStatusMsg){
             deleteStatusMsg.textContent = "";
             deleteStatusMsg.style.color = "#6b6964";
           }
         };
       }
-    
+
       renderVideosForPlan("free", videoSortMode);
     }else{
       state.plan = "standard";
-      
+
       const key = `ga_standard_started_${user.id}`;
       if (!localStorage.getItem(key)) {
-        gaEvent("standard_started", {
-          plan: "standard",
-          page: "members",
-          lang: currentLang
-        });
+        gaEvent("standard_started", { plan: "standard", page: "members", lang: currentLang });
         localStorage.setItem(key, "1");
       }
-            
+
       state.statusCode = "loading";
       applyLang(currentLang);
-    
-      const btnSubMain  = $("#btnSubscribe");
-      const btnSubAnim  = $("#btnSubscribeAnim");
-      const btnCancel   = $("#btnCancel");
-      const btnDelete   = $("#btnDeleteAccount");
-    
-      [btnSubMain, btnSubAnim].forEach(b=>{
+
+      const btnSubMain   = $("#btnSubscribe");
+      const btnSubVideos = $("#btnSubscribeVideos");
+      const btnCancel    = $("#btnCancel");
+      const btnDelete    = $("#btnDeleteAccount");
+
+      [btnSubMain, btnSubVideos].forEach(b=>{
         if (!b) return;
         b.classList.add("hidden");
         b.onclick = null;
       });
+
       if (btnCancel){
         btnCancel.classList.remove("hidden");
         btnCancel.onclick = ()=>openPortal(user.id);
       }
-      if (btnDelete){
-        btnDelete.classList.add("hidden");
-        btnDelete.onclick = null;
-      }
-      if (deleteBox){
-        deleteBox.classList.add("hidden");
-      }
-      if (deleteStatusMsg){
-        deleteStatusMsg.textContent = "";
-      }
-    
+      if (btnDelete){ btnDelete.classList.add("hidden"); btnDelete.onclick = null; }
+      if (deleteBox) deleteBox.classList.add("hidden");
+      if (deleteStatusMsg) deleteStatusMsg.textContent = "";
+
       renderVideosForPlan("standard", videoSortMode);
-    
+
       state.statusCode = "ready";
       applyLang(currentLang);
     }
