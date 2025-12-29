@@ -1,51 +1,12 @@
-[
-  {
-    "ep": 1,
-    "title": "Episode 1",
-    "yt_id": "JBy3kEuLAZY",
-    "tier": "free",
-    "visible": true
+{
+  "cloudflare": {
+    "customer_code": "customer-gm6ub8zzgd4gin4w.cloudflarestream.com",
+    "iframe_params": "controls=true&loop=true&preload=metadata"
   },
-  {
-    "ep": 2,
-    "title": "Episode 2",
-    "yt_id": "vAX0pQXpGPE",
-    "tier": "free",
-    "visible": true
-  },
-  {
-    "ep": 3,
-    "title": "Episode 3",
-    "yt_id": "jpL1eJ9xFnQ",
-    "tier": "free",
-    "visible": true
-  },
-  {
-    "ep": 4,
-    "title": "Episode 4",
-    "yt_id": "E33bqxlnT88",
-    "tier": "standard",
-    "visible": true
-  },
-  {
-    "ep": 5,
-    "title": "Episode 5",
-    "yt_id": "wMD_PvGvMt8",
-    "tier": "standard",
-    "visible": false
-  },
-  {
-    "ep": 6,
-    "title": "Episode 6",
-    "yt_id": "b-BiiqUTdIY",
-    "tier": "standard",
-    "visible": false
-  },
-  {
-    "ep": 7,
-    "title": "Episode 7",
-    "yt_id": "XXXXX",
-    "tier": "standard",
-    "visible": false
-  }
-]
+  "episodes": [
+    { "ep": 1, "title": "For Sleep 00001", "cf_uid": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "tier": "free", "visible": true },
+    { "ep": 2, "title": "For Sleep 00002", "cf_uid": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "tier": "standard", "visible": true },
+    { "ep": 3, "title": "For Sleep 00003", "cf_uid": "cccccccccccccccccccccccccccccccc", "tier": "standard", "visible": true },
+    { "ep": 4, "title": "For Sleep 00004", "cf_uid": "dddddddddddddddddddddddddddddddd", "tier": "standard", "visible": true }
+  ]
+}
