@@ -629,7 +629,7 @@
   );
 
   const BILLING_JSON_URL = "https://member.moriris.com/data/billing.json";
-  let BILLING_CONFIG = { stripe: { standard: { price_id: null } } };
+  let BILLING_CONFIG = { stripe: { standard: { payment_link_url: null } } };
 
   const $ = (s)=>document.querySelector(s);
   const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
@@ -870,18 +870,6 @@
       b.classList.toggle("active", b.dataset.view === mode);
     });
   }
-
-  async function loadBillingConfig(){
-    try{
-      const res = await fetch(BILLING_JSON_URL, { cache: "no-store" });
-      if(!res.ok) throw new Error("HTTP " + res.status);
-      const data = await res.json();
-      BILLING_CONFIG = data || BILLING_CONFIG;
-      log("billing json loaded", BILLING_CONFIG);
-    }catch(e){
-      console.error("billing json load error", e);
-    }
-  }
   
   async function loadVideoConfig(){
     try{
@@ -913,7 +901,7 @@
       log("billing json loaded", BILLING_CONFIG);
     }catch(e){
       console.error("billing json load error", e);
-      BILLING_CONFIG = { stripe: { standard: { price_id: null } } };
+      BILLING_CONFIG = { stripe: { standard: { payment_link_url: null } } };
     }
   }
 
@@ -1147,47 +1135,34 @@
   }
 
   async function createCheckout(userId){
-    const { data:sess } = await sb.auth.getSession();
-    const token = sess?.session?.access_token;
     const i18n = I18N[currentLang] || I18N["ja"] || {};
-
-    const priceId = BILLING_CONFIG?.stripe?.standard?.price_id;
-    if (!priceId){
-      console.error("missing price_id in billing.json", BILLING_CONFIG);
-      alert("課金設定の読み込みに失敗しました（billing.json を確認してください）");
+  
+    const baseUrl = BILLING_CONFIG?.stripe?.standard?.payment_link_url;
+    if (!baseUrl){
+      console.error("missing payment_link_url in billing.json", BILLING_CONFIG);
+      alert("課金設定の読み込みに失敗しました（billing.json の payment_link_url を確認してください）");
       return;
     }
-    
-    const res = await fetch(
-      "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "Authorization":`Bearer ${token}`
-        },
-        body:JSON.stringify({
-          user_id:userId,
-          price_id: priceId,
-          success_url: window.location.href,
-          cancel_url: window.location.href
-        })
-      }
-    );
-    
-    if (!res.ok){
-      const bodyText = await res.text().catch(()=> "");
-      console.error("createCheckout failed:", res.status, bodyText);
-      alert(i18n.checkout_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
-      return;
-    }
-    const data = await res.json();
-    if (!data?.url){
-      console.error("createCheckout: url missing", data);
-      alert(i18n.checkout_error || "現在この操作を完了できません。時間をおいて再度お試しください。");
-      return;
-    }
-    location.href = data.url;
+  
+    // Payment Linkに「メールの事前入力」を渡す（Stripe側で顧客情報入力が楽になる）
+    // client_reference_id も付けておくと、Stripe側で「どのユーザーか」追跡しやすい
+    const u = currentUser?.email ? String(currentUser.email) : "";
+    const params = new URLSearchParams();
+  
+    if (u) params.set("prefilled_email", u);
+    if (userId) params.set("client_reference_id", String(userId));
+  
+    // 既にクエリが付いているURLにも対応
+    const sep = baseUrl.includes("?") ? "&" : "?";
+    const url = params.toString() ? (baseUrl + sep + params.toString()) : baseUrl;
+  
+    gaEvent("begin_checkout", {
+      plan: "standard",
+      lang: currentLang,
+      method: "stripe_payment_link"
+    });
+  
+    location.href = url;
   }
 
   async function openPortal(userId){
