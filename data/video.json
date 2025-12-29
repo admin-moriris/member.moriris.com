@@ -5,24 +5,30 @@
   },
   "episodes": [
     {
-      "ep": 1,
+      "id": "sleep-00001",
       "title": { "ja": "睡眠導入 00001", "en": "For Sleep 00001" },
-      "cf_uid": "91d726e107418999e95982ad09ff8c27",
-      "tier": "free",
+      "tier": "standard",
+      "cf_uid": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "tags": ["sleep"],
+      "published_at": "2025-12-30T00:00:00Z",
       "visible": true
     },
     {
-      "ep": 2,
-      "title": { "ja": "集中用 00001", "en": "For Focus 00001" },
-      "cf_uid": "b6f93970518a2632c02222b94116ee40",
+      "id": "focus-00001",
+      "title": { "ja": "集中 00001", "en": "For Focus 00001" },
       "tier": "standard",
+      "cf_uid": "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+      "tags": ["focus"],
+      "published_at": "2025-12-29T00:00:00Z",
       "visible": true
     },
     {
-      "ep": 3,
-      "title": { "ja": "睡眠導入 00002", "en": "For Sleep 00002" },
-      "cf_uid": "cccccccccccccccccccccccccccccccc",
+      "id": "sleep-focus-00001",
+      "title": { "ja": "睡眠＋集中 00001", "en": "Sleep + Focus 00001" },
       "tier": "standard",
+      "cf_uid": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+      "tags": ["sleep", "focus"],
+      "published_at": "2025-12-28T00:00:00Z",
       "visible": true
     }
   ]
