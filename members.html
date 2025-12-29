@@ -217,9 +217,7 @@
 
     /* ===== Videos ===== */
 
-    .video-grid{
-      margin-top:12px;
-    }
+    .video-grid{ margin-top:12px; }
 
     /* 表示形式（list / grid） */
     .video-grid.mode-list{
@@ -276,6 +274,7 @@
       font-size:12px;
       cursor:pointer;
       user-select:none;
+      white-space:nowrap;
     }
     .video-sort-btn.active,
     .chip.active,
@@ -291,6 +290,7 @@
       gap:8px;
       flex-wrap:wrap;
       align-items:center;
+      margin-top:8px;
     }
 
     a{color:#0d6b45;text-decoration:none;}
@@ -363,6 +363,8 @@
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Cloudflare Stream Player SDK（loop強制用） -->
+  <script src="https://embed.videodelivery.net/embed/sdk.latest.js"></script>
 </head>
 
 <body>
@@ -465,7 +467,7 @@
           <button type="button" class="video-sort-btn" data-sort="oldest" data-i18n="sort_oldest">古い順</button>
 
           <span class="label" style="margin-left:8px;" data-i18n="view_label">表示：</span>
-          <!-- ★順番変更：グリッド → リスト -->
+          <!-- 要望：グリッド → リストの順 -->
           <button type="button" class="view-btn" data-view="grid" data-i18n="view_grid">グリッド</button>
           <button type="button" class="view-btn active" data-view="list" data-i18n="view_list">リスト</button>
         </div>
@@ -506,7 +508,6 @@
           </button>
         </div>
 
-        <!-- 画面上で行うアカウント削除の最終確認 -->
         <div id="deleteConfirmBox"
              class="status-box hidden"
              style="margin-top:12px;background:#ffe7e3;border-color:#ffb3a7;color:#8b1a07;">
@@ -541,43 +542,37 @@
 
         <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
 
-        <!-- has_password=FALSE のときだけ表示するパスワード設定欄 -->
         <div id="pwSection" class="hidden">
           <h3 data-i18n="pw_setup_title">パスワードの設定</h3>
-          <p class="muted" data-i18n="pw_setup_desc">
-            初回登録ではメール認証のみでした。今後はメールアドレスとパスワードでログインできるよう、ここでパスワードを設定してください。
-          </p>
-          <small data-i18n="pw_setup_note">セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。</small>
+          <p class="muted" data-i18n="pw_setup_desc"></p>
+          <small data-i18n="pw_setup_note"></small>
 
           <form id="pwForm" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
-            <input id="pwNew"  type="password" class="input" data-i18n-placeholder="pw_placeholder_new" placeholder="新しいパスワード（8文字以上）" />
-            <input id="pwNew2" type="password" class="input" data-i18n-placeholder="pw_placeholder_confirm" placeholder="確認のため、同じパスワードをもう一度" />
+            <input id="pwNew"  type="password" class="input" data-i18n-placeholder="pw_placeholder_new" />
+            <input id="pwNew2" type="password" class="input" data-i18n-placeholder="pw_placeholder_confirm" />
             <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
               <input type="checkbox" id="pwShowSetup" />
-              <label for="pwShowSetup" style="font-size:13px;" data-i18n="pw_show_label">パスワードを表示する</label>
+              <label for="pwShowSetup" style="font-size:13px;" data-i18n="pw_show_label"></label>
             </div>
-            <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn">パスワードを設定する</button>
+            <button id="pwSubmit" type="submit" class="btn btn-outline" data-i18n="pw_setup_btn"></button>
           </form>
 
           <p id="pwMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
         </div>
 
-        <!-- has_password=TRUE のときだけ表示するパスワード変更欄 -->
         <div id="pwChangeSection" class="hidden" style="margin-top:18px;">
           <h3 data-i18n="pw_change_title">パスワードの変更</h3>
-          <p class="muted" data-i18n="pw_change_desc">
-            現在ログインしているアカウントのパスワードを変更できます。古いパスワードの入力は不要です。
-          </p>
-          <small data-i18n="pw_change_note">セキュリティのため、8文字以上で他サービスと使い回さないパスワードを推奨します。</small>
+          <p class="muted" data-i18n="pw_change_desc"></p>
+          <small data-i18n="pw_change_note"></small>
 
           <form id="pwChangeForm" novalidate style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-width:320px;">
-            <input id="pwChangeNew"  type="password" class="input" data-i18n-placeholder="pw_placeholder_new" placeholder="新しいパスワード（8文字以上）" />
-            <input id="pwChangeNew2" type="password" class="input" data-i18n-placeholder="pw_placeholder_confirm" placeholder="確認のため、同じパスワードをもう一度" />
+            <input id="pwChangeNew"  type="password" class="input" data-i18n-placeholder="pw_placeholder_new" />
+            <input id="pwChangeNew2" type="password" class="input" data-i18n-placeholder="pw_placeholder_confirm" />
             <div style="display:flex;align-items:center;gap:6px;margin-top:4px;">
               <input type="checkbox" id="pwShowChange" />
-              <label for="pwShowChange" style="font-size:13px;" data-i18n="pw_show_label">パスワードを表示する</label>
+              <label for="pwShowChange" style="font-size:13px;" data-i18n="pw_show_label"></label>
             </div>
-            <button id="pwChangeSubmit" type="submit" class="btn btn-outline" data-i18n="pw_change_btn">パスワードを変更する</button>
+            <button id="pwChangeSubmit" type="submit" class="btn btn-outline" data-i18n="pw_change_btn"></button>
           </form>
 
           <p id="pwChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
@@ -590,7 +585,7 @@
     <div class="sns-row">
       <a class="sns-icon" href="https://www.youtube.com/@moriris_world" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
         <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6-.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/>
+          <path d="M21.6 7.2s-.2-1.5-.8-2.1c-.7-.8-1.5-.8-1.9-.9C15.6 4 12 4 12 4s-3.6 0-6.9.2c-.4.1-1.2.1-1.9.9-.6.6-.8 2.1-.8 2.1S2 9.1 2 11v1.9c0 1.9.2 3.8.2 3.8s.2 1.5.8 2.1c.7.8 1.8.8 2.3.9 1.7.2 7 .3 7 .3s3.6 0 6.9-.2c.4-.1 1.2-.1 1.9-.9.6.6.8-2.1.8-2.1s.2-1.9.2-3.8V11c0-1.9-.2-3.8-.2-3.8zM10 9.5l4.8 2.5L10 14.5V9.5z"/>
         </svg>
       </a>
       <a class="sns-icon" href="https://x.com/moriris_world" target="_blank" rel="noopener noreferrer" aria-label="X">
@@ -732,7 +727,6 @@
       view_list:"リスト",
       view_grid:"グリッド",
 
-      /* ★フィルターUI（全て＋追加タグ） */
       filter_title:"用途：",
       filter_all:"全て",
       tag_sleep:"睡眠導入",
@@ -825,8 +819,7 @@
       view_list:"List",
       view_grid:"Grid",
 
-      /* ★フィルターUI（all + quiet） */
-      filter_title:"Filter:",
+      filter_title:"Use:",
       filter_all:"All",
       tag_sleep:"For Sleep",
       tag_focus:"For Focus",
@@ -852,11 +845,12 @@
   // sort/view/filter state
   let videoSortMode = "newest"; // newest | oldest
   let viewMode = "list";        // list | grid
-  const selectedTags = new Set(); // OR条件の複数選択
-  let tagOptions = [];
+  const selectedTags = new Set(); // sleep/focus/quiet
+  const FIXED_TAGS = ["sleep","focus","quiet"]; // 要望：この3つ
 
   function tagLabel(tag){
     const t = I18N[currentLang] || I18N["ja"];
+    if (tag === "__all__") return t.filter_all || "All";
     const key = `tag_${tag}`;
     return t[key] || tag;
   }
@@ -889,19 +883,12 @@
       VIDEO_CONFIG = { cloudflare, episodes };
       log("video json loaded", VIDEO_CONFIG);
 
-      rebuildTagOptions();
+      renderTagFilterUI();
     }catch(e){
       console.error("video json load error", e);
       VIDEO_CONFIG = { cloudflare:null, episodes:[] };
-      tagOptions = [];
       renderTagFilterUI();
     }
-  }
-
-  function rebuildTagOptions(){
-    // 表示したいタグを固定（左から「全て」「sleep」「focus」「quiet」）
-    tagOptions = ["sleep", "focus", "quiet"];
-    renderTagFilterUI();
   }
 
   function renderTagFilterUI(){
@@ -918,22 +905,22 @@
     title.textContent = t.filter_title || "Filter:";
     row.appendChild(title);
 
-    // ★「全て」チップ（左端固定）
+    // 「全て」：左端。押すと selectedTags を空にする
     const allBtn = document.createElement("button");
     allBtn.type = "button";
     allBtn.className = "chip";
-    allBtn.textContent = t.filter_all || "All";
+    allBtn.textContent = tagLabel("__all__");
     allBtn.dataset.tag = "__all__";
     allBtn.classList.toggle("active", selectedTags.size === 0);
     allBtn.addEventListener("click", ()=>{
       selectedTags.clear();
-      renderTagFilterUI();
       gaEvent("video_filter_all", { plan: state.plan, lang: currentLang });
+      renderTagFilterUI();
       renderVideosForPlan(state.plan, videoSortMode);
     });
     row.appendChild(allBtn);
 
-    // タグチップ（複数選択 / OR）
+    // 固定タグ（sleep / focus / quiet）
     const makeChip = (tag)=>{
       const btn = document.createElement("button");
       btn.type = "button";
@@ -945,9 +932,6 @@
         if (selectedTags.has(tag)) selectedTags.delete(tag);
         else selectedTags.add(tag);
 
-        // 「全て」状態の見た目も含めて再描画
-        renderTagFilterUI();
-
         gaEvent("video_filter_toggle", {
           tag,
           active: selectedTags.has(tag) ? 1 : 0,
@@ -955,12 +939,13 @@
           lang: currentLang
         });
 
+        renderTagFilterUI(); // 「全て」active制御のため再描画
         renderVideosForPlan(state.plan, videoSortMode);
       });
       return btn;
     };
 
-    tagOptions.forEach(tag => row.appendChild(makeChip(tag)));
+    FIXED_TAGS.forEach(tag => row.appendChild(makeChip(tag)));
   }
 
   function getTitle(v){
@@ -977,9 +962,7 @@
   }
 
   function matchSelectedTags(v){
-    // 「全て」＝ selectedTags が空
-    if (selectedTags.size === 0) return true;
-
+    if (selectedTags.size === 0) return true; // 「全て」
     const tags = Array.isArray(v.tags) ? v.tags : [];
     for (const t of selectedTags){
       if (tags.includes(t)) return true; // OR条件
@@ -990,7 +973,15 @@
   function buildCloudflareIframeSrc(cf, uid){
     const customer = cf?.customer_code;
     if (!customer || !uid) return null;
-    const qp = cf?.iframe_params ? `?${cf.iframe_params}` : "";
+
+    // ここで「loop/autoplay/muted」を確実に含める（JSON側に無くても効くように）
+    const baseParams = new URLSearchParams(cf?.iframe_params || "");
+    if (!baseParams.has("loop")) baseParams.set("loop", "true");
+    if (!baseParams.has("autoplay")) baseParams.set("autoplay", "true");
+    if (!baseParams.has("muted")) baseParams.set("muted", "true");
+    if (!baseParams.has("controls")) baseParams.set("controls", "true");
+
+    const qp = baseParams.toString() ? `?${baseParams.toString()}` : "";
     return `https://${customer}/${encodeURIComponent(uid)}/iframe${qp}`;
   }
 
@@ -1046,7 +1037,6 @@
     $("#btn-ja").classList.toggle("active", lang==="ja");
     $("#btn-en").classList.toggle("active", lang==="en");
 
-    // ★フィルタやタグ表示の言語を更新
     renderTagFilterUI();
   }
 
@@ -1281,6 +1271,33 @@
     }
   }
 
+  // ループ強制（SDK + ended保険）
+  function forceLoopOnIframe(iframeEl){
+    try{
+      if (!iframeEl || typeof window.Stream !== "function") return;
+      const player = window.Stream(iframeEl);
+
+      // 反映できるまでタイミング差があるので、少し遅延して複数回トライ
+      const apply = ()=>{
+        try{
+          player.loop = true;
+          player.muted = true;    // autoplay許可のため
+          player.autoplay = true; // 施設用途なら基本ON推奨
+        }catch{}
+      };
+      apply();
+      setTimeout(apply, 200);
+      setTimeout(apply, 800);
+
+      player.addEventListener("ended", ()=>{
+        try{ player.currentTime = 0; }catch{}
+        try{ player.play(); }catch{}
+      });
+    }catch(e){
+      console.warn("forceLoopOnIframe error:", e);
+    }
+  }
+
   function renderVideosForPlan(plan, mode = videoSortMode){
     videoSortMode = mode;
 
@@ -1315,11 +1332,13 @@
       const title = getTitle(v) || "Video";
       const uid = v.cf_uid;
       const src = buildCloudflareIframeSrc(cf, uid);
+      const iframeId = `cf_${v.id || uid}`;
 
       const playerHtml = src
         ? `
           <div style="position:relative;background:#000;aspect-ratio:16/9;">
             <iframe
+              id="${iframeId}"
               src="${src}"
               title="${title}"
               frameborder="0"
@@ -1341,6 +1360,12 @@
         <div class="video-title">${title}</div>
       `;
       wrap.appendChild(card);
+
+      // ループ強制（iframe生成後に実行）
+      if (src){
+        const iframeEl = card.querySelector("iframe");
+        forceLoopOnIframe(iframeEl);
+      }
     }
   }
 
@@ -1352,8 +1377,12 @@
 
     // 表示形式の初期値（保存済みがあれば反映）
     const storedView = localStorage.getItem("moriris_view_mode");
-    // ★ボタン順はグリッド→リストだが、初期値は従来通り list を優先
     applyViewMode(storedView === "grid" ? "grid" : "list");
+
+    // ボタンのactiveも初期状態に合わせる（グリッド→リスト順のため）
+    document.querySelectorAll(".view-btn").forEach(b=>{
+      b.classList.toggle("active", b.dataset.view === viewMode);
+    });
 
     await loadVideoConfig();
 
