@@ -991,9 +991,8 @@
     // ここで「loop/autoplay/muted」を確実に含める（JSON側に無くても効くように）
     const baseParams = new URLSearchParams(cf?.iframe_params || "");
     if (!baseParams.has("loop")) baseParams.set("loop", "true");
-    if (!baseParams.has("autoplay")) baseParams.set("autoplay", "true");
-    if (!baseParams.has("muted")) baseParams.set("muted", "true");
     if (!baseParams.has("controls")) baseParams.set("controls", "true");
+    baseParams.set("autoplay", "false");
 
     const qp = baseParams.toString() ? `?${baseParams.toString()}` : "";
     return `https://${customer}/${encodeURIComponent(uid)}/iframe${qp}`;
@@ -1289,18 +1288,13 @@
       const apply = ()=>{
         try{
           player.loop = true;
-          player.muted = true;    // autoplay許可のため
-          player.autoplay = true; // 施設用途なら基本ON推奨
+          player.autoplay = false;
         }catch{}
       };
       apply();
       setTimeout(apply, 200);
       setTimeout(apply, 800);
 
-      player.addEventListener("ended", ()=>{
-        try{ player.currentTime = 0; }catch{}
-        try{ player.play(); }catch{}
-      });
     }catch(e){
       console.warn("forceLoopOnIframe error:", e);
     }
