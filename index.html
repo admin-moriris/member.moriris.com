@@ -84,10 +84,18 @@
 
     .brand h1{
       margin:0;
-      font-size:24px;
+      font-size:20px;
       font-weight:500;
-      letter-spacing:0.22em;
+      letter-spacing:0.08em;
       color:#666666;
+    }
+    @media (max-width: 860px){
+      .brand h1{
+        white-space:normal;  /* 折り返し許可 */
+        line-height:1.2;
+        letter-spacing:0.06em;
+        font-size:18px;
+      }
     }
 
     .lang{
