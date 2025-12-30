@@ -28,8 +28,44 @@
       "tier": "standard",
       "cf_uid": "48869bc9e6bd91dd20f801e652f6c77e",
       "tags": ["focus"],
-      "published_at": "2026-01-07T23:00:00Z",
+      "published_at": "2026-01-11T23:00:00Z",
       "visible": true
+    },
+    {
+      "id": "000004",
+      "title": { "ja": "睡眠導入", "en": "For Sleep" },
+      "tier": "standard",
+      "cf_uid": "24c2abc174d63edf72f836974ce186e8",
+      "tags": ["sleep", "quiet"],
+      "published_at": "2026-01-18T23:00:00Z",
+      "visible": true
+    },
+    {
+      "id": "000005",
+      "title": { "ja": "集中", "en": "For Focus" },
+      "tier": "standard",
+      "cf_uid": "ee040ac3417ecdcb622dadbb9ec12bc1",
+      "tags": ["focus"],
+      "published_at": "2026-01-25T23:00:00Z",
+      "visible": true
+    },
+    {
+      "id": "000006",
+      "title": { "ja": "睡眠＋集中", "en": "Sleep + Focus" },
+      "tier": "standard",
+      "cf_uid": "ef94ae20dfb2e13b7e93e0d36a59bcfa",
+      "tags": ["sleep", "focus", "quiet"],
+      "published_at": "2026-02-01T23:00:00Z",
+      "visible": true
+    },
+    {
+      "id": "000007",
+      "title": { "ja": "集中", "en": "For Focus" },
+      "tier": "standard",
+      "cf_uid": "48869bc9e6bd91dd20f801e652f6c77e",
+      "tags": ["focus"],
+      "published_at": "2026-02-08T23:00:00Z",
+      "visible": false
     }
   ]
 }
