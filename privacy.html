@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Moriris Members – Privacy Policy</title>
+  <title>Moriris for Facilities – Privacy Policy</title>
 
   <style>
     :root{
@@ -34,27 +34,27 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap:12px;
     }
     .brand{
       display:flex;
       align-items:center;
       gap:14px;
+      min-width:0;
     }
-    .brand img{
-      height:48px;
-    }
+    .brand img{ height:48px; }
     h1{
       margin:0;
       font-size:18px;
       letter-spacing:0.12em;
       text-transform:uppercase;
       color:#555;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    .lang{
-      display:flex;
-      gap:6px;
-    }
+    .lang{ display:flex; gap:6px; flex-shrink:0; }
     .lang button{
       padding:6px 12px;
       border-radius:999px;
@@ -86,11 +86,15 @@
       padding-bottom:4px;
       font-size:17px;
     }
-    p,li{
-      font-size:15px;
-      line-height:1.8;
+    p,li{ font-size:15px; line-height:1.8; }
+    ul{ padding-left:1.4em; }
+
+    .note{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:10px;
+      line-height:1.7;
     }
-    ul{padding-left:1.4em;}
 
     footer{
       text-align:center;
@@ -125,7 +129,8 @@
       <div id="pp-ja">
 
         <p>
-          本プライバシーポリシー（以下「本ポリシー」といいます。）は、Moriris Members（以下「本サービス」といいます。）におけるユーザー情報の取扱いについて定めるものです。
+          本プライバシーポリシー（以下「本ポリシー」といいます。）は、Moriris for Facilities（日本語表記：「法人・施設用視聴サイト」、以下「本サービス」といいます。）におけるユーザー情報の取扱いについて定めるものです。
+          本サービスは法人・施設（組織）での利用を想定し、管理者（担当者）を通じて情報を取得する場合があります。
         </p>
 
         <h2>第1条（適用範囲）</h2>
@@ -134,17 +139,19 @@
         <h2>第2条（取得する情報）</h2>
         <ul>
           <li>1. メールアドレス（アカウント作成・認証用）</li>
-          <li>2. Stripeが保持する決済情報（カード番号などは当運営者には提供されません）</li>
-          <li>3. ログイン記録、閲覧履歴、エラー情報</li>
-          <li>4. ユーザーが任意で送信した情報</li>
+          <li>2. 法人名（施設名）・担当者情報（決済時または問い合わせフォーム等で取得する場合があります）</li>
+          <li>3. Stripeが保持する決済情報（カード番号などは当運営者には提供されません）</li>
+          <li>4. ログイン記録、閲覧履歴、エラー情報</li>
+          <li>5. ユーザー（管理者）が任意で送信した情報（問い合わせ内容等）</li>
         </ul>
 
         <h2>第3条（利用目的）</h2>
         <ul>
           <li>1. 本サービスの提供・運営</li>
           <li>2. 認証やセキュリティの確保</li>
-          <li>3. 有料プランの決済処理</li>
-          <li>4. 利用状況の分析・改善</li>
+          <li>3. 有料プランの決済処理（法人名（施設名）の紐付けを含む）</li>
+          <li>4. お問い合わせ対応（法人名（施設名）の確認を含む）</li>
+          <li>5. 利用状況の分析・改善</li>
         </ul>
 
         <h2>第4条（第三者提供）</h2>
@@ -165,12 +172,16 @@
 
         <h2>第7条（ユーザーの権利）</h2>
         <p>
-          ユーザーは、自身の情報の削除・訂正等を求めることができます。
+          ユーザー（管理者）は、自身の情報の削除・訂正等を求めることができます。
         </p>
 
         <h2>第8条（ポリシーの変更）</h2>
         <p>
           本ポリシーは、必要に応じて変更される場合があります。
+        </p>
+
+        <p class="note">
+          ※法人名（施設名）の取得方法（Stripeの入力項目、問い合わせフォームの必須項目等）は運用により変更される場合があります。
         </p>
 
         <p style="margin-top:24px;">制定日：2025年11月1日</p>
@@ -182,7 +193,8 @@
       <div id="pp-en" style="display:none;">
 
         <p>
-          This Privacy Policy (“Policy”) describes how user information is handled in the Moriris Members service (“the Service”).
+          This Privacy Policy (“Policy”) describes how user information is handled in Moriris for Facilities (“the Service”).
+          The Service is intended for organizational use (companies/facilities) and information may be collected via an administrator (person in charge).
         </p>
 
         <h2>Article 1 (Scope)</h2>
@@ -191,17 +203,19 @@
         <h2>Article 2 (Information Collected)</h2>
         <ul>
           <li>1. Email address (for account creation and authentication)</li>
-          <li>2. Payment information stored by Stripe (card details are not provided to the operator)</li>
-          <li>3. Login logs, viewing history, error logs</li>
-          <li>4. Information voluntarily provided by users</li>
+          <li>2. Organization name (company/facility) and administrator details (may be collected at checkout and/or via inquiry forms)</li>
+          <li>3. Payment information stored by Stripe (card details are not provided to the operator)</li>
+          <li>4. Login logs, viewing history, error logs</li>
+          <li>5. Information voluntarily provided by administrators/users (e.g., inquiry messages)</li>
         </ul>
 
         <h2>Article 3 (Purposes of Use)</h2>
         <ul>
           <li>1. To operate and provide the Service</li>
           <li>2. To maintain authentication and security</li>
-          <li>3. To process payments for paid plans</li>
-          <li>4. To analyze usage and improve the Service</li>
+          <li>3. To process payments for paid plans (including associating the Organization name)</li>
+          <li>4. To respond to inquiries (including confirming the Organization name)</li>
+          <li>5. To analyze usage and improve the Service</li>
         </ul>
 
         <h2>Article 4 (Third-Party Provision)</h2>
@@ -221,11 +235,15 @@
         </p>
 
         <h2>Article 7 (User Rights)</h2>
-        <p>Users may request correction or deletion of their information.</p>
+        <p>Administrators may request correction or deletion of their information.</p>
 
         <h2>Article 8 (Amendments)</h2>
         <p>
           This Policy may be updated as necessary.
+        </p>
+
+        <p class="note">
+          Note: How the Organization name is collected (Stripe fields, required inquiry form fields, etc.) may change depending on operations.
         </p>
 
         <p style="margin-top:24px;">Effective: 2025-11-01</p>
@@ -237,23 +255,23 @@
   <footer>&copy; Moriris Studio </footer>
 
   <script>
-    const btnJa2 = document.getElementById("btn-ja");
-    const btnEn2 = document.getElementById("btn-en");
-    const ja2 = document.getElementById("pp-ja");
-    const en2 = document.getElementById("pp-en");
+    const btnJa = document.getElementById("btn-ja");
+    const btnEn = document.getElementById("btn-en");
+    const ja = document.getElementById("pp-ja");
+    const en = document.getElementById("pp-en");
 
-    btnJa2.onclick = () => {
-      ja2.style.display = "block";
-      en2.style.display = "none";
-      btnJa2.classList.add("active");
-      btnEn2.classList.remove("active");
+    btnJa.onclick = () => {
+      ja.style.display = "block";
+      en.style.display = "none";
+      btnJa.classList.add("active");
+      btnEn.classList.remove("active");
     };
 
-    btnEn2.onclick = () => {
-      ja2.style.display = "none";
-      en2.style.display = "block";
-      btnEn2.classList.add("active");
-      btnJa2.classList.remove("active");
+    btnEn.onclick = () => {
+      ja.style.display = "none";
+      en.style.display = "block";
+      btnEn.classList.add("active");
+      btnJa.classList.remove("active");
     };
   </script>
 </body>
