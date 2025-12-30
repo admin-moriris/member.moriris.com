@@ -1059,6 +1059,8 @@
     $("#btn-en").classList.toggle("active", lang==="en");
 
     renderTagFilterUI();
+
+    renderVideosForPlan(state.plan, videoSortMode);
   }
 
   $("#btn-ja").onclick = ()=>applyLang("ja");
