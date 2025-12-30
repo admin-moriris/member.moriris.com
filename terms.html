@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Moriris Members – Terms of Service</title>
+  <title>Moriris for Facilities – Terms of Service</title>
 
   <style>
     :root{
@@ -34,27 +34,27 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap:12px;
     }
     .brand{
       display:flex;
       align-items:center;
       gap:14px;
+      min-width:0;
     }
-    .brand img{
-      height:48px;
-    }
+    .brand img{ height:48px; }
     h1{
       margin:0;
       font-size:18px;
       letter-spacing:0.12em;
       text-transform:uppercase;
       color:#555;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
 
-    .lang{
-      display:flex;
-      gap:6px;
-    }
+    .lang{ display:flex; gap:6px; flex-shrink:0; }
     .lang button{
       padding:6px 12px;
       border-radius:999px;
@@ -86,11 +86,15 @@
       padding-bottom:4px;
       font-size:17px;
     }
-    p,li{
-      font-size:15px;
-      line-height:1.8;
+    p,li{ font-size:15px; line-height:1.8; }
+    ul{ padding-left:1.4em; }
+
+    .note{
+      color:var(--muted);
+      font-size:13px;
+      margin-top:10px;
+      line-height:1.7;
     }
-    ul{padding-left:1.4em;}
 
     footer{
       text-align:center;
@@ -125,7 +129,8 @@
       <div id="terms-ja">
 
         <p>
-          本利用規約（以下「本規約」といいます。）は、Moriris Members（以下「本サービス」といいます。）の利用条件を定めるものです。ユーザーは、本サービスを利用することにより、本規約に同意したものとみなされます。
+          本利用規約（以下「本規約」といいます。）は、Moriris for Facilities（日本語表記：「法人・施設用視聴サイト」、以下「本サービス」といいます。）の利用条件を定めるものです。
+          本サービスの利用にあたり、管理者（担当者）は、本規約に同意のうえ所属する法人・施設を代表して利用登録を行うものとします。
         </p>
 
         <h2>第1条（適用）</h2>
@@ -135,49 +140,56 @@
 
         <h2>第2条（定義）</h2>
         <ul>
-          <li>1. 「ユーザー」：本サービスを利用する個人</li>
-          <li>2. 「会員」：メールアドレスによってアカウントが作成されたユーザー</li>
-          <li>3. 「有料会員」：Stripe決済を通じて有料プランを契約した会員</li>
-          <li>4. 「コンテンツ」：本サービスで提供されるアニメーション、デジタル絵本等</li>
+          <li>1. 「法人・施設」：本サービスを利用する事業者（法人、施設、団体、個人事業を含みます）</li>
+          <li>2. 「管理者」：法人・施設を代表してアカウント登録・決済・設定を行う担当者</li>
+          <li>3. 「利用者」：当該法人・施設に所属し、管理者の許可の範囲で本サービスを利用する者</li>
+          <li>4. 「会員」：メールアドレスによりアカウントが作成された管理者（または当社が認めた者）</li>
+          <li>5. 「有料会員」：Stripe決済を通じて有料プランを契約した会員</li>
+          <li>6. 「コンテンツ」：本サービスで提供される動画等のデジタルコンテンツ</li>
         </ul>
 
         <h2>第3条（登録）</h2>
         <p>
-          ユーザーは、メールアドレスを用いてアカウント登録を行うことができます。
+          管理者は、メールアドレスを用いてアカウント登録を行うことができます。
+          なお、登録および利用に必要な情報として、法人名（施設名）等の入力を求める場合があります（決済時・問い合わせ時を含みます）。
         </p>
 
         <h2>第4条（アカウント管理）</h2>
         <p>
-          アカウント情報の管理はユーザーの責任で行うものとします。
+          アカウント情報および利用端末等の管理は法人・施設および管理者の責任で行うものとします。
         </p>
 
-        <h2>第5条（サービス内容）</h2>
+        <h2>第5条（サービス内容・利用範囲）</h2>
         <p>
-          本サービスは、動画・デジタル絵本などのコンテンツを提供します。  
-          無料会員と有料会員で利用できる範囲は異なります。
+          本サービスは、用途別の長尺動画等のコンテンツを提供します。無料会員と有料会員で利用できる範囲は異なります。
+        </p>
+        <p>
+          法人・施設内（同一組織内）での業務・運営上の利用（例：待ち時間、睡眠導入、集中、静かな空間等の目的での再生）は可能です。
+          ただし、コンテンツの再配布、第三者への共有、転売、または不特定多数に向けた公衆送信（SNS/動画サイトへの再投稿等）は禁止します。
         </p>
 
         <h2>第6条（料金と支払い）</h2>
         <p>
           有料会員は、当サービスが指定する料金をStripe決済により支払うものとします。
+          決済手続きにおいて、法人名（施設名）等の情報を取得する場合があります。
         </p>
 
         <h2>第7条（解約）</h2>
         <p>
-          ユーザーは、いつでもサブスクリプションを解約できます。  
-          既に支払い済み期間の返金は行いません。
+          管理者は、いつでもサブスクリプションを解約できます。既に支払い済み期間の返金は行いません。
         </p>
 
         <h2>第8条（禁止事項）</h2>
         <ul>
-          <li>1. コンテンツの無断転載・複製等</li>
+          <li>1. コンテンツの無断転載・複製・再配布・転売・第三者共有</li>
           <li>2. 法令違反行為</li>
           <li>3. 他者の権利を侵害する行為</li>
+          <li>4. 不正アクセス、または本サービス運営を妨害する行為</li>
         </ul>
 
         <h2>第9条（知的財産権）</h2>
         <p>
-          コンテンツの著作権は当運営者または権利者に帰属します。
+          コンテンツの著作権および関連する知的財産権は当運営者または権利者に帰属します。
         </p>
 
         <h2>第10条（免責）</h2>
@@ -190,6 +202,10 @@
           当運営者は、本規約を変更できるものとします。
         </p>
 
+        <p class="note">
+          ※本規約は、法人・施設向け利用を想定した一般的な記載です。必要に応じて、個別運用（ID発行方式、同時視聴、拠点利用等）に合わせて調整してください。
+        </p>
+
         <p style="margin-top:24px;">制定日：2025年11月1日</p>
       </div>
 
@@ -199,7 +215,8 @@
       <div id="terms-en" style="display:none;">
 
         <p>
-          These Terms of Service ("Terms") set forth the conditions for using Moriris Members ("the Service"). By using the Service, users are deemed to have agreed to these Terms.
+          These Terms of Service ("Terms") set forth the conditions for using Moriris for Facilities ("the Service").
+          By registering and using the Service, the administrator (the person in charge) is deemed to have agreed to these Terms on behalf of their organization (company/facility).
         </p>
 
         <h2>Article 1 (Scope)</h2>
@@ -209,49 +226,55 @@
 
         <h2>Article 2 (Definitions)</h2>
         <ul>
-          <li>1. “User”: An individual who uses the Service</li>
-          <li>2. “Member”: A user who creates an account using an email address</li>
-          <li>3. “Paid Member”: A Member who subscribes to a paid plan via Stripe</li>
-          <li>4. “Content”: Animations, picture books, and other materials provided via the Service</li>
+          <li>1. “Organization”: The business entity using the Service (company, facility, group, or sole proprietorship)</li>
+          <li>2. “Administrator”: A representative who registers, pays, and manages settings for the Organization</li>
+          <li>3. “Users”: People within the same Organization who use the Service within the Administrator’s permitted scope</li>
+          <li>4. “Member”: An Administrator (or a person approved by the operator) who creates an account with an email address</li>
+          <li>5. “Paid Member”: A Member who subscribes to a paid plan via Stripe</li>
+          <li>6. “Content”: Long-form videos and other digital content provided via the Service</li>
         </ul>
 
         <h2>Article 3 (Registration)</h2>
         <p>
-          Users may register an account using their email address.
+          Administrators may register an account using their email address.
+          We may request Organization details such as the company/facility name (including at checkout and in inquiry forms).
         </p>
 
         <h2>Article 4 (Account Management)</h2>
         <p>
-          Users are responsible for managing their own account information.
+          The Organization and Administrator are responsible for managing account credentials and devices.
         </p>
 
-        <h2>Article 5 (Service Content)</h2>
+        <h2>Article 5 (Service Content & Permitted Use)</h2>
         <p>
-          The Service provides animations, digital picture books, and related content.  
-          The available content may differ between free members and paid members.
+          The Service provides purpose-based long-form videos and related content. The available content may differ between free and paid plans.
+        </p>
+        <p>
+          Playback and use within the same Organization for operational purposes (e.g., waiting rooms, calm spaces, sleep/focus) is permitted.
+          Redistribution, sharing with third parties, resale, and re-uploading/public distribution (e.g., posting the Content to social/video platforms) are prohibited.
         </p>
 
         <h2>Article 6 (Fees and Payment)</h2>
         <p>
-          Paid Members shall pay the prescribed fees via Stripe.
+          Paid Members shall pay the prescribed fees via Stripe. We may collect the Organization name during the payment process.
         </p>
 
         <h2>Article 7 (Cancellation)</h2>
         <p>
-          Users may cancel their subscription at any time.  
-          Payments already made are non-refundable.
+          Administrators may cancel subscriptions at any time. Payments already made are non-refundable.
         </p>
 
         <h2>Article 8 (Prohibited Acts)</h2>
         <ul>
-          <li>1. Unauthorized reproduction or redistribution of content</li>
+          <li>1. Unauthorized reproduction, redistribution, resale, or sharing of Content with third parties</li>
           <li>2. Acts that violate laws or regulations</li>
           <li>3. Acts that infringe the rights of others</li>
+          <li>4. Unauthorized access or actions that disrupt the Service</li>
         </ul>
 
         <h2>Article 9 (Intellectual Property)</h2>
         <p>
-          Copyright and related rights to the content belong to the operator or rightful owners.
+          Copyright and related rights to the Content belong to the operator or rightful owners.
         </p>
 
         <h2>Article 10 (Disclaimer)</h2>
@@ -262,6 +285,10 @@
         <h2>Article 11 (Amendments)</h2>
         <p>
           The operator may revise these Terms at any time.
+        </p>
+
+        <p class="note">
+          Note: This is a general corporate/facility-oriented wording. If you have specific requirements (multi-site use, seat limits, etc.), adjust accordingly.
         </p>
 
         <p style="margin-top:24px;">Effective: 2025-11-01</p>
