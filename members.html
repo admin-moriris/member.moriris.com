@@ -878,7 +878,38 @@
       b.classList.toggle("active", b.dataset.view === mode);
     });
   }
-  
+
+  function getVideoKey(v){
+    return String(v?.id || v?.cf_uid || "");
+  }
+
+  // 既に表示されている動画カードの「タイトルだけ」言語に合わせて差し替える（iframe作り直しなし）
+  function refreshVideoTitlesInPlace(){
+    if (!VIDEO_CONFIG?.episodes?.length) return;
+
+    const t = I18N[currentLang] || I18N["ja"];
+
+    // 空表示メッセージも差し替え
+    const emptyEl = document.querySelector('#videos [data-role="videos-empty"]');
+    if (emptyEl) emptyEl.textContent = t.videos_empty;
+
+    document.querySelectorAll("#videos .video-card").forEach(card=>{
+      const vid = card.dataset.videoId || "";
+      if (!vid) return;
+
+      const ep = VIDEO_CONFIG.episodes.find(e => getVideoKey(e) === vid);
+      if (!ep) return;
+
+      const newTitle = getTitle(ep) || "Video";
+
+      const titleEl = card.querySelector('[data-role="video-title"]');
+      if (titleEl) titleEl.textContent = newTitle;
+
+      const iframe = card.querySelector("iframe");
+      if (iframe) iframe.setAttribute("title", newTitle);
+    });
+  }
+
   async function loadVideoConfig(){
     try{
       const res = await fetch(VIDEO_JSON_URL, { cache: "no-store" });
@@ -893,10 +924,12 @@
       log("video json loaded", VIDEO_CONFIG);
 
       renderTagFilterUI();
+      refreshVideoTitlesInPlace(); // ★追加：JSON再読込後も即時反映
     }catch(e){
       console.error("video json load error", e);
       VIDEO_CONFIG = { cloudflare:null, episodes:[] };
       renderTagFilterUI();
+      refreshVideoTitlesInPlace(); // ★追加：空メッセージの言語反映
     }
   }
 
@@ -1060,7 +1093,8 @@
 
     renderTagFilterUI();
 
-    renderVideosForPlan(state.plan, videoSortMode);
+    // ★重要：言語切替時は「一覧再描画」ではなく「タイトルだけ差し替え」
+    refreshVideoTitlesInPlace();
   }
 
   $("#btn-ja").onclick = ()=>applyLang("ja");
@@ -1332,6 +1366,7 @@
     if (!episodes.length){
       const p = document.createElement("p");
       p.className = "muted";
+      p.dataset.role = "videos-empty";   // ★追加：言語切替で差し替えやすく
       p.textContent = t.videos_empty;
       wrap.appendChild(p);
       return;
@@ -1340,6 +1375,10 @@
     for (const v of episodes){
       const card = document.createElement("div");
       card.className = "video-card";
+
+      // ★追加：後からタイトルだけ更新できるようにID保持
+      const vidKey = getVideoKey(v);
+      card.dataset.videoId = vidKey;
 
       const title = getTitle(v) || "Video";
       const uid = v.cf_uid;
@@ -1369,7 +1408,7 @@
 
       card.innerHTML = `
         ${playerHtml}
-        <div class="video-title">${title}</div>
+        <div class="video-title" data-role="video-title">${title}</div>
       `;
       wrap.appendChild(card);
 
@@ -1395,9 +1434,8 @@
     document.querySelectorAll(".view-btn").forEach(b=>{
       b.classList.toggle("active", b.dataset.view === viewMode);
     });
-　　　
+
     await loadBillingConfig();
-    
     await loadVideoConfig();
 
     state.statusCode = "checking";
