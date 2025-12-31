@@ -17,7 +17,7 @@
       "id": "000002",
       "title": { "ja": "睡眠＋集中", "en": "Sleep + Focus" },
       "tier": "standard",
-      "cf_uid": "b6f93970518a2632c02222b94116ee40",
+      "cf_uid": "98d6733f02b97dad0b20eded9f5e3bb9",
       "tags": ["sleep", "focus", "quiet"],
       "published_at": "2026-01-04T23:00:00Z",
       "visible": true
@@ -35,7 +35,7 @@
       "id": "000004",
       "title": { "ja": "睡眠導入", "en": "For Sleep" },
       "tier": "standard",
-      "cf_uid": "24c2abc174d63edf72f836974ce186e8",
+      "cf_uid": "cea36a0b23f94c52324d30c9277daabc",
       "tags": ["sleep", "quiet"],
       "published_at": "2026-01-18T23:00:00Z",
       "visible": true
