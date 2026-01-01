@@ -60,12 +60,21 @@
     },
     {
       "id": "000007",
-      "title": { "ja": "集中", "en": "For Focus" },
+      "title": { "ja": "睡眠＋集中", "en": "Sleep + Focus" },
       "tier": "standard",
-      "cf_uid": "48869bc9e6bd91dd20f801e652f6c77e",
-      "tags": ["focus"],
+      "cf_uid": "c1b38a8f05fc102daa2966a29ab015bb",
+      "tags": ["sleep", "focus", "quiet"],
       "published_at": "2026-02-08T23:00:00Z",
-      "visible": false
+      "visible": true
+    },
+    {
+      "id": "000008",
+      "title": { "ja": "睡眠＋集中", "en": "Sleep + Focus" },
+      "tier": "standard",
+      "cf_uid": "25c0d757c4356b698dae9d02e8447288",
+      "tags": ["sleep", "focus", "quiet"],
+      "published_at": "2026-02-08T23:00:00Z",
+      "visible": true
     }
   ]
 }
