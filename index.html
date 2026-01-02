@@ -15,7 +15,7 @@
   </script>
   
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Moriris Video Platform Video Platform for Facilities</title>
+  <title>Video Platform for Facilities | Moriris</title>
 
   <style>
     :root{
@@ -64,7 +64,7 @@
       align-items:center;
       justify-content:space-between;
       margin-bottom:18px;
-      flex-wrap:wrap;       /* 画面幅が狭いときに折り返し */
+      flex-wrap:wrap;
       gap:12px;
     }
 
@@ -72,7 +72,7 @@
       display:flex;
       align-items:center;
       gap:20px;
-      flex-wrap:wrap;       /* ロゴと MEMBERSHIP を折り返し可能に */
+      flex-wrap:wrap;
     }
 
     .brand img{
@@ -91,7 +91,7 @@
     }
     @media (max-width: 860px){
       .brand h1{
-        white-space:normal;  /* 折り返し許可 */
+        white-space:normal;
         line-height:1.2;
         letter-spacing:0.06em;
         font-size:18px;
@@ -126,6 +126,36 @@
       border-radius:var(--r);
       box-shadow:var(--sh);
       padding:28px 32px 32px;
+    }
+
+    /* NEW: intro block */
+    .intro{
+      max-width:720px;
+      margin:0 auto 18px;
+      text-align:center;
+    }
+    .intro-title{
+      margin:0 0 8px;
+      font-size:18px;
+      font-weight:700;
+      letter-spacing:.02em;
+    }
+    .intro-desc{
+      margin:0;
+      font-size:14px;
+      color:var(--muted);
+      line-height:1.6;
+      white-space:pre-line;
+    }
+    .intro-badge{
+      display:inline-block;
+      margin-top:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(117,194,156,.18);
+      color:#0b5130;
+      font-weight:700;
+      font-size:13px;
     }
 
     .form-block{
@@ -164,9 +194,7 @@
       border:1px solid #ddd;
     }
 
-    input{
-      width:100%;
-    }
+    input{ width:100%; }
 
     input[type="checkbox"]{
       width:auto;
@@ -239,7 +267,6 @@
 
     a{ color:#0d6b45; }
 
-    /* メッセージ表示用 */
     .form-message{
       margin:6px 2px 0;
       font-size:13px;
@@ -247,28 +274,15 @@
       min-height:1.2em;
       color:var(--muted);
     }
-    .form-message.error{
-      color:#b3261e;
-    }
-    .form-message.success{
-      color:#0b5130;
-    }
+    .form-message.error{ color:#b3261e; }
+    .form-message.success{ color:#0b5130; }
 
-    /* スマホ用調整 */
     @media (max-width:600px){
-      .wrap{
-        padding:16px 12px 32px;
-      }
-      .brand img{
-        height:120px;
-      }
-      .brand h1{
-        font-size:18px;
-        letter-spacing:0.18em;
-      }
-      .lang{
-        margin-left:auto;  /* 右寄せ */
-      }
+      .wrap{ padding:16px 12px 32px; }
+      .brand img{ height:120px; }
+      .brand h1{ font-size:18px; letter-spacing:0.18em; }
+      .lang{ margin-left:auto; }
+      .card{ padding:22px 18px 22px; }
     }
   </style>
 
@@ -290,8 +304,16 @@
       </div>
     </header>
 
-    <!-- カード本体 -->
     <div class="card">
+
+      <!-- NEW: top intro (login reassurance) -->
+      <div class="intro" aria-label="intro">
+        <div class="intro-title" id="t_intro_title">法人・施設向け映像配信サイト</div>
+        <p class="intro-desc" id="t_intro_desc">
+          メール登録で無料2本を視聴できます。
+        </p>
+        <div class="intro-badge" id="t_intro_badge">Free: 2 videos (Email registration)</div>
+      </div>
 
       <!-- 1. パスワードログイン -->
       <section class="form-block" aria-label="password login">
@@ -310,7 +332,6 @@
         </div>
         <div class="row">
           <button id="btn-login-pw" class="primary">ログイン</button>
-          <!-- パスワードログイン用メッセージ表示場所 -->
           <p id="pw-message" class="form-message" aria-live="polite"></p>
         </div>
       </section>
@@ -339,7 +360,6 @@
         <div class="row">
           <input id="magic-email" type="email" placeholder="you@example.com" aria-label="email" />
           <button id="btn-magic" class="primary" disabled>メールを送る</button>
-          <!-- 新規登録 / パスワード再設定用メッセージ表示場所 -->
           <p id="magic-message" class="form-message" aria-live="polite"></p>
         </div>
       </section>
@@ -362,9 +382,9 @@
       SUPABASE_ANON_KEY,
       {
         auth: {
-          persistSession: true,        // セッションを localStorage に保存
-          autoRefreshToken: true,      // トークン自動更新
-          detectSessionInUrl: true,    // （マジックリンク用）URL からもセッション復元
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
         },
       }
     );
@@ -373,13 +393,20 @@
     const I18N = {
       ja:{
         title:"法人・施設向け映像配信サイト",
+        introTitle:"法人・施設向け映像配信サイト",
+        introDesc:"メール登録で無料2本を視聴できます。",
+        introBadge:"無料：2本（メール登録）",
+
         pwTitle:"パスワードでログイン",
         pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
         pwButton:"ログイン",
+
         magicTitle:"新規会員登録 / パスワード再設定",
         magicDesc:"メールアドレスを認証してアカウントを作成します。\nすでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
         magicButton:"メールを送る",
+
         hint:"メールが届かない場合は迷惑メールフォルダをご確認ください。",
+
         needEmail:"メールアドレスを入力してください。",
         needPassword:"パスワードを入力してください。",
         needAgree:"利用規約とプライバシーポリシーへの同意が必要です。",
@@ -392,14 +419,21 @@
           '「<a href="https://member.moriris.com/privacy.html" target="_blank" rel="noopener">プライバシーポリシー</a>」 を読んで同意しました。'
       },
       en:{
-        title:"Video Platform Video Platform for Facilities",
+        title:"Video Platform for Facilities",
+        introTitle:"Video Platform for Facilities",
+        introDesc:"Watch 2 videos free with email registration.",
+        introBadge:"Free: 2 videos (Email registration)",
+
         pwTitle:"Log in with password",
         pwDesc:"If you have already set a password, you can log in here.",
         pwButton:"Log in",
+
         magicTitle:"Sign up / Reset password",
         magicDesc:"Verify your email address to create an account.\nIf you already have an account, you can also reset your password using this link.",
         magicButton:"Send email",
+
         hint:"If you don't see the email, please check your spam folder.",
+
         needEmail:"Please enter your email address.",
         needPassword:"Please enter your password.",
         needAgree:"Please read and agree to the Terms of Service and Privacy Policy.",
@@ -430,18 +464,14 @@
       if(!pwMsg) return;
       pwMsg.textContent = text || "";
       pwMsg.classList.remove("error","success");
-      if(text){
-        pwMsg.classList.add(type);
-      }
+      if(text){ pwMsg.classList.add(type); }
     }
 
     function showMagicMessage(text, type = "error"){
       if(!magicMsg) return;
       magicMsg.textContent = text || "";
       magicMsg.classList.remove("error","success");
-      if(text){
-        magicMsg.classList.add(type);
-      }
+      if(text){ magicMsg.classList.add(type); }
     }
 
     /***** 利用規約チェック制御 *****/
@@ -457,7 +487,15 @@
       localStorage.setItem(langKey, lang);
       const t = I18N[lang];
 
+      // header title
       $("#t_title").textContent = t.title;
+
+      // NEW: intro
+      $("#t_intro_title").textContent = t.introTitle;
+      $("#t_intro_desc").textContent = t.introDesc;
+      $("#t_intro_badge").textContent = t.introBadge;
+
+      // forms
       $("#t_pw_title").textContent = t.pwTitle;
       $("#t_pw_desc").textContent = t.pwDesc;
       $("#btn-login-pw").textContent = t.pwButton;
@@ -493,7 +531,6 @@
     /***** Show Password（パスワード表示切替） *****/
     const showPw = $("#show-password");
     const pwField = $("#pw-password");
-    
     showPw.addEventListener("change", ()=>{
       pwField.type = showPw.checked ? "text" : "password";
     });
@@ -510,20 +547,11 @@
       const email = $("#pw-email").value.trim();
       const password = $("#pw-password").value;
 
-      showPwMessage(""); // いったんクリア
+      showPwMessage("");
 
-      if(!email){
-        showPwMessage(t.needEmail, "error");
-        return;
-      }
-      if(!validateEmail(email)){
-        showPwMessage(t.invalidEmail, "error");
-        return;
-      }
-      if(!password){
-        showPwMessage(t.needPassword, "error");
-        return;
-      }
+      if(!email){ showPwMessage(t.needEmail, "error"); return; }
+      if(!validateEmail(email)){ showPwMessage(t.invalidEmail, "error"); return; }
+      if(!password){ showPwMessage(t.needPassword, "error"); return; }
 
       pwLoginBtn.disabled = true;
 
@@ -544,7 +572,7 @@
         funnel_step: 'login_complete',
         lang: lang
       });
-      
+
       window.location.href = `/members.html?lang=${lang}`;
     };
 
@@ -554,20 +582,11 @@
       const lang = localStorage.getItem(langKey) || "ja";
       const email = $("#magic-email").value.trim();
 
-      showMagicMessage(""); // いったんクリア
+      showMagicMessage("");
 
-      if(!email){
-        showMagicMessage(t.needEmail, "error");
-        return;
-      }
-      if(!validateEmail(email)){
-        showMagicMessage(t.invalidEmail, "error");
-        return;
-      }
-      if(!agreeCheckbox.checked){
-        showMagicMessage(t.needAgree, "error");
-        return;
-      }
+      if(!email){ showMagicMessage(t.needEmail, "error"); return; }
+      if(!validateEmail(email)){ showMagicMessage(t.invalidEmail, "error"); return; }
+      if(!agreeCheckbox.checked){ showMagicMessage(t.needAgree, "error"); return; }
 
       magicBtn.disabled = true;
 
