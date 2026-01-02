@@ -128,17 +128,11 @@
       padding:28px 32px 32px;
     }
 
-    /* NEW: intro block */
+    /* intro block (no title line to avoid duplication) */
     .intro{
       max-width:720px;
       margin:0 auto 18px;
       text-align:center;
-    }
-    .intro-title{
-      margin:0 0 8px;
-      font-size:18px;
-      font-weight:700;
-      letter-spacing:.02em;
     }
     .intro-desc{
       margin:0;
@@ -306,12 +300,10 @@
 
     <div class="card">
 
-      <!-- NEW: top intro (login reassurance) -->
+      <!-- intro (no duplicated title) -->
       <div class="intro" aria-label="intro">
-        <p class="intro-desc" id="t_intro_desc">
-          メール登録で無料2本を視聴できます。
-        </p>
-        <div class="intro-badge" id="t_intro_badge">Free: 2 videos (Email registration)</div>
+        <p class="intro-desc" id="t_intro_desc">メール登録で無料2本を視聴できます。</p>
+        <div class="intro-badge" id="t_intro_badge">無料：2本（メール登録）</div>
       </div>
 
       <!-- 1. パスワードログイン -->
@@ -392,7 +384,6 @@
     const I18N = {
       ja:{
         title:"法人・施設向け映像配信サイト",
-        introTitle:"法人・施設向け映像配信サイト",
         introDesc:"メール登録で無料2本を視聴できます。",
         introBadge:"無料：2本（メール登録）",
 
@@ -485,11 +476,9 @@
       localStorage.setItem(langKey, lang);
       const t = I18N[lang];
 
-      // header title
       $("#t_title").textContent = t.title;
 
-      // NEW: intro
-      $("#t_intro_title").textContent = t.introTitle;
+      // intro (no duplicated title)
       $("#t_intro_desc").textContent = t.introDesc;
       $("#t_intro_badge").textContent = t.introBadge;
 
