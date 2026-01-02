@@ -25,7 +25,7 @@
     {
       "id": "000003",
       "title": { "ja": "集中", "en": "For Focus" },
-      "tier": "standard",
+      "tier": "free",
       "cf_uid": "48869bc9e6bd91dd20f801e652f6c77e",
       "tags": ["focus"],
       "published_at": "2026-01-11T23:00:00Z",
