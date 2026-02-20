@@ -151,6 +151,11 @@
       font-weight:700;
       font-size:13px;
     }
+    .trial-notice{
+      margin:8px 0 0;
+      font-size:12px;
+      color:var(--muted);
+    }
 
     .form-block{
       max-width:520px;
@@ -304,6 +309,7 @@
       <div class="intro" aria-label="intro">
         <p class="intro-desc" id="t_intro_desc">メール登録で14日間無料で体験できます。</p>
         <div class="intro-badge" id="t_intro_badge">14日間無料（メール登録）</div>
+        <p class="trial-notice" id="t_intro_notice">無料期間終了後は、自動的にサブスクリプションが開始されます。</p>
       </div>
 
       <!-- 1. パスワードログイン -->
@@ -386,6 +392,7 @@
         title:"法人・施設向け映像配信サイト",
         introDesc:"メール登録で14日間無料で体験できます。",
         introBadge:"14日間無料（メール登録）",
+        introNotice:"無料期間終了後は、自動的にサブスクリプションが開始されます。",
 
         pwTitle:"パスワードでログイン",
         pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
@@ -412,6 +419,7 @@
         title:"Video Platform for Facilities",
         introDesc:"Try it free for 14 days with email registration.",
         introBadge:"14-day free trial (Email registration)",
+        introNotice:"After the free trial ends, your subscription will start automatically.",
 
         pwTitle:"Log in with password",
         pwDesc:"If you have already set a password, you can log in here.",
@@ -481,6 +489,7 @@
       // intro (no duplicated title)
       $("#t_intro_desc").textContent = t.introDesc;
       $("#t_intro_badge").textContent = t.introBadge;
+      $("#t_intro_notice").textContent = t.introNotice;
 
       // forms
       $("#t_pw_title").textContent = t.pwTitle;

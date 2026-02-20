@@ -201,6 +201,7 @@
     h3{ margin:0 0 6px; font-size:16px; }
     p{ margin:6px 0; line-height:1.7; font-size:14px; }
     .muted{color:var(--muted);}
+    .trial-notice{margin:6px 0 0;font-size:12px;color:var(--muted);}
 
     .home-layout{
       display:flex;
@@ -467,6 +468,7 @@
                 data-i18n="btn_subscribe">
           14日間無料で試す
         </button>
+        <p id="trialNoticeVideos" class="trial-notice hidden" data-i18n="trial_notice">無料期間終了後は、自動的にサブスクリプションが開始されます。</p>
 
         <!-- コントロール行：並び替え + 表示形式 -->
         <div class="video-controls" id="videoControlsRow">
@@ -515,6 +517,7 @@
             アカウントを削除する
           </button>
         </div>
+        <p id="trialNoticeAccount" class="trial-notice hidden" data-i18n="trial_notice">無料期間終了後は、自動的にサブスクリプションが開始されます。</p>
 
         <div id="deleteConfirmBox"
              class="status-box hidden"
@@ -667,6 +670,7 @@
       status_ready:"コンテンツをお楽しみください。",
       status_error:"情報の取得に失敗しました。",
       btn_subscribe:"14日間無料で試す",
+      trial_notice:"無料期間終了後は、自動的にサブスクリプションが開始されます。",
       btn_cancel:"サブスクを解約する",
       btn_delete:"アカウントを削除する",
       delete_confirm:"本当にアカウントを削除しますか？この操作は取り消せません。",
@@ -759,6 +763,7 @@
       status_ready:"Enjoy the content!",
       status_error:"Failed to load your membership information.",
       btn_subscribe:"Try free for 14 days",
+      trial_notice:"After the free trial ends, your subscription will start automatically.",
       btn_cancel:"Cancel subscription",
       btn_delete:"Delete account",
       delete_confirm:"Are you sure you want to delete your account? This action cannot be undone.",
@@ -1727,6 +1732,11 @@
         };
       });
 
+      const noticeVideos  = $("#trialNoticeVideos");
+      const noticeAccount = $("#trialNoticeAccount");
+      if (noticeVideos)  noticeVideos.classList.remove("hidden");
+      if (noticeAccount) noticeAccount.classList.remove("hidden");
+
       if (btnCancel){ btnCancel.classList.add("hidden"); btnCancel.onclick = null; }
       if (btnDelete){
         btnDelete.classList.remove("hidden");
@@ -1770,6 +1780,11 @@
       if (btnDelete){ btnDelete.classList.add("hidden"); btnDelete.onclick = null; }
       if (deleteBox) deleteBox.classList.add("hidden");
       if (deleteStatusMsg) deleteStatusMsg.textContent = "";
+
+      const noticeVideos  = $("#trialNoticeVideos");
+      const noticeAccount = $("#trialNoticeAccount");
+      if (noticeVideos)  noticeVideos.classList.add("hidden");
+      if (noticeAccount) noticeAccount.classList.add("hidden");
 
       renderVideosForPlan("standard", videoSortMode);
 
