@@ -1,5 +1,0 @@
-[project]
-id = "sqwyfscumunyhsvsvejv"
-
-[functions.stripe-webhook]
-verify_jwt = false
