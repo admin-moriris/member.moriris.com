@@ -1724,18 +1724,15 @@
         b.classList.remove("hidden");
       
         if (prof.stripe_customer_id) {
-          // 一度サブスク経験済み → Stripeポータルへ
           b.textContent = currentLang === "ja" ? "Standardプラン登録" : "Subscribe to Standard";
           b.onclick = () => {
-            gaEvent("membership_cta_click", {
-              cta_name: "standard_resubscribe",
-              plan: "standard",
-              page: "members",
-              lang: currentLang,
-              destination: "stripe_portal",
-              outbound: 1
-            });
-            openPortal(user.id);
+            // トライアルなしのPayment Linkへ、既存の顧客IDを紐付けて飛ばす
+            const baseUrl = BILLING_CONFIG?.stripe?.standard?.payment_link_no_trial_url;
+            if (!baseUrl) return;
+            const params = new URLSearchParams();
+            if (currentUser?.email) params.set("prefilled_email", currentUser.email);
+            params.set("client_reference_id", user.id);
+            location.href = baseUrl + "?" + params.toString();
           };
         } else {
           // 初回 → 通常の決済リンクへ
