@@ -63,7 +63,6 @@ serve(async (req) => {
           })
           .eq("id", userId);
 
-        console.log("profiles upgraded for user:", userId, "subStatus:", subStatus);
         break;
       }
 
@@ -76,6 +75,7 @@ serve(async (req) => {
         const customerId = sub.customer as string | undefined;
         if (!customerId) break;
 
+        // cancel_at_period_end=true の場合も非アクティブ扱い
         const active = isActiveSubStatus(sub.status);
         await supabaseAdmin
           .from("profiles")
@@ -86,7 +86,6 @@ serve(async (req) => {
           })
           .eq("stripe_customer_id", customerId);
 
-        console.log("profiles updated for customer:", customerId, "active:", active, "status:", sub.status);
         break;
       }
     }
