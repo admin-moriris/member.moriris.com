@@ -1151,7 +1151,7 @@
   async function loadProfileOrCreate(userId){
     let { data:prof, error } = await sb
       .from("profiles")
-      .select("id,tier,is_active,has_password")
+      .select("id,tier,is_active,has_password,stripe_customer_id")
       .eq("id", userId)
       .single();
 
@@ -1719,20 +1719,39 @@
       const btnCancel    = $("#btnCancel");
       const btnDelete    = $("#btnDeleteAccount");
 
-      [btnSubMain, btnSubVideos].forEach(b=>{
+      [btnSubMain, btnSubVideos].forEach(b => {
         if (!b) return;
         b.classList.remove("hidden");
-        b.onclick = ()=>{
-          gaEvent("membership_cta_click", {
-            cta_name: "standard_start",
-            plan: "standard",
-            page: "members",
-            lang: currentLang,
-            destination: "stripe_checkout",
-            outbound: 1
-          });
-          createCheckout(user.id);
-        };
+      
+        if (prof.stripe_customer_id) {
+          // 一度サブスク経験済み → Stripeポータルへ
+          b.textContent = currentLang === "ja" ? "Standardプラン登録" : "Subscribe to Standard";
+          b.onclick = () => {
+            gaEvent("membership_cta_click", {
+              cta_name: "standard_resubscribe",
+              plan: "standard",
+              page: "members",
+              lang: currentLang,
+              destination: "stripe_portal",
+              outbound: 1
+            });
+            openPortal(user.id);
+          };
+        } else {
+          // 初回 → 通常の決済リンクへ
+          b.textContent = I18N[currentLang].btn_subscribe;
+          b.onclick = () => {
+            gaEvent("membership_cta_click", {
+              cta_name: "standard_start",
+              plan: "standard",
+              page: "members",
+              lang: currentLang,
+              destination: "stripe_checkout",
+              outbound: 1
+            });
+            createCheckout(user.id);
+          };
+        }
       });
 
       if (btnCancel){ btnCancel.classList.add("hidden"); btnCancel.onclick = null; }
