@@ -669,7 +669,7 @@
       status_error:"情報の取得に失敗しました。",
       btn_subscribe:"14日間無料で試す",
       btn_cancel:"サブスクを解約する",
-      cancel_explanation:"",
+      cancel_explanation:"※無料期間中に解約した場合、再登録時に無料トライアルは適用されません。",
       btn_delete:"アカウントを削除する",
       delete_confirm:"本当にアカウントを削除しますか？この操作は取り消せません。",
       delete_confirm_yes:"はい、削除します",
@@ -762,7 +762,7 @@
       status_error:"Failed to load your membership information.",
       btn_subscribe:"Try free for 14 days",
       btn_cancel:"Cancel subscription",
-      cancel_explanation:"",
+      cancel_explanation:"※If you cancel during the free trial period, the free trial will not apply upon re-registration.",
       btn_delete:"Delete account",
       delete_confirm:"Are you sure you want to delete your account? This action cannot be undone.",
       delete_confirm_yes:"Yes, delete my account",
@@ -1794,7 +1794,10 @@
         btnCancel.onclick = ()=>openPortal(user.id);
       }
       const cancelExp2 = $("#cancelExplanation");
-      if (cancelExp2) cancelExp2.classList.remove("hidden");
+      if (cancelExp2){
+        cancelExp2.classList.remove("hidden");
+        cancelExp2.innerHTML = I18N[currentLang].cancel_explanation;
+      }
       if (btnDelete){ btnDelete.classList.add("hidden"); btnDelete.onclick = null; }
       if (deleteBox) deleteBox.classList.add("hidden");
       if (deleteStatusMsg) deleteStatusMsg.textContent = "";
