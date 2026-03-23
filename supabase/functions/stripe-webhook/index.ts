@@ -1,116 +1,114 @@
-import Stripe from "npm:stripe@14";
-import { createClient } from "npm:@supabase/supabase-js@2";
+// supabase/functions/stripe-webhook/index.ts
+// deno-lint-ignore-file no-explicit-any
+import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
+import { stripe, supabaseAdmin, CONFIG } from "../_shared/config.ts";
 
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY")!, {
-  apiVersion: "2024-04-10",
-});
+const STRIPE_WEBHOOK_SECRET = CONFIG.stripe.webhookSecret;
 
-const supabase = createClient(
-  Deno.env.get("SUPABASE_URL")!,
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
-);
-
-Deno.serve(async (req) => {
-  const signature = req.headers.get("stripe-signature");
-  if (!signature) {
-    return new Response("Missing stripe-signature header", { status: 400 });
+serve(async (req) => {
+  if (req.method !== "POST") {
+    return new Response("Method Not Allowed", { status: 405 });
   }
 
+  const sig = req.headers.get("stripe-signature") ?? "";
   const body = await req.text();
 
-  let event: Stripe.Event;
+  let event: any;
   try {
     event = await stripe.webhooks.constructEventAsync(
       body,
-      signature,
-      Deno.env.get("STRIPE_WEBHOOK_SECRET")!,
+      sig,
+      STRIPE_WEBHOOK_SECRET,
     );
-  } catch (err) {
-    console.error("Webhook signature verification failed:", err);
+  } catch (err: any) {
+    console.error("Webhook signature error:", err.message);
     return new Response(`Webhook Error: ${err.message}`, { status: 400 });
   }
 
-  console.log("Received Stripe event:", event.type);
+  try {
+    console.log("event type:", event.type);
 
-  switch (event.type) {
-    case "checkout.session.completed": {
-      const session = event.data.object as Stripe.Checkout.Session;
-      const userId = session.client_reference_id;
-      const customerId = typeof session.customer === "string"
-        ? session.customer
-        : session.customer?.id;
+    switch (event.type) {
+      case "checkout.session.completed": {
+        const session = event.data.object as any;
 
-      if (!userId) {
-        console.error("No client_reference_id in session", session.id);
+        // Payment Link は client_reference_id にユーザーIDを付与している
+        const userId = (session.client_reference_id as string | null) ??
+          (session.metadata?.user_id as string | undefined);
+
+        if (!userId) {
+          console.warn("No user_id in client_reference_id or metadata");
+          break;
+        }
+
+        const stripeCustomerId = session.customer as string | null;
+        const stripeSubscriptionId = session.subscription as string | null;
+
+        const { error } = await supabaseAdmin
+          .from("profiles")
+          .update({
+            tier: "standard",
+            is_active: true,
+            stripe_customer_id: stripeCustomerId,
+            stripe_subscription_id: stripeSubscriptionId,
+          })
+          .eq("id", userId);
+
+        if (error) {
+          console.error("Supabase update error:", error);
+        } else {
+          console.log("profiles upgraded for user:", userId);
+        }
         break;
       }
 
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          tier: "standard",
-          is_active: true,
-          stripe_customer_id: customerId ?? null,
-        })
-        .eq("id", userId);
+      case "customer.subscription.deleted":
+      case "customer.subscription.updated": {
+        const sub = event.data.object as any;
+        const customerId = sub.customer as string | undefined;
 
-      if (error) {
-        console.error("Failed to update profile:", error);
-        return new Response("DB update failed", { status: 500 });
-      }
+        if (!customerId) {
+          console.warn("No customer id on subscription");
+          break;
+        }
 
-      console.log(`Profile updated: userId=${userId}, customerId=${customerId}`);
-      break;
-    }
+        const isDeleted = event.type === "customer.subscription.deleted";
+        const isCancelScheduled =
+          event.type === "customer.subscription.updated" &&
+          (sub.cancel_at_period_end === true || sub.status === "canceled");
 
-    case "customer.subscription.deleted": {
-      // サブスク解約・期間終了時にFreeプランへ移行
-      const subscription = event.data.object as Stripe.Subscription;
-      const customerId = typeof subscription.customer === "string"
-        ? subscription.customer
-        : subscription.customer.id;
+        if (!isDeleted && !isCancelScheduled) {
+          console.log("subscription update ignored, status:", sub.status);
+          break;
+        }
 
-      const { error } = await supabase
-        .from("profiles")
-        .update({ tier: "free", is_active: false })
-        .eq("stripe_customer_id", customerId);
-
-      if (error) {
-        console.error("Failed to downgrade profile:", error);
-        return new Response("DB update failed", { status: 500 });
-      }
-
-      console.log(`Profile downgraded to free: customerId=${customerId}`);
-      break;
-    }
-
-    case "invoice.payment_failed": {
-      // 支払い失敗時
-      const invoice = event.data.object as Stripe.Invoice;
-      const customerId = typeof invoice.customer === "string"
-        ? invoice.customer
-        : invoice.customer?.id;
-
-      if (customerId) {
-        const { error } = await supabase
+        const { error } = await supabaseAdmin
           .from("profiles")
-          .update({ is_active: false })
+          .update({
+            tier: "free",
+            is_active: false,
+            stripe_subscription_id: null,
+          })
           .eq("stripe_customer_id", customerId);
 
         if (error) {
-          console.error("Failed to deactivate profile:", error);
+          console.error("Supabase downgrade error:", error);
         } else {
-          console.log(`Profile deactivated due to payment failure: customerId=${customerId}`);
+          console.log("profiles downgraded for customer:", customerId);
         }
+        break;
       }
-      break;
+
+      default:
+        break;
     }
 
-    default:
-      console.log(`Unhandled event type: ${event.type}`);
+    return new Response(JSON.stringify({ received: true }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  } catch (err) {
+    console.error("Webhook handler error:", err);
+    return new Response("Internal Error", { status: 500 });
   }
-
-  return new Response(JSON.stringify({ received: true }), {
-    headers: { "Content-Type": "application/json" },
-  });
 });
