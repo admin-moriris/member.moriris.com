@@ -5,6 +5,9 @@ import { stripe, supabaseAdmin, CONFIG } from "../_shared/config.ts";
 
 const STRIPE_WEBHOOK_SECRET = CONFIG.stripe.webhookSecret;
 
+const isActiveSubStatus = (status?: string | null) =>
+  ["active", "trialing", "past_due"].includes(String(status || ""));
+
 serve(async (req) => {
   if (req.method !== "POST") {
     return new Response("Method Not Allowed", { status: 405 });
@@ -22,85 +25,70 @@ serve(async (req) => {
     );
   } catch (err: any) {
     console.error("Webhook signature error:", err.message);
-    return new Response(`Webhook Error: ${err.message}`, { status: 400 });
+    return new Response("Webhook Error", { status: 400 });
   }
 
   try {
-    console.log("event type:", event.type);
-
     switch (event.type) {
+      // =========================
+      // 決済完了（Payment Link）
+      // =========================
       case "checkout.session.completed": {
         const session = event.data.object as any;
-
-        // Payment Link は client_reference_id にユーザーIDを付与している
-        const userId = (session.client_reference_id as string | null) ??
-          (session.metadata?.user_id as string | undefined);
+        const userId =
+          session?.client_reference_id ||
+          session?.metadata?.user_id;
 
         if (!userId) {
-          console.warn("No user_id in client_reference_id or metadata");
+          console.warn("No userId on checkout.session", session.id);
           break;
         }
 
         const stripeCustomerId = session.customer as string | null;
         const stripeSubscriptionId = session.subscription as string | null;
 
-        const { error } = await supabaseAdmin
+        let subStatus: string | null = null;
+        if (stripeSubscriptionId) {
+          const sub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+          subStatus = sub.status ?? null;
+        }
+
+        await supabaseAdmin
           .from("profiles")
           .update({
             tier: "standard",
-            is_active: true,
+            is_active: subStatus ? isActiveSubStatus(subStatus) : true,
             stripe_customer_id: stripeCustomerId,
             stripe_subscription_id: stripeSubscriptionId,
           })
           .eq("id", userId);
 
-        if (error) {
-          console.error("Supabase update error:", error);
-        } else {
-          console.log("profiles upgraded for user:", userId);
-        }
+        console.log("profiles upgraded for user:", userId, "subStatus:", subStatus);
         break;
       }
 
-      case "customer.subscription.deleted":
-      case "customer.subscription.updated": {
+      // =========================
+      // 更新・解約
+      // =========================
+      case "customer.subscription.updated":
+      case "customer.subscription.deleted": {
         const sub = event.data.object as any;
         const customerId = sub.customer as string | undefined;
+        if (!customerId) break;
 
-        if (!customerId) {
-          console.warn("No customer id on subscription");
-          break;
-        }
-
-        const isDeleted = event.type === "customer.subscription.deleted";
-        const isCancelScheduled =
-          event.type === "customer.subscription.updated" &&
-          (sub.cancel_at_period_end === true || sub.status === "canceled");
-
-        if (!isDeleted && !isCancelScheduled) {
-          console.log("subscription update ignored, status:", sub.status);
-          break;
-        }
-
-        const { error } = await supabaseAdmin
+        const active = isActiveSubStatus(sub.status);
+        await supabaseAdmin
           .from("profiles")
           .update({
-            tier: "free",
-            is_active: false,
-            stripe_subscription_id: null,
+            tier: active ? "standard" : "free",
+            is_active: active,
+            stripe_subscription_id: active ? sub.id : null,
           })
           .eq("stripe_customer_id", customerId);
 
-        if (error) {
-          console.error("Supabase downgrade error:", error);
-        } else {
-          console.log("profiles downgraded for customer:", customerId);
-        }
+        console.log("profiles updated for customer:", customerId, "active:", active, "status:", sub.status);
         break;
       }
-
-      default:
-        break;
     }
 
     return new Response(JSON.stringify({ received: true }), {
