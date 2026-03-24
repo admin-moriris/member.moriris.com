@@ -1,289 +1,138 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Moriris for Facilities – 特定商取引法に基づく表記</title>
-  <meta name="description" content="Moriris Video Platform for Facilities（法人・施設向け映像配信サイト）に関する特定商取引法に基づく表記です。" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>特定商取引法に基づく表記 | Moriris</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
 
   <style>
     :root {
-      --bg: #faf8f4;
-      --panel: #ffffff;
-      --ink: #24311c;
-      --muted: #6b6964;
-      --accent: #75c29c;
-      --radius: 20px;
-      --shadow: 0 10px 32px rgba(0,0,0,.08);
+      --bg: #f5f0e8; --ink: #2a2a25; --ink-soft: #6b6659;
+      --moss: #4a6741; --cream: #faf7f0; --sand: #e8e0cc; --warm: #c8a96e;
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background-color: var(--bg);
-      color: var(--ink);
-      padding: 24px 16px 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: 'Noto Serif JP', 'Georgia', serif; line-height: 1.8; font-weight: 300; }
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 24px; background: rgba(245,240,232,0.97);
+      backdrop-filter: blur(8px); border-bottom: 1px solid rgba(232,224,204,0.5);
     }
-
-    .lang-switch {
-      width: 100%;
-      max-width: 840px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .lang-switch button {
-      border-radius: 999px;
-      border: 1px solid var(--accent);
-      padding: 4px 12px;
-      font-size: 0.85rem;
-      background: #fff;
-      color: var(--accent);
-      cursor: pointer;
-    }
-
-    .lang-switch button.active {
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .legal-panel {
-      width: 100%;
-      max-width: 840px;
-      background: var(--panel);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 24px 20px 28px;
-    }
-
-    h1 {
-      font-size: 1.4rem;
-      margin-top: 0;
-      margin-bottom: 16px;
-    }
-
-    h2 {
-      font-size: 1rem;
-      margin-top: 16px;
-      margin-bottom: 6px;
-    }
-
-    p {
-      margin: 0 0 4px;
-      line-height: 1.6;
-      font-size: 0.92rem;
-    }
-
-    .note {
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin-top: 4px;
-    }
-
-    a {
-      color: var(--accent);
-      text-decoration: underline;
-    }
-
-    @media (min-width: 768px) {
-      body { padding-top: 40px; }
-      h1 { font-size: 1.6rem; }
-      p { font-size: 0.95rem; }
-    }
+    .topbar-back { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.06em; color: var(--ink-soft); text-decoration: none; transition: color 0.2s; }
+    .topbar-back:hover { color: var(--moss); }
+    .lang-toggle { display: flex; background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); border-radius: 999px; padding: 4px; gap: 2px; border: 1px solid rgba(200,169,110,0.3); }
+    .lang-btn { border: none; background: none; padding: 4px 14px; border-radius: 999px; font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-soft); cursor: pointer; transition: all 0.25s; }
+    .lang-btn[aria-pressed="true"] { background: var(--moss); color: #fff; }
+    .page-wrap { max-width: 760px; margin: 0 auto; padding: 100px 24px 80px; }
+    .section-label { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--warm); margin-bottom: 20px; display: block; }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 300; color: var(--ink); line-height: 1.2; margin-bottom: 12px; }
+    .divider { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--warm), transparent); margin: 24px 0 32px; }
+    .doc-card { background: var(--cream); border-radius: 20px; padding: 40px; border: 1px solid rgba(200,169,110,0.2); }
+    .doc-card p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.9; margin-bottom: 12px; }
+    .doc-card h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 400; color: var(--ink); margin: 28px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--sand); }
+    .doc-card ul, .doc-card ol { padding-left: 1.4em; margin-bottom: 12px; }
+    .doc-card li { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.9; }
+    .doc-card a { color: var(--moss); text-decoration: none; border-bottom: 1px solid rgba(74,103,65,0.3); }
+    .doc-card a:hover { border-color: var(--moss); }
+    .note { font-size: 0.78rem; color: #a09a8e; margin-top: 16px; line-height: 1.7; }
+    .date { font-size: 0.82rem; color: var(--ink-soft); margin-top: 28px; }
+    footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--sand); }
+    footer a { font-size: 0.78rem; color: var(--ink-soft); text-decoration: none; }
+    footer a:hover { color: var(--moss); }
+    .footer-copy { font-size: 0.72rem; color: #a09a8e; margin-top: 8px; }
+    @media (max-width: 600px) { .doc-card { padding: 24px 20px; } }
   </style>
 </head>
-<body data-lang="ja">
-  <div class="lang-switch">
-    <button type="button" data-set-lang="en">EN</button>
-    <button type="button" data-set-lang="ja" class="active">JP</button>
+<body>
+  <div class="topbar">
+    <a href="/" class="topbar-back" id="back-link">← トップページへ</a>
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="ja" aria-pressed="true">JP</button>
+      <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
+    </div>
   </div>
 
-  <main class="legal-panel">
-    <h1 data-i18n="legal_title">特定商取引法に基づく表記</h1>
+  <div class="page-wrap">
+    <span class="section-label">Legal</span>
+    <h1 class="page-title" id="page-title">特定商取引法に基づく表記</h1>
+    <div class="divider"></div>
 
-    <p data-i18n="service_scope">
-      本ページは、Moriris Video Platform for Facilities（日本語表記：「法人・施設向け映像配信サイト」）上で提供されるサブスクリプション型のデジタルサービスに適用されます。
-    </p>
+    <div class="doc-card">
+      <!-- JA -->
+      <div id="content-ja">
+        <p>本ページは、Moriris Video Platform for Facilities（法人・施設向け映像配信サイト）上で提供されるサブスクリプション型のデジタルサービスに適用されます。</p>
+        <h2>法人名（事業者名）</h2><p>Moriris Studio</p>
+        <h2>住所</h2><p>個人事業主のため、住所の公開は控えておりますが、請求があった場合には速やかに開示いたします。</p>
+        <h2>電話番号</h2><p>個人事業主のため、電話番号の公開は控えておりますが、請求があった場合には速やかに開示いたします。サポートは原則として下記問い合わせ窓口経由で受け付けております。</p>
+        <h2>メールアドレス</h2><p><a href="mailto:support@moriris.com">support@moriris.com</a></p>
+        <h2>運営責任者</h2><p>宮本 夏美</p>
+        <h2>ウェブサイト URL</h2><p>https://member.moriris.com/</p>
+        <h2>お問い合わせ窓口</h2>
+        <p>お問い合わせは以下のフォーム、または上記メールアドレスよりご連絡ください。通常 2〜3 営業日以内に返信いたします。</p>
+        <p><a href="https://official.moriris.com/contact.html" target="_blank" rel="noopener">お問い合わせフォームへ</a></p>
+        <h2>追加手数料</h2><p>当サービスでは、商品・サービスの代金以外に追加でご負担いただく手数料はありません。なお、インターネット接続に伴う通信料はお客様のご負担となります。</p>
+        <h2>交換および返品に関するポリシー</h2>
+        <p>デジタルサービスの特性上、購入手続き完了後のお客様都合による交換・返品・返金はお受けしておりません。</p>
+        <p>コンテンツが閲覧できない等の不具合が発生した場合は、上記お問い合わせ窓口までご連絡ください。</p>
+        <h2>サービスの提供時期</h2><p>決済完了後ただちに、会員ページにログインしてコンテンツをご利用いただけます。</p>
+        <h2>利用可能な決済手段</h2><p>クレジットカード決済（Stripe）</p>
+        <h2>決済期間</h2><p>クレジットカード決済は、ご注文時にただちに処理されます。サブスクリプションプランの場合は、契約更新日に自動的に決済が行われます。</p>
+        <h2>価格</h2><p>各商品ページおよび決済画面に表示された金額（消費税を含む）となります。</p>
+        <h2>動作環境</h2><p>最新版の主要なウェブブラウザでのご利用を推奨します。</p>
+        <p class="note">本表示の内容は、サービス内容の変更等により予告なく更新される場合があります。</p>
+        <p class="date">制定日：2025年11月1日</p>
+      </div>
+      <!-- EN -->
+      <div id="content-en" style="display:none;">
+        <p>This page applies to the subscription-based digital service provided on Moriris Video Platform for Facilities.</p>
+        <h2>Legal Entity Name</h2><p>Moriris Studio</p>
+        <h2>Address</h2><p>As a sole proprietorship, the address is not publicly disclosed, but will be provided without delay upon request.</p>
+        <h2>Telephone</h2><p>As a sole proprietorship, the telephone number is not publicly disclosed, but will be provided upon request. Support is provided through the contact channels below.</p>
+        <h2>Email Address</h2><p><a href="mailto:support@moriris.com">support@moriris.com</a></p>
+        <h2>Person Responsible</h2><p>Natsumi Miyamoto</p>
+        <h2>Website URL</h2><p>https://member.moriris.com/</p>
+        <h2>Contact</h2>
+        <p>For inquiries, please use the contact form or the email address above. We usually respond within 2–3 business days.</p>
+        <p><a href="https://official.moriris.com/contact.html" target="_blank" rel="noopener">Go to contact form</a></p>
+        <h2>Additional Fees</h2><p>No additional fees beyond the service price. Internet connection fees are borne by the customer.</p>
+        <h2>Returns & Refunds</h2>
+        <p>Due to the nature of digital services, we do not accept exchanges, returns, or refunds for customer-initiated cancellations after purchase.</p>
+        <p>If content is inaccessible due to a technical issue, please contact us and we will respond appropriately.</p>
+        <h2>Service Availability</h2><p>Content becomes available immediately after successful payment.</p>
+        <h2>Payment Methods</h2><p>Credit card (via Stripe)</p>
+        <h2>Payment Timing</h2><p>Payments are processed immediately at sign-up. Subscription renewals are billed automatically on the renewal date.</p>
+        <h2>Price</h2><p>The price shown on each product page and checkout screen (including consumption tax).</p>
+        <h2>System Requirements</h2><p>Latest version of a modern web browser recommended.</p>
+        <p class="note">This notice may be updated without prior notice if our services change.</p>
+        <p class="date">Effective: 2025-11-01</p>
+      </div>
+    </div>
+  </div>
 
-    <h2 data-i18n="corp_title">法人名（事業者名）</h2>
-    <p data-i18n="corp_body">Moriris Studio</p>
-
-    <h2 data-i18n="addr_title">住所</h2>
-    <p data-i18n="addr_body">
-      個人事業主のため、住所の公開は控えておりますが、請求があった場合には速やかに開示いたします。
-    </p>
-
-    <h2 data-i18n="tel_title">電話番号</h2>
-    <p data-i18n="tel_body">
-      個人事業主のため、電話番号の公開は控えておりますが、請求があった場合には速やかに開示いたします。サポートは原則として下記問い合わせ窓口経由で受け付けております。
-    </p>
-
-    <h2 data-i18n="email_title">メールアドレス</h2>
-    <p>
-      <a href="mailto:support@moriris.com" data-i18n="email_value">support@moriris.com</a>
-    </p>
-
-    <h2 data-i18n="manager_title">運営責任者</h2>
-    <p data-i18n="manager_body">宮本 夏美</p>
-
-    <h2 data-i18n="site_url_title">ウェブサイト URL</h2>
-    <p data-i18n="site_url_body">https://members.moriris.com/</p>
-
-    <h2 data-i18n="contact_title">お問い合わせ窓口</h2>
-    <p data-i18n="contact_body">
-      お問い合わせは以下のフォーム、または上記メールアドレスよりご連絡ください。通常 2〜3 営業日以内に返信いたします。
-      お問い合わせフォームでは、法人名（施設名）のご入力をお願いしています。
-    </p>
-    <p>
-      <a href="https://official.moriris.com/contact.html" target="_blank" rel="noopener" data-i18n="contact_link">
-        お問い合わせフォームへ
-      </a>
-    </p>
-
-    <h2 data-i18n="extra_fee_title">追加手数料</h2>
-    <p data-i18n="extra_fee_body">
-      当サービスでは、商品・サービスの代金以外に追加でご負担いただく手数料はありません。なお、インターネット接続に伴う通信料はお客様のご負担となります。
-    </p>
-
-    <h2 data-i18n="return_title">交換および返品に関するポリシー</h2>
-    <p data-i18n="return_body1">
-      デジタルサービスの特性上、購入手続き完了後のお客様都合による交換・返品・返金はお受けしておりません。
-    </p>
-    <p data-i18n="return_body2">
-      コンテンツが閲覧できない等の不具合が発生した場合は、上記お問い合わせ窓口までご連絡ください。個別の状況を確認のうえ、適切な方法で対応いたします。
-    </p>
-
-    <h2 data-i18n="delivery_title">配達時間（サービスの提供時期）</h2>
-    <p data-i18n="delivery_body">
-      決済完了後ただちに、会員ページにログインしてコンテンツをご利用いただけます。
-    </p>
-
-    <h2 data-i18n="pay_methods_title">利用可能な決済手段</h2>
-    <p data-i18n="pay_methods_body">クレジットカード決済（Stripe）</p>
-
-    <h2 data-i18n="pay_period_title">決済期間</h2>
-    <p data-i18n="pay_period_body">
-      クレジットカード決済は、ご注文（サブスクリプションお申し込み）時にただちに処理されます。サブスクリプションプランの場合は、契約更新日に自動的に決済が行われます。
-    </p>
-
-    <h2 data-i18n="price_title">価格</h2>
-    <p data-i18n="price_body">
-      商品またはサービスの販売価格は、各商品ページおよび決済画面に表示された金額（消費税を含む）となります。
-    </p>
-
-    <h2 data-i18n="env_title">動作環境</h2>
-    <p data-i18n="env_body">
-      最新版の主要なウェブブラウザでのご利用を推奨します。通信状況やご利用端末によっては、コンテンツの再生に時間がかかる場合があります。
-    </p>
-
-    <p class="note" data-i18n="note_body">
-      本表示の内容は、サービス内容の変更等により予告なく更新される場合があります。
-    </p>
-  </main>
+  <footer>
+    <a href="/" id="footer-home">トップページへ戻る</a>
+    <p class="footer-copy">© Moriris Studio</p>
+  </footer>
 
   <script>
-    const translations = {
-      ja: {
-        legal_title: "特定商取引法に基づく表記",
-        service_scope: "本ページは、Moriris Video Platform for Facilities（日本語表記：「法人・施設向け映像配信サイト」）上で提供されるサブスクリプション型のデジタルサービスに適用されます。",
-        corp_title: "法人名（事業者名）",
-        corp_body: "Moriris Studio",
-        addr_title: "住所",
-        addr_body: "個人事業主のため、住所の公開は控えておりますが、請求があった場合には速やかに開示いたします。",
-        tel_title: "電話番号",
-        tel_body: "個人事業主のため、電話番号の公開は控えておりますが、請求があった場合には速やかに開示いたします。サポートは原則として下記問い合わせ窓口経由で受け付けております。",
-        email_title: "メールアドレス",
-        email_value: "support@moriris.com",
-        manager_title: "運営責任者",
-        manager_body: "宮本 夏美",
-        site_url_title: "ウェブサイト URL",
-        site_url_body: "https://members.moriris.com/",
-        contact_title: "お問い合わせ窓口",
-        contact_body: "お問い合わせは以下のフォーム、または上記メールアドレスよりご連絡ください。通常 2〜3 営業日以内に返信いたします。お問い合わせフォームでは、法人名（施設名）のご入力をお願いしています。",
-        contact_link: "お問い合わせフォームへ",
-        extra_fee_title: "追加手数料",
-        extra_fee_body: "当サービスでは、商品・サービスの代金以外に追加でご負担いただく手数料はありません。なお、インターネット接続に伴う通信料はお客様のご負担となります。",
-        return_title: "交換および返品に関するポリシー",
-        return_body1: "デジタルサービスの特性上、購入手続き完了後のお客様都合による交換・返品・返金はお受けしておりません。",
-        return_body2: "コンテンツが閲覧できない等の不具合が発生した場合は、上記お問い合わせ窓口までご連絡ください。個別の状況を確認のうえ、適切な方法で対応いたします。",
-        delivery_title: "配達時間（サービスの提供時期）",
-        delivery_body: "決済完了後ただちに、会員ページにログインしてコンテンツをご利用いただけます。",
-        pay_methods_title: "利用可能な決済手段",
-        pay_methods_body: "クレジットカード決済（Stripe）",
-        pay_period_title: "決済期間",
-        pay_period_body: "クレジットカード決済は、ご注文（サブスクリプションお申し込み）時にただちに処理されます。サブスクリプションプランの場合は、契約更新日に自動的に決済が行われます。",
-        price_title: "価格",
-        price_body: "商品またはサービスの販売価格は、各商品ページおよび決済画面に表示された金額（消費税を含む）となります。",
-        env_title: "動作環境",
-        env_body: "最新版の主要なウェブブラウザでのご利用を推奨します。通信状況やご利用端末によっては、コンテンツの再生に時間がかかる場合があります。",
-        note_body: "本表示の内容は、サービス内容の変更等により予告なく更新される場合があります。"
-      },
-      en: {
-        legal_title: "Legal Notice (Specified Commercial Transactions Act – Japan)",
-        service_scope: "This page applies to the subscription-based digital service provided on Moriris Video Platform Video Platform for Facilities (法人・施設向け映像配信サイト).",
-        corp_title: "Legal Entity Name (Business Name)",
-        corp_body: "Moriris Studio",
-        addr_title: "Address",
-        addr_body: "As this is a sole proprietorship, the address is not publicly disclosed, but will be provided without delay upon request.",
-        tel_title: "Telephone Number",
-        tel_body: "As this is a sole proprietorship, the telephone number is not publicly disclosed, but will be provided without delay upon request. Support is basically provided through the contact channels below.",
-        email_title: "Email Address",
-        email_value: "support@moriris.com",
-        manager_title: "Person Responsible for Operations",
-        manager_body: "Natsumi Miyamoto",
-        site_url_title: "Website URL",
-        site_url_body: "https://members.moriris.com/",
-        contact_title: "Contact",
-        contact_body: "For inquiries, please use the contact form below or the above email address. We usually respond within 2–3 business days. In the contact form, we ask you to provide your organization name (company/facility).",
-        contact_link: "Go to contact form",
-        extra_fee_title: "Additional Fees",
-        extra_fee_body: "We do not charge any additional fees other than the price of the service. However, internet connection and data communication fees are borne by the customer.",
-        return_title: "Policy on Exchanges and Returns",
-        return_body1: "Due to the nature of digital services, we generally do not accept exchanges, returns, or refunds for reasons attributable to the customer once the purchase process has been completed.",
-        return_body2: "If you are unable to view content or encounter other issues, please contact us via the above channels. We will review your situation and respond appropriately.",
-        delivery_title: "Delivery Time (Service Availability)",
-        delivery_body: "Content becomes available immediately after your payment is successfully completed and you log in to the site.",
-        pay_methods_title: "Available Payment Methods",
-        pay_methods_body: "Credit card payment (via Stripe)",
-        pay_period_title: "Payment Period",
-        pay_period_body: "Credit card payments are processed immediately at the time of order (subscription sign-up). For subscription plans, payments are automatically processed on each renewal date.",
-        price_title: "Price",
-        price_body: "The price is the amount shown on each product page and on the checkout screen (including consumption tax, unless otherwise stated).",
-        env_title: "System Requirements",
-        env_body: "We recommend using the latest version of a modern web browser. Depending on your device and network conditions, content playback may take some time.",
-        note_body: "This legal notice may be updated without prior notice if our services change."
-      }
-    };
-
-    function setLanguage(lang) {
-      const dict = translations[lang];
-      if (!dict) return;
-
+    let currentLang = localStorage.getItem("moriris_lang") || "ja";
+    function applyLang(lang) {
+      currentLang = lang;
       document.documentElement.lang = lang;
-      document.body.setAttribute("data-lang", lang);
-
-      document.querySelectorAll("[data-i18n]").forEach(el => {
-        const key = el.getAttribute("data-i18n");
-        if (dict[key]) el.textContent = dict[key];
-      });
-
-      document.querySelectorAll("[data-set-lang]").forEach(btn => {
-        btn.classList.toggle("active", btn.getAttribute("data-set-lang") === lang);
-      });
+      document.getElementById("content-ja").style.display = lang === "ja" ? "block" : "none";
+      document.getElementById("content-en").style.display = lang === "en" ? "block" : "none";
+      document.getElementById("back-link").textContent = lang === "ja" ? "← トップページへ" : "← Back to home";
+      document.getElementById("page-title").textContent = lang === "ja" ? "特定商取引法に基づく表記" : "Legal Notice";
+      document.getElementById("footer-home").textContent = lang === "ja" ? "トップページへ戻る" : "Back to home";
+      document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang ? "true" : "false"));
+      localStorage.setItem("moriris_lang", lang);
     }
-
-    document.querySelectorAll("[data-set-lang]").forEach(btn => {
-      btn.addEventListener("click", () => setLanguage(btn.getAttribute("data-set-lang")));
-    });
-
-    setLanguage("ja");
+    document.querySelectorAll(".lang-btn").forEach(btn => btn.addEventListener("click", () => applyLang(btn.dataset.lang)));
+    applyLang(currentLang);
   </script>
 </body>
 </html>
