@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>特定商取引法に基づく表記 | Moriris</title>
 
+    <link rel="icon" href="/assets/favicon.png" type="image/png">
+  <link rel="apple-touch-icon" href="/assets/logo-moriris.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
@@ -18,12 +20,10 @@
     body { background: var(--bg); color: var(--ink); font-family: 'Noto Serif JP', 'Georgia', serif; line-height: 1.8; font-weight: 300; }
     .topbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; justify-content: flex-end; align-items: center;
       padding: 14px 24px; background: rgba(245,240,232,0.97);
       backdrop-filter: blur(8px); border-bottom: 1px solid rgba(232,224,204,0.5);
     }
-    .topbar-back { font-family: 'Cormorant Garamond', serif; font-size: 14px; letter-spacing: 0.06em; color: var(--ink-soft); text-decoration: none; transition: color 0.2s; }
-    .topbar-back:hover { color: var(--moss); }
     .lang-toggle { display: flex; background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); border-radius: 999px; padding: 4px; gap: 2px; border: 1px solid rgba(200,169,110,0.3); }
     .lang-btn { border: none; background: none; padding: 4px 14px; border-radius: 999px; font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-soft); cursor: pointer; transition: all 0.25s; }
     .lang-btn[aria-pressed="true"] { background: var(--moss); color: #fff; }
@@ -49,7 +49,7 @@
 </head>
 <body>
   <div class="topbar">
-    <a href="/" class="topbar-back" id="back-link">← トップページへ</a>
+    
     <div class="lang-toggle">
       <button class="lang-btn" data-lang="ja" aria-pressed="true">JP</button>
       <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
@@ -125,7 +125,6 @@
       document.documentElement.lang = lang;
       document.getElementById("content-ja").style.display = lang === "ja" ? "block" : "none";
       document.getElementById("content-en").style.display = lang === "en" ? "block" : "none";
-      document.getElementById("back-link").textContent = lang === "ja" ? "← トップページへ" : "← Back to home";
       document.getElementById("page-title").textContent = lang === "ja" ? "特定商取引法に基づく表記" : "Legal Notice";
       document.getElementById("footer-home").textContent = lang === "ja" ? "トップページへ戻る" : "Back to home";
       document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang ? "true" : "false"));
