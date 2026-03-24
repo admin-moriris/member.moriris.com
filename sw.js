@@ -1,6 +1,6 @@
 // Moriris Service Worker
 // キャッシュバージョンを上げると古いキャッシュが自動削除されます
-const CACHE_NAME = "moriris-v2";
+const CACHE_NAME = "moriris-v3";
 
 // キャッシュするアセット（静的ファイルのみ・認証関連ページは除外）
 const PRECACHE_ASSETS = [
@@ -63,6 +63,9 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
 
+  // https / http 以外（chrome-extension: など）は即スルー
+  if (url.protocol !== "https:" && url.protocol !== "http:") return;
+
   // ─────────────────────────────────────
   // キャッシュしないドメイン・パス
   // 認証・課金・動画・外部CDN は常にネットワークから
@@ -88,7 +91,9 @@ self.addEventListener("fetch", (event) => {
     fetch(event.request)
       .then((response) => {
         // 正常なレスポンスのみキャッシュに保存
-        if (response.status === 200) {
+        // http / https のみキャッシュ（chrome-extension など他スキームは除外）
+        const scheme = new URL(event.request.url).protocol;
+        if (response.status === 200 && (scheme === "https:" || scheme === "http:")) {
           const clone = response.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
         }
