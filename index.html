@@ -17,6 +17,22 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Video Platform for Facilities | Moriris</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/assets/favicon.png" />
+  <link rel="shortcut icon" href="/assets/favicon.png" />
+
+  <!-- ===================== PWA ===================== -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#75c29c" />
+  <!-- Android Chrome -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <!-- iOS Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Moriris" />
+  <link rel="apple-touch-icon" href="/assets/favicon.png" />
+  <!-- ================================================ -->
+
   <style>
     :root{
       --bg:#faf8f4;
@@ -128,7 +144,7 @@
       padding:28px 32px 32px;
     }
 
-    /* intro block (no title line to avoid duplication) */
+    /* intro block */
     .intro{
       max-width:720px;
       margin:0 auto 18px;
@@ -300,7 +316,7 @@
 
     <div class="card">
 
-      <!-- intro (no duplicated title) -->
+      <!-- intro -->
       <div class="intro" aria-label="intro">
         <p class="intro-desc" id="t_intro_desc">メール登録で14日間無料で体験できます。</p>
         <div class="intro-badge" id="t_intro_badge">14日間無料（メール登録）</div>
@@ -478,11 +494,9 @@
 
       $("#t_title").textContent = t.title;
 
-      // intro (no duplicated title)
       $("#t_intro_desc").textContent = t.introDesc;
       $("#t_intro_badge").textContent = t.introBadge;
 
-      // forms
       $("#t_pw_title").textContent = t.pwTitle;
       $("#t_pw_desc").textContent = t.pwDesc;
       $("#btn-login-pw").textContent = t.pwButton;
@@ -595,6 +609,22 @@
       }
     };
   </script>
+
+  <!-- ===================== Service Worker 登録 ===================== -->
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js")
+          .then((reg) => {
+            console.log("[SW] registered, scope:", reg.scope);
+          })
+          .catch((err) => {
+            console.warn("[SW] registration failed:", err);
+          });
+      });
+    }
+  </script>
+  <!-- ============================================================== -->
 
 </body>
 </html>
