@@ -1,278 +1,142 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Moriris for Facilities – Privacy Policy</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>プライバシーポリシー | Moriris</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Serif+JP:wght@300;400&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#faf8f4;
-      --panel:#ffffff;
-      --ink:#1d1b16;
-      --muted:#6b6964;
-      --accent:#75c29c;
-      --r:18px;
-      --sh:0 10px 30px rgba(0,0,0,.08);
-    }
-    *{box-sizing:border-box;}
-    html,body{
-      margin:0;
-      padding:0;
-      background:var(--bg);
-      color:var(--ink);
-      font-family:system-ui,-apple-system,"Segoe UI",Roboto;
-    }
-    header{
-      background:#f1ede4;
-      padding:16px;
-      border-bottom:1px solid #e0d8c8;
-    }
-    header .inner{
-      max-width:900px;
-      margin:0 auto;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      min-width:0;
-    }
-    .brand img{ height:48px; }
-    h1{
-      margin:0;
-      font-size:18px;
-      letter-spacing:0.12em;
-      text-transform:uppercase;
-      color:#555;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    .lang{ display:flex; gap:6px; flex-shrink:0; }
-    .lang button{
-      padding:6px 12px;
-      border-radius:999px;
-      border:1px solid #ccc;
-      background:#fff;
-      cursor:pointer;
-      font-size:14px;
-    }
-    .lang .active{
-      border-color:var(--accent);
-      color:#0b5130;
-      font-weight:600;
-    }
-
-    main{
-      max-width:900px;
-      margin:24px auto 40px;
-      padding:0 16px;
-    }
-    .card{
-      background:var(--panel);
-      border-radius:var(--r);
-      box-shadow:var(--sh);
-      padding:26px 22px;
-    }
-    h2{
-      margin-top:24px;
-      border-bottom:1px solid #eee2cf;
-      padding-bottom:4px;
-      font-size:17px;
-    }
-    p,li{ font-size:15px; line-height:1.8; }
-    ul{ padding-left:1.4em; }
-
-    .note{
-      color:var(--muted);
-      font-size:13px;
-      margin-top:10px;
-      line-height:1.7;
-    }
-
-    footer{
-      text-align:center;
-      margin:40px 0 20px;
-      color:var(--muted);
-      font-size:12px;
-    }
+    :root { --bg: #f5f0e8; --ink: #2a2a25; --ink-soft: #6b6659; --moss: #4a6741; --cream: #faf7f0; --sand: #e8e0cc; --warm: #c8a96e; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--ink); font-family: 'Noto Serif JP', 'Georgia', serif; line-height: 1.8; font-weight: 300; }
+    .topbar { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: flex-end; align-items: center; padding: 14px 24px; background: rgba(245,240,232,0.97); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(232,224,204,0.5); }
+    .lang-toggle { display: flex; background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); border-radius: 999px; padding: 4px; gap: 2px; border: 1px solid rgba(200,169,110,0.3); }
+    .lang-btn { border: none; background: none; padding: 4px 14px; border-radius: 999px; font-family: 'Cormorant Garamond', serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; color: var(--ink-soft); cursor: pointer; transition: all 0.25s; }
+    .lang-btn[aria-pressed="true"] { background: var(--moss); color: #fff; }
+    .page-wrap { max-width: 760px; margin: 0 auto; padding: 100px 24px 80px; }
+    .section-label { font-family: 'Cormorant Garamond', serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--warm); margin-bottom: 20px; display: block; }
+    .page-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 300; color: var(--ink); line-height: 1.2; margin-bottom: 12px; }
+    .divider { width: 60px; height: 1px; background: linear-gradient(to right, transparent, var(--warm), transparent); margin: 24px 0 32px; }
+    .doc-card { background: var(--cream); border-radius: 20px; padding: 40px; border: 1px solid rgba(200,169,110,0.2); }
+    .doc-card p { font-size: 0.88rem; color: var(--ink-soft); line-height: 1.9; margin-bottom: 12px; }
+    .doc-card h2 { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 400; color: var(--ink); margin: 28px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--sand); }
+    .doc-card ul { padding-left: 1.4em; margin-bottom: 12px; }
+    .doc-card li { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.9; }
+    .doc-card a { color: var(--moss); text-decoration: none; border-bottom: 1px solid rgba(74,103,65,0.3); }
+    .doc-card a:hover { border-color: var(--moss); }
+    .note { font-size: 0.78rem; color: #a09a8e; margin-top: 16px; line-height: 1.7; }
+    .date { font-size: 0.82rem; color: var(--ink-soft); margin-top: 28px; }
+    footer { padding: 40px 24px; text-align: center; border-top: 1px solid var(--sand); }
+    footer a { font-size: 0.78rem; color: var(--ink-soft); text-decoration: none; }
+    footer a:hover { color: var(--moss); }
+    .footer-copy { font-size: 0.72rem; color: #a09a8e; margin-top: 8px; }
+    @media (max-width: 600px) { .doc-card { padding: 24px 20px; } }
   </style>
 </head>
-
 <body>
-  <header>
-    <div class="inner">
-      <div class="brand">
-        <img src="/assets/logo-moriris.png" alt="Moriris" />
-        <h1>Privacy Policy</h1>
-      </div>
-
-      <div class="lang">
-        <button id="btn-en">EN</button>
-        <button id="btn-ja" class="active">JP</button>
-      </div>
+  <div class="topbar">
+    
+    <div class="lang-toggle">
+      <button class="lang-btn" data-lang="ja" aria-pressed="true">JP</button>
+      <button class="lang-btn" data-lang="en" aria-pressed="false">EN</button>
     </div>
-  </header>
+  </div>
 
-  <main>
-    <div class="card">
-
-      <!-- ----------------------- -->
-      <!-- 日本語版 -->
-      <!-- ----------------------- -->
-      <div id="pp-ja">
-
-        <p>
-          本プライバシーポリシー（以下「本ポリシー」といいます。）は、Moriris Video Platform for Facilities（日本語表記：「法人・施設向け映像配信サイト」、以下「本サービス」といいます。）におけるユーザー情報の取扱いについて定めるものです。
-          本サービスは法人・施設（組織）での利用を想定し、管理者（担当者）を通じて情報を取得する場合があります。
-        </p>
-
-        <h2>第1条（適用範囲）</h2>
-        <p>本ポリシーは、本サービスにおいて取得する全てのユーザー情報に適用されます。</p>
-
+  <div class="page-wrap">
+    <span class="section-label">Privacy</span>
+    <h1 class="page-title" id="page-title">プライバシーポリシー</h1>
+    <div class="divider"></div>
+    <div class="doc-card">
+      <div id="content-ja">
+        <p>本プライバシーポリシーは、Moriris Video Platform for Facilities（法人・施設向け映像配信サイト、以下「本サービス」）におけるユーザー情報の取扱いについて定めるものです。</p>
+        <h2>第1条（適用範囲）</h2><p>本ポリシーは、本サービスにおいて取得する全てのユーザー情報に適用されます。</p>
         <h2>第2条（取得する情報）</h2>
         <ul>
-          <li>1. メールアドレス（アカウント作成・認証用）</li>
-          <li>2. 法人名（施設名）・担当者情報（決済時または問い合わせフォーム等で取得する場合があります）</li>
-          <li>3. Stripeが保持する決済情報（カード番号などは当運営者には提供されません）</li>
-          <li>4. ログイン記録、閲覧履歴、エラー情報</li>
-          <li>5. ユーザー（管理者）が任意で送信した情報（問い合わせ内容等）</li>
+          <li>メールアドレス（アカウント作成・認証用）</li>
+          <li>法人名（施設名）・担当者情報（決済時または問い合わせフォーム等で取得する場合があります）</li>
+          <li>Stripeが保持する決済情報（カード番号などは当運営者には提供されません）</li>
+          <li>ログイン記録、閲覧履歴、エラー情報</li>
+          <li>ユーザーが任意で送信した情報（問い合わせ内容等）</li>
         </ul>
-
         <h2>第3条（利用目的）</h2>
         <ul>
-          <li>1. 本サービスの提供・運営</li>
-          <li>2. 認証やセキュリティの確保</li>
-          <li>3. 有料プランの決済処理（法人名（施設名）の紐付けを含む）</li>
-          <li>4. お問い合わせ対応（法人名（施設名）の確認を含む）</li>
-          <li>5. 利用状況の分析・改善</li>
+          <li>本サービスの提供・運営</li>
+          <li>認証やセキュリティの確保</li>
+          <li>有料プランの決済処理（法人名の紐付けを含む）</li>
+          <li>お問い合わせ対応</li>
+          <li>利用状況の分析・改善</li>
         </ul>
-
-        <h2>第4条（第三者提供）</h2>
-        <p>法令に基づく場合を除き、ユーザー情報を第三者へ提供しません。</p>
-
+        <h2>第4条（第三者提供）</h2><p>法令に基づく場合を除き、ユーザー情報を第三者へ提供しません。</p>
         <h2>第5条（外部サービス）</h2>
         <ul>
           <li>認証：Supabase</li>
           <li>決済：Stripe</li>
-          <li>解析：必要に応じてGoogle Analytics等</li>
+          <li>解析：Google Analytics等（必要に応じて）</li>
         </ul>
-
-        <h2>第6条（情報の保存期間）</h2>
-        <p>
-          アカウント情報は、利用期間中および削除後に法令上必要な期間に限り保存します。
-          決済履歴はStripeが法令に従って管理します。
-        </p>
-
-        <h2>第7条（ユーザーの権利）</h2>
-        <p>
-          ユーザー（管理者）は、自身の情報の削除・訂正等を求めることができます。
-        </p>
-
-        <h2>第8条（ポリシーの変更）</h2>
-        <p>
-          本ポリシーは、必要に応じて変更される場合があります。
-        </p>
-
-        <p class="note">
-          ※法人名（施設名）の取得方法（Stripeの入力項目、問い合わせフォームの必須項目等）は運用により変更される場合があります。
-        </p>
-
-        <p style="margin-top:24px;">制定日：2025年11月1日</p>
+        <h2>第6条（情報の保存期間）</h2><p>アカウント情報は、利用期間中および削除後に法令上必要な期間に限り保存します。</p>
+        <h2>第7条（ユーザーの権利）</h2><p>ユーザーは、自身の情報の削除・訂正等を求めることができます。</p>
+        <h2>第8条（ポリシーの変更）</h2><p>本ポリシーは、必要に応じて変更される場合があります。</p>
+        <p class="note">法人名（施設名）の取得方法は運用により変更される場合があります。</p>
+        <p class="date">制定日：2025年11月1日</p>
       </div>
-
-      <!-- ------------------------ -->
-      <!-- 英語版 -->
-      <!-- ------------------------ -->
-      <div id="pp-en" style="display:none;">
-
-        <p>
-          This Privacy Policy (“Policy”) describes how user information is handled in Moriris Video Platform for Facilities (“the Service”).
-          The Service is intended for organizational use (companies/facilities) and information may be collected via an administrator (person in charge).
-        </p>
-
-        <h2>Article 1 (Scope)</h2>
-        <p>This Policy applies to all information collected through the Service.</p>
-
+      <div id="content-en" style="display:none;">
+        <p>This Privacy Policy describes how user information is handled in Moriris Video Platform for Facilities ("the Service").</p>
+        <h2>Article 1 (Scope)</h2><p>This Policy applies to all information collected through the Service.</p>
         <h2>Article 2 (Information Collected)</h2>
         <ul>
-          <li>1. Email address (for account creation and authentication)</li>
-          <li>2. Organization name (company/facility) and administrator details (may be collected at checkout and/or via inquiry forms)</li>
-          <li>3. Payment information stored by Stripe (card details are not provided to the operator)</li>
-          <li>4. Login logs, viewing history, error logs</li>
-          <li>5. Information voluntarily provided by administrators/users (e.g., inquiry messages)</li>
+          <li>Email address (for account creation and authentication)</li>
+          <li>Organization name and administrator details (may be collected at checkout or via inquiry forms)</li>
+          <li>Payment information stored by Stripe (card details are not provided to the operator)</li>
+          <li>Login logs, viewing history, error logs</li>
+          <li>Information voluntarily provided by administrators (e.g., inquiry messages)</li>
         </ul>
-
         <h2>Article 3 (Purposes of Use)</h2>
         <ul>
-          <li>1. To operate and provide the Service</li>
-          <li>2. To maintain authentication and security</li>
-          <li>3. To process payments for paid plans (including associating the Organization name)</li>
-          <li>4. To respond to inquiries (including confirming the Organization name)</li>
-          <li>5. To analyze usage and improve the Service</li>
+          <li>To operate and provide the Service</li>
+          <li>To maintain authentication and security</li>
+          <li>To process payments (including associating the organization name)</li>
+          <li>To respond to inquiries</li>
+          <li>To analyze usage and improve the Service</li>
         </ul>
-
-        <h2>Article 4 (Third-Party Provision)</h2>
-        <p>User information will not be disclosed to third parties unless required by law.</p>
-
+        <h2>Article 4 (Third-Party Provision)</h2><p>User information will not be disclosed to third parties unless required by law.</p>
         <h2>Article 5 (External Services)</h2>
         <ul>
           <li>Authentication: Supabase</li>
           <li>Payment: Stripe</li>
           <li>Analytics: Google Analytics (if used)</li>
         </ul>
-
-        <h2>Article 6 (Retention Period)</h2>
-        <p>
-          Account information is retained during use and for a legally required period after deletion.
-          Payment history is managed by Stripe in accordance with legal requirements.
-        </p>
-
-        <h2>Article 7 (User Rights)</h2>
-        <p>Administrators may request correction or deletion of their information.</p>
-
-        <h2>Article 8 (Amendments)</h2>
-        <p>
-          This Policy may be updated as necessary.
-        </p>
-
-        <p class="note">
-          Note: How the Organization name is collected (Stripe fields, required inquiry form fields, etc.) may change depending on operations.
-        </p>
-
-        <p style="margin-top:24px;">Effective: 2025-11-01</p>
+        <h2>Article 6 (Retention Period)</h2><p>Account information is retained during use and for a legally required period after deletion.</p>
+        <h2>Article 7 (User Rights)</h2><p>Administrators may request correction or deletion of their information.</p>
+        <h2>Article 8 (Amendments)</h2><p>This Policy may be updated as necessary.</p>
+        <p class="note">How the organization name is collected may change depending on operations.</p>
+        <p class="date">Effective: 2025-11-01</p>
       </div>
-
     </div>
-  </main>
+  </div>
 
-  <footer>&copy; Moriris Studio </footer>
+  <footer>
+    <a href="/" id="footer-home">トップページへ戻る</a>
+    <p class="footer-copy">© Moriris Studio</p>
+  </footer>
 
   <script>
-    const btnJa = document.getElementById("btn-ja");
-    const btnEn = document.getElementById("btn-en");
-    const ja = document.getElementById("pp-ja");
-    const en = document.getElementById("pp-en");
-
-    btnJa.onclick = () => {
-      ja.style.display = "block";
-      en.style.display = "none";
-      btnJa.classList.add("active");
-      btnEn.classList.remove("active");
-    };
-
-    btnEn.onclick = () => {
-      ja.style.display = "none";
-      en.style.display = "block";
-      btnEn.classList.add("active");
-      btnJa.classList.remove("active");
-    };
+    let currentLang = localStorage.getItem("moriris_lang") || "ja";
+    function applyLang(lang) {
+      currentLang = lang;
+      document.documentElement.lang = lang;
+      document.getElementById("content-ja").style.display = lang === "ja" ? "block" : "none";
+      document.getElementById("content-en").style.display = lang === "en" ? "block" : "none";
+      document.getElementById("page-title").textContent = lang === "ja" ? "プライバシーポリシー" : "Privacy Policy";
+      document.getElementById("footer-home").textContent = lang === "ja" ? "トップページへ戻る" : "Back to home";
+      document.querySelectorAll(".lang-btn").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === lang ? "true" : "false"));
+      localStorage.setItem("moriris_lang", lang);
+    }
+    document.querySelectorAll(".lang-btn").forEach(btn => btn.addEventListener("click", () => applyLang(btn.dataset.lang)));
+    applyLang(currentLang);
   </script>
 </body>
 </html>
