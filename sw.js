@@ -1,17 +1,13 @@
 // Moriris Service Worker
 // キャッシュバージョンを上げると古いキャッシュが自動削除されます
-const CACHE_NAME = "moriris-v1";
+const CACHE_NAME = "moriris-v2";
 
-// インストール時にキャッシュするアプリシェル
+// キャッシュするアセット（静的ファイルのみ・認証関連ページは除外）
 const PRECACHE_ASSETS = [
-  "/",
-  "/index.html",
-  "/members.html",
   "/assets/logo-moriris.png",
   "/assets/hero-forest.png",
   "/assets/home-img.png",
-  "/assets/icon-192.png",
-  "/assets/icon-512.png",
+  "/assets/favicon.png",
   "/manifest.json"
 ];
 
@@ -80,7 +76,11 @@ self.addEventListener("fetch", (event) => {
     url.hostname.includes("google-analytics.com") ||
     url.hostname.includes("jsdelivr.net") ||       // Supabase SDK CDN
     url.hostname.includes("embed.videodelivery.net") ||
-    url.pathname.startsWith("/data/");             // video.json / billing.json は常に最新
+    url.pathname.startsWith("/data/") ||           // video.json / billing.json は常に最新
+    // 認証・ログインページはキャッシュしない（キャッシュするとログイン画面に戻れなくなる）
+    url.pathname === "/" ||
+    url.pathname === "/index.html" ||
+    url.pathname.includes("index.html");
 
   if (bypass) return; // ブラウザのデフォルト動作に任せる
 
