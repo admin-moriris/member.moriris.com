@@ -19,6 +19,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Moriris Video Platform for Facilities</title>
 
+  <!-- ===================== PWA ===================== -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#75c29c" />
+  <!-- Android Chrome -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <!-- iOS Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Moriris" />
+  <link rel="apple-touch-icon" href="/assets/icon-192.png" />
+  <!-- ================================================ -->
+
   <style>
     :root{
       --bg:#faf8f4;
@@ -77,7 +89,7 @@
     }
     @media (max-width: 860px){
       .brand-title span{
-        white-space:normal;  /* 折り返し許可 */
+        white-space:normal;
         line-height:1.2;
         letter-spacing:0.06em;
         font-size:18px;
@@ -227,7 +239,6 @@
 
     .video-grid{ margin-top:12px; }
 
-    /* 表示形式（list / grid） */
     .video-grid.mode-list{
       display:flex;
       flex-direction:column;
@@ -475,7 +486,6 @@
           <button type="button" class="video-sort-btn" data-sort="oldest" data-i18n="sort_oldest">古い順</button>
 
           <span class="label" style="margin-left:8px;" data-i18n="view_label">表示：</span>
-          <!-- 要望：グリッド → リストの順 -->
           <button type="button" class="view-btn" data-view="grid" data-i18n="view_grid">グリッド</button>
           <button type="button" class="view-btn active" data-view="list" data-i18n="view_list">リスト</button>
         </div>
@@ -741,7 +751,7 @@
       tab_home:"HOME",
       tab_videos:"VIDEOS",
       tab_account:"ACCOUNT",
-      status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
+      status_not_logged:"You are not logged in, or we couldn't restore your login session (for example, if the link was opened in a different browser). Please log in again.",
       not_logged_back_link:"Back to login page",
       pw_banner_text:"You haven't set a password yet. Click here to set it.",
       home_title:"Welcome to Moriris Video Platform for Facilities",
@@ -755,7 +765,7 @@
       plan_free:"Free",
       plan_standard:"Standard",
       status_checking:"Checking your login status…",
-      status_not_logged:"You are not logged in, or we couldn’t restore your login session (for example, if the link was opened in a different browser). Please log in again.",
+      status_not_logged:"You are not logged in, or we couldn't restore your login session (for example, if the link was opened in a different browser). Please log in again.",
       status_free:"You don't have an active subscription yet.",
       status_loading:"Loading videos…",
       status_ready:"Enjoy the content!",
@@ -786,12 +796,12 @@
       email_change_desc:"Enter a new email address and we will send a confirmation email. Please use the link in that email to complete the change.",
       email_change_current:"Current email:",
       email_change_btn:"Send confirmation email",
-      email_change_sent:"We’ve sent a confirmation email to your new address. Please follow the link in the email to complete the change.",
+      email_change_sent:"We've sent a confirmation email to your new address. Please follow the link in the email to complete the change.",
       email_change_invalid:"Please enter a valid email address.",
       email_change_error:"An error occurred while changing your email. Please try again later.",
       email_change_same:"This is the same as your current email. Please enter a different address.",
       checkout_error:"Something went wrong while processing your request. Please try again later.",
-      portal_error:"We couldn’t open the subscription management page. Please try again later.",
+      portal_error:"We couldn't open the subscription management page. Please try again later.",
 
       pw_setup_title:"Set your password",
       pw_setup_desc:"You initially registered with email verification only. To log in with your email and password from now on, please set a password here.",
@@ -845,10 +855,10 @@
   let VIDEO_CONFIG = { cloudflare:null, episodes:[] };
 
   // sort/view/filter state
-  let videoSortMode = "newest"; // newest | oldest
-  let viewMode = "list";        // list | grid
-  const selectedTags = new Set(); // sleep/focus/quiet
-  const FIXED_TAGS = ["sleep","focus","quiet"]; // 要望：この3つ
+  let videoSortMode = "newest";
+  let viewMode = "list";
+  const selectedTags = new Set();
+  const FIXED_TAGS = ["sleep","focus","quiet"];
 
   function tagLabel(tag){
     const t = I18N[currentLang] || I18N["ja"];
@@ -876,13 +886,11 @@
     return String(v?.id || v?.cf_uid || "");
   }
 
-  // 既に表示されている動画カードの「タイトルだけ」言語に合わせて差し替える（iframe作り直しなし）
   function refreshVideoTitlesInPlace(){
     if (!VIDEO_CONFIG?.episodes?.length) return;
 
     const t = I18N[currentLang] || I18N["ja"];
 
-    // 空表示メッセージも差し替え
     const emptyEl = document.querySelector('#videos [data-role="videos-empty"]');
     if (emptyEl) emptyEl.textContent = t.videos_empty;
 
@@ -917,12 +925,12 @@
       log("video json loaded", VIDEO_CONFIG);
 
       renderTagFilterUI();
-      refreshVideoTitlesInPlace(); // ★追加：JSON再読込後も即時反映
+      refreshVideoTitlesInPlace();
     }catch(e){
       console.error("video json load error", e);
       VIDEO_CONFIG = { cloudflare:null, episodes:[] };
       renderTagFilterUI();
-      refreshVideoTitlesInPlace(); // ★追加：空メッセージの言語反映
+      refreshVideoTitlesInPlace();
     }
   }
 
@@ -953,7 +961,6 @@
     title.textContent = t.filter_title || "Filter:";
     row.appendChild(title);
 
-    // 「全て」：左端。押すと selectedTags を空にする
     const allBtn = document.createElement("button");
     allBtn.type = "button";
     allBtn.className = "chip";
@@ -968,7 +975,6 @@
     });
     row.appendChild(allBtn);
 
-    // 固定タグ（sleep / focus / quiet）
     const makeChip = (tag)=>{
       const btn = document.createElement("button");
       btn.type = "button";
@@ -987,7 +993,7 @@
           lang: currentLang
         });
 
-        renderTagFilterUI(); // 「全て」active制御のため再描画
+        renderTagFilterUI();
         renderVideosForPlan(state.plan, videoSortMode);
       });
       return btn;
@@ -1010,10 +1016,10 @@
   }
 
   function matchSelectedTags(v){
-    if (selectedTags.size === 0) return true; // 「全て」
+    if (selectedTags.size === 0) return true;
     const tags = Array.isArray(v.tags) ? v.tags : [];
     for (const t of selectedTags){
-      if (tags.includes(t)) return true; // OR条件
+      if (tags.includes(t)) return true;
     }
     return false;
   }
@@ -1022,7 +1028,6 @@
     const customer = cf?.customer_code;
     if (!customer || !uid) return null;
 
-    // ここで「loop/autoplay/muted」を確実に含める（JSON側に無くても効くように）
     const baseParams = new URLSearchParams(cf?.iframe_params || "");
     if (!baseParams.has("loop")) baseParams.set("loop", "true");
     if (!baseParams.has("controls")) baseParams.set("controls", "true");
@@ -1090,8 +1095,6 @@
     $("#btn-en").classList.toggle("active", lang==="en");
 
     renderTagFilterUI();
-
-    // ★重要：言語切替時は「一覧再描画」ではなく「タイトルだけ差し替え」
     refreshVideoTitlesInPlace();
   }
 
@@ -1185,15 +1188,12 @@
       return;
     }
   
-    // Payment Linkに「メールの事前入力」を渡す（Stripe側で顧客情報入力が楽になる）
-    // client_reference_id も付けておくと、Stripe側で「どのユーザーか」追跡しやすい
     const u = currentUser?.email ? String(currentUser.email) : "";
     const params = new URLSearchParams();
   
     if (u) params.set("prefilled_email", u);
     if (userId) params.set("client_reference_id", String(userId));
   
-    // 既にクエリが付いているURLにも対応
     const sep = baseUrl.includes("?") ? "&" : "?";
     const url = params.toString() ? (baseUrl + sep + params.toString()) : baseUrl;
   
@@ -1320,13 +1320,11 @@
     }
   }
 
-  // ループ強制（SDK + ended保険）
   function forceLoopOnIframe(iframeEl){
     try{
       if (!iframeEl || typeof window.Stream !== "function") return;
       const player = window.Stream(iframeEl);
 
-      // 反映できるまでタイミング差があるので、少し遅延して複数回トライ
       const apply = ()=>{
         try{
           player.loop = true;
@@ -1358,13 +1356,13 @@
     episodes.sort((a,b)=>{
       const ta = toTime(a), tb = toTime(b);
       if (videoSortMode === "oldest") return ta - tb;
-      return tb - ta; // newest
+      return tb - ta;
     });
 
     if (!episodes.length){
       const p = document.createElement("p");
       p.className = "muted";
-      p.dataset.role = "videos-empty";   // ★追加：言語切替で差し替えやすく
+      p.dataset.role = "videos-empty";
       p.textContent = t.videos_empty;
       wrap.appendChild(p);
       return;
@@ -1374,7 +1372,6 @@
       const card = document.createElement("div");
       card.className = "video-card";
 
-      // ★追加：後からタイトルだけ更新できるようにID保持
       const vidKey = getVideoKey(v);
       card.dataset.videoId = vidKey;
 
@@ -1410,7 +1407,6 @@
       `;
       wrap.appendChild(card);
 
-      // ループ強制（iframe生成後に実行）
       if (src){
         const iframeEl = card.querySelector("iframe");
         forceLoopOnIframe(iframeEl);
@@ -1424,11 +1420,9 @@
     const navLang = (navigator.language || "ja").startsWith("ja") ? "ja" : "en";
     applyLang(urlLang || storedLang || navLang);
 
-    // 表示形式の初期値（保存済みがあれば反映）
     const storedView = localStorage.getItem("moriris_view_mode");
     applyViewMode(storedView === "grid" ? "grid" : "list");
 
-    // ボタンのactiveも初期状態に合わせる（グリッド→リスト順のため）
     document.querySelectorAll(".view-btn").forEach(b=>{
       b.classList.toggle("active", b.dataset.view === viewMode);
     });
@@ -1726,7 +1720,6 @@
         if (prof.stripe_customer_id) {
           b.textContent = currentLang === "ja" ? "Standardプラン登録" : "Subscribe to Standard";
           b.onclick = () => {
-            // トライアルなしのPayment Linkへ、既存の顧客IDを紐付けて飛ばす
             const baseUrl = BILLING_CONFIG?.stripe?.standard?.payment_link_no_trial_url;
             if (!baseUrl) return;
             const params = new URLSearchParams();
@@ -1735,7 +1728,6 @@
             location.href = baseUrl + "?" + params.toString();
           };
         } else {
-          // 初回 → 通常の決済リンクへ
           b.textContent = I18N[currentLang].btn_subscribe;
           b.onclick = () => {
             gaEvent("membership_cta_click", {
@@ -1816,5 +1808,22 @@
 
   main();
 </script>
+
+<!-- ===================== Service Worker 登録 ===================== -->
+<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/sw.js")
+        .then((reg) => {
+          console.log("[SW] registered, scope:", reg.scope);
+        })
+        .catch((err) => {
+          console.warn("[SW] registration failed:", err);
+        });
+    });
+  }
+</script>
+<!-- ============================================================== -->
+
 </body>
 </html>
