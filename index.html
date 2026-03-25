@@ -3,7 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <link rel="icon" type="image/png" href="/assets/favicon.png" />
-  
+
+  <!-- ===== PWA ===== -->
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#75c29c" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Moriris" />
+  <link rel="apple-touch-icon" href="/assets/favicon.png" />
+  <!-- ===== /PWA ===== -->
+
   <!-- Google tag (gtag.js)  -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-HWRX6Q9K3E"></script>
   <script>
@@ -272,6 +282,92 @@
     .form-message.error{ color:#b3261e; }
     .form-message.success{ color:#0b5130; }
 
+    /* ===== PWA バナー ===== */
+    .pwa-banner{
+      display:none;
+      align-items:center;
+      gap:12px;
+      background:white;
+      border:1px solid rgba(117,194,156,.35);
+      border-left:4px solid var(--accent);
+      padding:14px 16px;
+      margin-bottom:20px;
+      position:relative;
+      border-radius:12px;
+      box-shadow:0 4px 16px rgba(0,0,0,.08);
+    }
+    .pwa-banner.show{ display:flex; }
+    .pwa-banner-icon{ font-size:22px; flex-shrink:0; }
+    .pwa-banner-body{ flex:1; min-width:0; }
+    .pwa-banner-title{ font-size:13px; font-weight:600; color:var(--ink); margin-bottom:2px; }
+    .pwa-banner-desc{ font-size:12px; color:var(--muted); line-height:1.5; }
+    .pwa-banner-btn{
+      background:var(--accent);
+      color:#05361f;
+      border:none;
+      border-radius:999px;
+      padding:8px 16px;
+      font-size:13px;
+      font-weight:600;
+      cursor:pointer;
+      white-space:nowrap;
+      flex-shrink:0;
+      transition:background .2s;
+    }
+    .pwa-banner-btn:hover{ background:#0b5130; color:white; }
+    .pwa-banner-close{
+      position:absolute;
+      top:8px; right:8px;
+      background:none; border:none;
+      color:var(--muted); font-size:16px;
+      cursor:pointer; padding:2px 6px; line-height:1;
+      transition:color .2s;
+    }
+    .pwa-banner-close:hover{ color:var(--ink); }
+
+    /* ===== PWA 手順モーダル ===== */
+    .pwa-modal-overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.5);
+      z-index:500;
+      display:none;
+      align-items:flex-end;
+      justify-content:center;
+      padding:0;
+    }
+    .pwa-modal-overlay.show{ display:flex; }
+    .pwa-modal{
+      background:white;
+      width:min(480px,100vw);
+      padding:28px 24px 32px;
+      border-top-left-radius:16px;
+      border-top-right-radius:16px;
+      border-top:4px solid var(--accent);
+      animation:slideUp .3s ease;
+    }
+    @keyframes slideUp{ from{ transform:translateY(100%); } to{ transform:translateY(0); } }
+    .pwa-modal-title{ font-size:18px; font-weight:700; color:var(--ink); margin-bottom:6px; }
+    .pwa-modal-sub{ font-size:13px; color:var(--muted); margin-bottom:20px; line-height:1.6; }
+    .pwa-steps{ display:flex; flex-direction:column; gap:12px; margin-bottom:20px; }
+    .pwa-step{ display:flex; align-items:flex-start; gap:12px; }
+    .pwa-step-num{
+      width:24px; height:24px; border-radius:50%;
+      background:var(--accent); color:#05361f;
+      font-size:12px; font-weight:700;
+      display:flex; align-items:center; justify-content:center;
+      flex-shrink:0; margin-top:1px;
+    }
+    .pwa-step-text{ font-size:13px; color:var(--ink); line-height:1.7; }
+    .pwa-step-text strong{ font-weight:700; color:var(--accent-dark); }
+    .pwa-modal-close{
+      width:100%; padding:12px;
+      background:#f0f0ec; border:none;
+      font-size:14px; color:var(--muted);
+      cursor:pointer; border-radius:8px;
+      transition:background .2s;
+    }
+    .pwa-modal-close:hover{ background:var(--ink); color:white; }
+
     @media (max-width:600px){
       .wrap{ padding:16px 12px 32px; }
       .brand img{ height:120px; }
@@ -285,7 +381,28 @@
 </head>
 
 <body>
+  <!-- ===== PWA 手順モーダル ===== -->
+  <div id="pwaModal" class="pwa-modal-overlay">
+    <div class="pwa-modal">
+      <div class="pwa-modal-title">📱 ホーム画面に追加</div>
+      <div class="pwa-modal-sub" id="pwaModalSub"></div>
+      <div class="pwa-steps" id="pwaSteps"></div>
+      <button class="pwa-modal-close" id="pwaModalClose">閉じる</button>
+    </div>
+  </div>
+
   <div class="wrap">
+
+    <!-- ===== PWA バナー ===== -->
+    <div id="pwaBanner" class="pwa-banner">
+      <div class="pwa-banner-icon">📱</div>
+      <div class="pwa-banner-body">
+        <div class="pwa-banner-title">アプリとして使う</div>
+        <div class="pwa-banner-desc">ホーム画面に追加するとアプリのように使えます</div>
+      </div>
+      <button class="pwa-banner-btn" id="pwaBannerBtn">追加する</button>
+      <button class="pwa-banner-close" id="pwaBannerClose">×</button>
+    </div>
 
     <header>
       <div class="brand">
@@ -596,6 +713,80 @@
       }
     };
   </script>
+
+  <!-- ===== Service Worker 登録 + PWA バナー制御 ===== -->
+  <script>
+    // Service Worker 登録
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('SW registered:', reg.scope))
+          .catch(err => console.warn('SW registration failed:', err));
+      });
+    }
+
+    // PWA バナー制御
+    let deferredPrompt = null;
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isInStandaloneMode =
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone;
+    const pwaBannerDismissed = sessionStorage.getItem('pwaBannerDismissed');
+
+    if (!isInStandaloneMode && !pwaBannerDismissed) {
+      // Android / PC: インストールイベントを捕捉
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('pwaBanner').classList.add('show');
+      });
+      // iOS: 常にバナー表示
+      if (isIOS) {
+        document.getElementById('pwaBanner').classList.add('show');
+      }
+    }
+
+    // 「追加する」ボタン
+    document.getElementById('pwaBannerBtn').addEventListener('click', () => {
+      if (deferredPrompt) {
+        // Android/PC: ネイティブダイアログ
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+      } else {
+        // iOS / その他: 手順モーダルを表示
+        document.getElementById('pwaModalSub').textContent = isIOS
+          ? 'Safariで以下の手順でホーム画面に追加できます。'
+          : 'ブラウザの手順でホーム画面に追加できます。';
+        document.getElementById('pwaSteps').innerHTML = isIOS ? `
+          <div class="pwa-step"><div class="pwa-step-num">1</div><div class="pwa-step-text">画面下の<strong>共有ボタン（□↑）</strong>をタップ</div></div>
+          <div class="pwa-step"><div class="pwa-step-num">2</div><div class="pwa-step-text">メニューをスクロールして<strong>「ホーム画面に追加」</strong>をタップ</div></div>
+          <div class="pwa-step"><div class="pwa-step-num">3</div><div class="pwa-step-text"><strong>「追加」</strong>をタップして完了！</div></div>
+        ` : `
+          <div class="pwa-step"><div class="pwa-step-num">1</div><div class="pwa-step-text">ブラウザ右上の<strong>メニュー（⋮）</strong>をタップ</div></div>
+          <div class="pwa-step"><div class="pwa-step-num">2</div><div class="pwa-step-text"><strong>「アプリをインストール」</strong>をタップ</div></div>
+          <div class="pwa-step"><div class="pwa-step-num">3</div><div class="pwa-step-text"><strong>「インストール」</strong>をタップして完了！</div></div>
+        `;
+        document.getElementById('pwaModal').classList.add('show');
+      }
+    });
+
+    // バナーを閉じる
+    document.getElementById('pwaBannerClose').addEventListener('click', () => {
+      document.getElementById('pwaBanner').classList.remove('show');
+      sessionStorage.setItem('pwaBannerDismissed', '1');
+    });
+
+    // モーダルを閉じる
+    document.getElementById('pwaModalClose').addEventListener('click', () => {
+      document.getElementById('pwaModal').classList.remove('show');
+    });
+    document.getElementById('pwaModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('pwaModal')) {
+        document.getElementById('pwaModal').classList.remove('show');
+      }
+    });
+  </script>
+  <!-- ===== /PWA ===== -->
 
 </body>
 </html>
