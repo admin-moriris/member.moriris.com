@@ -139,7 +139,7 @@
       padding:28px 32px 32px;
     }
 
-    /* intro block (no title line to avoid duplication) */
+    /* intro block */
     .intro{
       max-width:720px;
       margin:0 auto 18px;
@@ -222,11 +222,59 @@
       cursor:not-allowed;
     }
 
+    /* ===== Google ボタン ===== */
+    .btn-google{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      background:#ffffff;
+      color:#3c4043;
+      border:1px solid #dadce0;
+      border-radius:12px;
+      padding:12px 14px;
+      font-size:15px;
+      font-weight:500;
+      cursor:pointer;
+      transition:background 0.15s, box-shadow 0.15s;
+      line-height:1;
+    }
+    .btn-google:hover{
+      background:#f8f9fa;
+      box-shadow:0 1px 4px rgba(0,0,0,.12);
+    }
+    .btn-google svg{
+      flex-shrink:0;
+      width:20px;
+      height:20px;
+      display:block;
+    }
+    .btn-google span{
+      display:block;
+    }
+    /* ===== /Google ボタン ===== */
+
     hr{
       width:100%;
       border:none;
       border-top:1px solid #e3e0d7;
       margin:24px 0;
+    }
+
+    .divider-or{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:4px 0 16px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .divider-or::before,
+    .divider-or::after{
+      content:"";
+      flex:1;
+      border-top:1px solid #e3e0d7;
     }
 
     .agree-row{
@@ -418,7 +466,7 @@
 
     <div class="card">
 
-      <!-- intro (no duplicated title) -->
+      <!-- intro -->
       <div class="intro" aria-label="intro">
         <p class="intro-desc" id="t_intro_desc">メール登録で14日間無料で体験できます。</p>
         <div class="intro-badge" id="t_intro_badge">14日間無料（メール登録）</div>
@@ -440,19 +488,23 @@
           </label>
         </div>
         <div class="row">
-          <button id="btn-login-pw" class="primary">ログイン</button>
+          <button id="btn-login-pw" class="primary" id="t_pw_button">ログイン</button>
           <p id="pw-message" class="form-message" aria-live="polite"></p>
+        </div>
 
-          <!-- <button id="btn-" class="btn-">
-            <svg width="18" height="18" viewBox="0 0 48 48">
+        <!-- Google ログイン -->
+        <div class="divider-or" id="t_or_divider">または</div>
+        <div class="row">
+          <button id="btn-google" class="btn-google">
+            <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.73 1.22 9.23 3.61l6.9-6.9C35.68 2.2 30.2 0 24 0 14.6 0 6.48 5.48 2.56 13.44l8.04 6.24C12.6 13.28 17.8 9.5 24 9.5z"/>
               <path fill="#4285F4" d="M46.5 24c0-1.64-.14-3.21-.41-4.73H24v9h12.7c-.55 2.9-2.18 5.36-4.66 7.02l7.2 5.6C43.98 36.2 46.5 30.6 46.5 24z"/>
               <path fill="#FBBC05" d="M10.6 28.68a14.5 14.5 0 010-9.36l-8.04-6.24A24 24 0 000 24c0 3.9.94 7.6 2.56 10.92l8.04-6.24z"/>
               <path fill="#34A853" d="M24 48c6.2 0 11.4-2.05 15.2-5.6l-7.2-5.6c-2 1.35-4.56 2.15-8 2.15-6.2 0-11.4-3.78-13.4-9.18l-8.04 6.24C6.48 42.52 14.6 48 24 48z"/>
             </svg>
-            Sign in with 
+            <span id="t_google_btn">Googleでログイン</span>
           </button>
-          <p id="google-message" class="msg"></p> -->
+          <p id="google-message" class="form-message" aria-live="polite"></p>
         </div>
       </section>
 
@@ -520,6 +572,9 @@
         pwDesc:"すでにパスワードを設定済みの方はこちらからログインしてください。",
         pwButton:"ログイン",
 
+        orDivider:"または",
+        googleBtn:"Googleでログイン",
+
         magicTitle:"新規会員登録 / パスワード再設定",
         magicDesc:"メールアドレスを認証してアカウントを作成します。\nすでにアカウントがある場合は、このリンクからパスワード再設定も行えます。",
         magicButton:"メールを送る",
@@ -532,6 +587,7 @@
         invalidEmail:"メールアドレスの形式が正しくありません。",
         sent:"認証メールを送信しました。",
         pwLoginFailed:"ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。",
+        googleFailed:"Googleログインに失敗しました。時間をおいて再度お試しください。",
         errorPrefix:"エラー：",
         agreeText:
           '「<a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">利用規約</a>」 および ' +
@@ -546,6 +602,9 @@
         pwDesc:"If you have already set a password, you can log in here.",
         pwButton:"Log in",
 
+        orDivider:"or",
+        googleBtn:"Sign in with Google",
+
         magicTitle:"Sign up / Reset password",
         magicDesc:"Verify your email address to create an account.\nIf you already have an account, you can also reset your password using this link.",
         magicButton:"Send email",
@@ -558,6 +617,7 @@
         invalidEmail:"The email format is invalid.",
         sent:"A verification email has been sent.",
         pwLoginFailed:"Login failed. Please check your email and password.",
+        googleFailed:"Google sign-in failed. Please try again later.",
         errorPrefix:"Error: ",
         agreeText:
           'I have read and agree to the <a href="https://member.moriris.com/terms.html" target="_blank" rel="noopener">Terms of Service</a> ' +
@@ -573,6 +633,8 @@
     const pwLoginBtn = $("#btn-login-pw");
     const pwMsg = $("#pw-message");
     const magicMsg = $("#magic-message");
+    const googleBtn = $("#btn-google");
+    const googleMsg = $("#google-message");
 
     const btnJa = $("#btn-ja");
     const btnEn = $("#btn-en");
@@ -592,6 +654,13 @@
       if(text){ magicMsg.classList.add(type); }
     }
 
+    function showGoogleMessage(text, type = "error"){
+      if(!googleMsg) return;
+      googleMsg.textContent = text || "";
+      googleMsg.classList.remove("error","success");
+      if(text){ googleMsg.classList.add(type); }
+    }
+
     /***** 利用規約チェック制御 *****/
     function updateMagicDisabled(){
       magicBtn.disabled = !agreeCheckbox.checked;
@@ -607,7 +676,7 @@
 
       $("#t_title").textContent = t.title;
 
-      // intro (no duplicated title)
+      // intro
       $("#t_intro_desc").textContent = t.introDesc;
       $("#t_intro_badge").textContent = t.introBadge;
 
@@ -615,6 +684,8 @@
       $("#t_pw_title").textContent = t.pwTitle;
       $("#t_pw_desc").textContent = t.pwDesc;
       $("#btn-login-pw").textContent = t.pwButton;
+      $("#t_or_divider").textContent = t.orDivider;
+      $("#t_google_btn").textContent = t.googleBtn;
       $("#t_magic_title").textContent = t.magicTitle;
       $("#t_magic_desc").textContent = t.magicDesc;
       $("#btn-magic").textContent = t.magicButton;
@@ -692,6 +763,35 @@
       window.location.href = `/members.html?lang=${lang}`;
     };
 
+    /***** Google ログイン *****/
+    googleBtn.onclick = async ()=>{
+      const t = currentText();
+      const lang = localStorage.getItem(langKey) || "ja";
+
+      showGoogleMessage("");
+      googleBtn.disabled = true;
+
+      try{
+        const { error } = await sb.auth.signInWithOAuth({
+          provider: "google",
+          options: {
+            redirectTo: `https://member.moriris.com/members.html?lang=${lang}`
+          }
+        });
+
+        if(error){
+          console.error("Google login error:", error.message);
+          showGoogleMessage(t.googleFailed, "error");
+          googleBtn.disabled = false;
+        }
+        // 成功時はOAuthリダイレクトが走るため disabled のままでOK
+      }catch(e){
+        console.error("Google login exception:", e);
+        showGoogleMessage(t.googleFailed, "error");
+        googleBtn.disabled = false;
+      }
+    };
+
     /***** メール認証（新規 / PWリセット） *****/
     magicBtn.onclick = async ()=>{
       const t = currentText();
@@ -727,36 +827,11 @@
 
   <!-- ===== Service Worker 登録 + PWA バナー制御 ===== -->
   <script>
-    // Service Worker 登録
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/sw.js')
           .then(reg => console.log('SW registered:', reg.scope))
           .catch(err => console.warn('SW registration failed:', err));
-      });
-    }
-
-    const googleBtn = document.getElementById("btn-google");
-    const googleMsg = document.getElementById("google-message");
-    
-    if (googleBtn) {
-      googleBtn.addEventListener("click", async () => {
-        try {
-          const { error } = await sb.auth.signInWithOAuth({
-            provider: "google",
-            options: {
-              redirectTo: "https://member.moriris.com/member.html"
-            }
-          });
-    
-          if (error) {
-            googleMsg.textContent = "ログインに失敗しました";
-            googleMsg.classList.add("error");
-          }
-        } catch (e) {
-          googleMsg.textContent = "エラーが発生しました";
-          googleMsg.classList.add("error");
-        }
       });
     }
 
@@ -769,26 +844,21 @@
     const pwaBannerDismissed = sessionStorage.getItem('pwaBannerDismissed');
 
     if (!isInStandaloneMode && !pwaBannerDismissed) {
-      // Android / PC: インストールイベントを捕捉
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
         document.getElementById('pwaBanner').classList.add('show');
       });
-      // iOS: 常にバナー表示
       if (isIOS) {
         document.getElementById('pwaBanner').classList.add('show');
       }
     }
 
-    // 「追加する」ボタン
     document.getElementById('pwaBannerBtn').addEventListener('click', () => {
       if (deferredPrompt) {
-        // Android/PC: ネイティブダイアログ
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
       } else {
-        // iOS / その他: 手順モーダルを表示
         document.getElementById('pwaModalSub').textContent = isIOS
           ? 'Safariで以下の手順でホーム画面に追加できます。'
           : 'ブラウザの手順でホーム画面に追加できます。';
@@ -805,13 +875,11 @@
       }
     });
 
-    // バナーを閉じる
     document.getElementById('pwaBannerClose').addEventListener('click', () => {
       document.getElementById('pwaBanner').classList.remove('show');
       sessionStorage.setItem('pwaBannerDismissed', '1');
     });
 
-    // モーダルを閉じる
     document.getElementById('pwaModalClose').addEventListener('click', () => {
       document.getElementById('pwaModal').classList.remove('show');
     });
