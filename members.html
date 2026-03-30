@@ -647,6 +647,7 @@
           <p id="deleteStatusMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
         </div>
 
+        <div id="email-change-section">
         <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
 
         <h3 data-i18n="email_change_title">メールアドレスの変更</h3>
@@ -667,7 +668,7 @@
         <p id="emailChangeMsg" class="muted" style="font-size:12px;margin-top:6px;"></p>
 
         <hr style="margin:18px 0;border:none;border-top:1px solid #e0e0e0;" />
-
+　　　　　</div>
         <div id="pwSection" class="hidden">
           <h3 data-i18n="pw_setup_title">パスワードの設定</h3>
           <p class="muted" data-i18n="pw_setup_desc"></p>
@@ -1567,17 +1568,10 @@
     if (currentEmailEl) currentEmailEl.textContent = user.email || "";
 
     // ★ Googleユーザーはメールアドレス変更セクションを非表示
-    if (isGoogleUser) {
-      const sections = document.querySelectorAll(
-        "#tab-account .card h3[data-i18n='email_change_title'], " +
-        "#tab-account .card p[data-i18n='email_change_desc'], " +
-        "#tab-account .card p[style*='margin-top:8px'], " +
-        "#tab-account .card div[style*='margin-top:8px'][style*='display:flex'], " +
-        "#tab-account #emailChangeMsg"
-      );
-      sections.forEach(el => el.style.display = "none");
-      // 前後のhrも非表示にしたい場合はHTML側に id="email-change-section" を追加推奨
-    }
+        if (isGoogleUser) {
+          const emailSection = document.getElementById("email-change-section");
+          if (emailSection) emailSection.classList.add("hidden");
+        }
     
     const btnChangeEmail = $("#btnChangeEmail");
     if (btnChangeEmail){
