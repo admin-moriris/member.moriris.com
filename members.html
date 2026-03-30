@@ -1551,6 +1551,10 @@
     currentUser = user;
     $("#userEmail").textContent = user.email || "";
 
+    // ★追加: Googleログインユーザー判定
+    const isGoogleUser = (user.identities || []).some(id => id.provider === "google");    
+    const loginEventKey = "ga_login_success_sent";
+
     const loginEventKey = "ga_login_success_sent";
     if (!sessionStorage.getItem(loginEventKey)) {
       gtag('event', 'login_success', {
@@ -1564,6 +1568,19 @@
     const currentEmailEl = $("#currentEmailText");
     if (currentEmailEl) currentEmailEl.textContent = user.email || "";
 
+    // ★ Googleユーザーはメールアドレス変更セクションを非表示
+    if (isGoogleUser) {
+      const sections = document.querySelectorAll(
+        "#tab-account .card h3[data-i18n='email_change_title'], " +
+        "#tab-account .card p[data-i18n='email_change_desc'], " +
+        "#tab-account .card p[style*='margin-top:8px'], " +
+        "#tab-account .card div[style*='margin-top:8px'][style*='display:flex'], " +
+        "#tab-account #emailChangeMsg"
+      );
+      sections.forEach(el => el.style.display = "none");
+      // 前後のhrも非表示にしたい場合はHTML側に id="email-change-section" を追加推奨
+    }
+    
     const btnChangeEmail = $("#btnChangeEmail");
     if (btnChangeEmail){
       btnChangeEmail.onclick = async ()=>{
@@ -1643,29 +1660,36 @@
     const pwChangeSection = document.getElementById("pwChangeSection");
     const pwBanner        = document.getElementById("pwBanner");
 
-    if (pwSection){
-      pwSection.classList.toggle("hidden", state.hasPassword);
-    }
-    if (pwChangeSection){
-      pwChangeSection.classList.toggle("hidden", !state.hasPassword);
-    }
-
-    if (!state.hasPassword) {
-      if (pwBanner) {
-        pwBanner.classList.remove("hidden");
-        pwBanner.onclick = ()=>{
-          document.querySelectorAll(".tab-btn").forEach(btn=>{
-            btn.classList.toggle("active", btn.dataset.tab === "account");
-          });
-          document.querySelectorAll(".tab-pane").forEach(pane=>{
-            pane.classList.toggle("active", pane.id === "tab-account");
-          });
-          const target = document.getElementById("pwSection");
-          if (target) target.scrollIntoView({ behavior:"smooth", block:"center" });
-        };
-      }
+    // ★ Googleユーザーは PW 関連 UI をすべて非表示
+    if (isGoogleUser) {
+      if (pwSection)       pwSection.classList.add("hidden");
+      if (pwChangeSection) pwChangeSection.classList.add("hidden");
+      if (pwBanner)        pwBanner.classList.add("hidden");
     } else {
-      if (pwBanner) pwBanner.classList.add("hidden");
+      if (pwSection){
+        pwSection.classList.toggle("hidden", state.hasPassword);
+      }
+      if (pwChangeSection){
+        pwChangeSection.classList.toggle("hidden", !state.hasPassword);
+      }
+    
+      if (!state.hasPassword) {
+        if (pwBanner) {
+          pwBanner.classList.remove("hidden");
+          pwBanner.onclick = ()=>{
+            document.querySelectorAll(".tab-btn").forEach(btn=>{
+              btn.classList.toggle("active", btn.dataset.tab === "account");
+            });
+            document.querySelectorAll(".tab-pane").forEach(pane=>{
+              pane.classList.toggle("active", pane.id === "tab-account");
+            });
+            const target = document.getElementById("pwSection");
+            if (target) target.scrollIntoView({ behavior:"smooth", block:"center" });
+          };
+        }
+      } else {
+        if (pwBanner) pwBanner.classList.add("hidden");
+      }
     }
 
     const pwForm = document.getElementById("pwForm");
