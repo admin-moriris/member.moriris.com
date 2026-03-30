@@ -1554,8 +1554,6 @@
     // ★追加: Googleログインユーザー判定
     const isGoogleUser = (user.identities || []).some(id => id.provider === "google");    
     const loginEventKey = "ga_login_success_sent";
-
-    const loginEventKey = "ga_login_success_sent";
     if (!sessionStorage.getItem(loginEventKey)) {
       gtag('event', 'login_success', {
         method: 'session_restored',
