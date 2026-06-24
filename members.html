@@ -2036,7 +2036,7 @@
               destination: "stripe_checkout",
               outbound: 1
             });
-            showCampaignModal(() => createCheckoutNoTrial(user.id));
+            createCheckoutNoTrial(user.id);
           };
         } else {
           b.textContent = I18N[currentLang].btn_subscribe;
