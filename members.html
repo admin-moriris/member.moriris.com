@@ -626,6 +626,34 @@
 
     <!-- HOME -->
     <section id="tab-home" class="tab-pane active">
+
+      <!-- アンケートバナー（Standardプランユーザーのみ表示） -->
+      <div id="surveyLinkBox" class="hidden" style="
+        background:linear-gradient(135deg,#0b5130 0%,#1a7a4a 100%);
+        border-radius:var(--radius);
+        padding:20px 22px;
+        margin-bottom:18px;
+        display:flex;
+        align-items:center;
+        gap:16px;
+        flex-wrap:wrap;
+        box-shadow:0 6px 24px rgba(11,81,48,.25);
+      ">
+        <div style="font-size:32px;flex-shrink:0;">📝</div>
+        <div style="flex:1;min-width:200px;">
+          <div style="font-size:15px;font-weight:800;color:#ffffff;margin-bottom:4px;">アンケートのご協力をお願いします</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.85);line-height:1.6;">
+            1ヶ月無料キャンペーンをご利用の施設さまへ。簡単なアンケートにご回答いただけますと幸いです。（約3〜5分）
+          </div>
+        </div>
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeCQFV_9ybsPmVUHuC6KdqIIyV43ieR_FvQQusISsGB-y5tUg/viewform?usp=publish-editor"
+           target="_blank"
+           rel="noopener noreferrer"
+           style="display:inline-block;background:#ffffff;color:#0b5130;font-weight:800;font-size:14px;border-radius:999px;padding:11px 24px;text-decoration:none;white-space:nowrap;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.15);">
+          回答する →
+        </a>
+      </div>
+
       <div class="card home-layout">
         <!-- パスワード未設定時の案内バナー -->
         <div id="pwBanner" class="pw-banner hidden" data-i18n="pw_banner_text">
@@ -664,18 +692,6 @@
           </ul>
         </div>
 
-        <div id="surveyLinkBox" class="hidden" style="background:#f0f9f4;border:1px solid #b2dcc8;border-radius:14px;padding:14px 16px;">
-          <div style="font-size:13px;font-weight:700;color:#0b5130;margin-bottom:6px;">📝 アンケートのご協力のお願い</div>
-          <p style="font-size:13px;margin:0 0 10px;line-height:1.7;color:#24311c;">
-            キャンペーンをご利用いただいた施設さまへ、簡単なアンケートにご回答いただけますと幸いです。（所要時間：約3〜5分）
-          </p>
-          <a href="https://docs.google.com/forms/d/e/1FAIpQLSeCQFV_9ybsPmVUHuC6KdqIIyV43ieR_FvQQusISsGB-y5tUg/viewform?usp=publish-editor"
-             target="_blank"
-             rel="noopener noreferrer"
-             style="display:inline-block;background:#75c29c;color:#05361f;font-weight:700;font-size:13px;border-radius:999px;padding:9px 20px;text-decoration:none;">
-            アンケートに回答する →
-          </a>
-        </div>
       </div>
     </section>
 
