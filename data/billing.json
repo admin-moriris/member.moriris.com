@@ -1,8 +1,9 @@
 {
   "stripe": {
     "standard": {
-      "payment_link_url": "https://buy.stripe.com/28E7sMd0X1TPg9e0pO3ks02",
-      "payment_link_no_trial_url": "https://buy.stripe.com/28E00k8KHdCx4qw4G43ks03"
+      "price_id": "price_1T2qlkJBnnPY5Sg2N0YoemYO",
+      "price_id_test": "price_1SjkybQt8oBthclH5Q8IpvCi",
+      "trial_days": 30
     }
   }
 }

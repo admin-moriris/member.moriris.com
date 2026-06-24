@@ -464,6 +464,67 @@
       transition:background .2s;
     }
     .pwa-modal-close:hover{ background:var(--ink); color:white; }
+
+    /* ===== キャンペーン説明モーダル ===== */
+    .campaign-modal-overlay{
+      position:fixed; inset:0;
+      background:rgba(0,0,0,.55);
+      z-index:600;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+    }
+    .campaign-modal-overlay.show{ display:flex; }
+    .campaign-modal{
+      background:white;
+      width:min(560px,100%);
+      max-height:90vh;
+      overflow-y:auto;
+      border-radius:20px;
+      padding:28px 24px 28px;
+      border-top:5px solid var(--accent);
+      box-shadow:0 20px 60px rgba(0,0,0,.25);
+      animation:fadeInUp .25s ease;
+    }
+    @keyframes fadeInUp{ from{ transform:translateY(20px);opacity:0; } to{ transform:translateY(0);opacity:1; } }
+    .campaign-modal-title{
+      font-size:20px; font-weight:800; color:var(--accent-dark);
+      margin-bottom:4px; display:flex; align-items:center; gap:8px;
+    }
+    .campaign-modal-sub{
+      font-size:13px; color:var(--muted); margin-bottom:18px;
+    }
+    .campaign-section{
+      background:#f5ffe9; border:1px solid #d7e8c4;
+      border-radius:12px; padding:14px 16px; margin-bottom:14px;
+      font-size:13px; line-height:1.8; color:var(--ink);
+    }
+    .campaign-section h4{
+      margin:0 0 6px; font-size:13px; font-weight:700;
+      color:var(--accent-dark); border-bottom:1px solid #d7e8c4; padding-bottom:4px;
+    }
+    .campaign-note{
+      background:#fff7e0; border:1px solid #f3d38a; border-radius:12px;
+      padding:12px 14px; font-size:12px; line-height:1.8; color:#6b5a00;
+      margin-bottom:18px;
+    }
+    .campaign-btn-row{
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .campaign-confirm-btn{
+      background:var(--accent); border:none; border-radius:999px;
+      padding:14px; font-size:15px; font-weight:700; color:#05361f;
+      cursor:pointer; transition:background .2s; width:100%;
+    }
+    .campaign-confirm-btn:hover{ background:#5aad83; }
+    .campaign-confirm-btn:disabled{ opacity:.6; cursor:not-allowed; }
+    .campaign-cancel-btn{
+      background:none; border:1px solid #ddd; border-radius:999px;
+      padding:10px; font-size:13px; color:var(--muted);
+      cursor:pointer; transition:background .2s; width:100%;
+    }
+    .campaign-cancel-btn:hover{ background:#f5f5f5; }
   </style>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -472,6 +533,39 @@
 </head>
 
 <body>
+  <!-- ===== キャンペーン説明モーダル ===== -->
+  <div id="campaignModal" class="campaign-modal-overlay">
+    <div class="campaign-modal">
+      <div class="campaign-modal-title">🌿 1ヶ月無料キャンペーン</div>
+      <div class="campaign-modal-sub">ご登録前に、以下の内容をご確認ください。</div>
+
+      <div class="campaign-section">
+        <h4>ご協力のお願い</h4>
+        本キャンペーンをご利用いただく施設さまには、利用期間終了後に以下のご協力をお願いしております。<br>
+        ・簡単なアンケートへのご回答（所要時間：約3〜5分）<br>
+        ・ご感想の提供（モリリス公式サイト・SNSへの掲載を予定しております）
+      </div>
+
+      <div class="campaign-section">
+        <h4>掲載内容について</h4>
+        ・ご感想は、施設名・施設種別とともに掲載させていただく場合がございます。<br>
+        ・施設名の掲載を希望されない場合は、アンケート内でお知らせください。匿名（「関東の放課後等デイサービス」など）での掲載も可能です。
+      </div>
+
+      <div class="campaign-note">
+        ⚠️ キャンペーン期間終了後は、通常プラン（月額4,980円）へ自動移行となります。<br>
+        引き続きご利用不要の場合は、期間内にマイページよりいつでも解約できます。
+      </div>
+
+      <div class="campaign-btn-row">
+        <button id="campaignConfirmBtn" class="campaign-confirm-btn">
+          同意して1ヶ月無料を始める
+        </button>
+        <button id="campaignCancelBtn" class="campaign-cancel-btn">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== PWA 手順モーダル ===== -->
   <div id="pwaModal" class="pwa-modal-overlay">
     <div class="pwa-modal">
@@ -569,6 +663,19 @@
             <li data-i18n="home_how_2">プランの確認や変更は ACCOUNTタブからいつでも行うことができます。</li>
           </ul>
         </div>
+
+        <div id="surveyLinkBox" class="hidden" style="background:#f0f9f4;border:1px solid #b2dcc8;border-radius:14px;padding:14px 16px;">
+          <div style="font-size:13px;font-weight:700;color:#0b5130;margin-bottom:6px;">📝 アンケートのご協力のお願い</div>
+          <p style="font-size:13px;margin:0 0 10px;line-height:1.7;color:#24311c;">
+            キャンペーンをご利用いただいた施設さまへ、簡単なアンケートにご回答いただけますと幸いです。（所要時間：約3〜5分）
+          </p>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSeCQFV_9ybsPmVUHuC6KdqIIyV43ieR_FvQQusISsGB-y5tUg/viewform?usp=publish-editor"
+             target="_blank"
+             rel="noopener noreferrer"
+             style="display:inline-block;background:#75c29c;color:#05361f;font-weight:700;font-size:13px;border-radius:999px;padding:9px 20px;text-decoration:none;">
+            アンケートに回答する →
+          </a>
+        </div>
       </div>
     </section>
 
@@ -583,7 +690,7 @@
         <button id="btnSubscribeVideos"
                 class="btn btn-primary hidden add-gap"
                 data-i18n="btn_subscribe">
-          14日間無料で試す
+          1ヶ月無料で試す
         </button>
 
         <!-- コントロール行：並び替え + 表示形式 -->
@@ -623,7 +730,7 @@
 
         <div class="cta-row">
           <button id="btnSubscribe" class="btn btn-primary hidden" data-i18n="btn_subscribe">
-            14日間無料で試す
+            1ヶ月無料で試す
           </button>
           <button id="btnCancel" class="btn btn-danger hidden" data-i18n="btn_cancel">
             サブスクを解約する
@@ -746,7 +853,7 @@
   );
 
   const BILLING_JSON_URL = "https://member.moriris.com/data/billing.json";
-  let BILLING_CONFIG = { stripe: { standard: { payment_link_url: null } } };
+  let BILLING_CONFIG = { stripe: { standard: { price_id: null, price_id_test: null, trial_days: 30 } } };
 
   const $ = (s)=>document.querySelector(s);
   const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
@@ -785,9 +892,9 @@
       status_loading:"動画を読み込み中…",
       status_ready:"コンテンツをお楽しみください。",
       status_error:"情報の取得に失敗しました。",
-      btn_subscribe:"14日間無料で試す",
+      btn_subscribe:"1ヶ月無料で試す",
       btn_cancel:"サブスクを解約する",
-      cancel_explanation:"※無料期間中に解約した場合、再登録時に無料トライアルは適用されません。",
+      cancel_explanation:"※1ヶ月無料期間中に解約した場合、再登録時に無料トライアルは適用されません。",
       btn_delete:"アカウントを削除する",
       delete_confirm:"本当にアカウントを削除しますか？この操作は取り消せません。",
       delete_confirm_yes:"はい、削除します",
@@ -878,9 +985,9 @@
       status_loading:"Loading videos…",
       status_ready:"Enjoy the content!",
       status_error:"Failed to load your membership information.",
-      btn_subscribe:"Try free for 14 days",
+      btn_subscribe:"Try free for 1 month",
       btn_cancel:"Cancel subscription",
-      cancel_explanation:"※If you cancel during the free trial period, the free trial will not apply upon re-registration.",
+      cancel_explanation:"※If you cancel during the free 1-month trial, the free trial will not apply upon re-registration.",
       btn_delete:"Delete account",
       delete_confirm:"Are you sure you want to delete your account? This action cannot be undone.",
       delete_confirm_yes:"Yes, delete my account",
@@ -1049,8 +1156,33 @@
       log("billing json loaded", BILLING_CONFIG);
     }catch(e){
       console.error("billing json load error", e);
-      BILLING_CONFIG = { stripe: { standard: { payment_link_url: null } } };
+      BILLING_CONFIG = { stripe: { standard: { price_id: null, price_id_test: null, trial_days: 30 } } };
     }
+  }
+
+  function getActivePriceId(){
+    const std = BILLING_CONFIG?.stripe?.standard;
+    if (!std) return null;
+    return isLocal ? (std.price_id_test || std.price_id) : std.price_id;
+  }
+
+  function showCampaignModal(onConfirm){
+    const overlay = document.getElementById("campaignModal");
+    const confirmBtn = document.getElementById("campaignConfirmBtn");
+    const cancelBtn = document.getElementById("campaignCancelBtn");
+    if (!overlay) { onConfirm(); return; }
+
+    overlay.classList.add("show");
+
+    const doClose = ()=>{
+      overlay.classList.remove("show");
+      confirmBtn.onclick = null;
+      cancelBtn.onclick = null;
+    };
+
+    confirmBtn.onclick = ()=>{ doClose(); onConfirm(); };
+    cancelBtn.onclick = ()=>{ doClose(); };
+    overlay.onclick = (e)=>{ if (e.target === overlay) doClose(); };
   }
 
   function renderTagFilterUI(){
@@ -1286,30 +1418,106 @@
 
   async function createCheckout(userId){
     const i18n = I18N[currentLang] || I18N["ja"] || {};
-  
-    const baseUrl = BILLING_CONFIG?.stripe?.standard?.payment_link_url;
-    if (!baseUrl){
-      console.error("missing payment_link_url in billing.json", BILLING_CONFIG);
-      alert("課金設定の読み込みに失敗しました（billing.json の payment_link_url を確認してください）");
+
+    const priceId = getActivePriceId();
+    if (!priceId){
+      console.error("missing price_id in billing.json", BILLING_CONFIG);
+      alert(i18n.checkout_error || "課金設定の読み込みに失敗しました。時間をおいて再度お試しください。");
       return;
     }
-  
-    const u = currentUser?.email ? String(currentUser.email) : "";
-    const params = new URLSearchParams();
-  
-    if (u) params.set("prefilled_email", u);
-    if (userId) params.set("client_reference_id", String(userId));
-  
-    const sep = baseUrl.includes("?") ? "&" : "?";
-    const url = params.toString() ? (baseUrl + sep + params.toString()) : baseUrl;
-  
+
+    const trialDays = BILLING_CONFIG?.stripe?.standard?.trial_days ?? 30;
+
     gaEvent("begin_checkout", {
       plan: "standard",
       lang: currentLang,
-      method: "stripe_payment_link"
+      method: "stripe_checkout_session"
     });
-  
-    location.href = url;
+
+    const { data: sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+
+    try{
+      const res = await fetch(
+        "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            price_id: priceId,
+            trial_days: trialDays,
+            success_url: `${SITE_TOP_URL}members.html`,
+            cancel_url: `${SITE_TOP_URL}members.html`
+          })
+        }
+      );
+
+      if (!res.ok){
+        const bodyText = await res.text().catch(()=>"");
+        console.error("create-checkout-session failed:", res.status, bodyText);
+        alert(i18n.checkout_error || "お手続き中にエラーが発生しました。時間をおいて再度お試しください。");
+        return;
+      }
+
+      const data = await res.json();
+      if (!data?.url){
+        console.error("create-checkout-session: url missing", data);
+        alert(i18n.checkout_error || "お手続き中にエラーが発生しました。時間をおいて再度お試しください。");
+        return;
+      }
+
+      location.href = data.url;
+    }catch(e){
+      console.error("createCheckout error:", e);
+      alert(i18n.checkout_error || "お手続き中にエラーが発生しました。時間をおいて再度お試しください。");
+    }
+  }
+
+  async function createCheckoutNoTrial(userId){
+    const i18n = I18N[currentLang] || I18N["ja"] || {};
+    const priceId = getActivePriceId();
+    if (!priceId){
+      alert(i18n.checkout_error || "課金設定の読み込みに失敗しました。");
+      return;
+    }
+
+    const { data: sess } = await sb.auth.getSession();
+    const token = sess?.session?.access_token;
+
+    try{
+      const res = await fetch(
+        "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            price_id: priceId,
+            trial_days: 0,
+            success_url: `${SITE_TOP_URL}members.html`,
+            cancel_url: `${SITE_TOP_URL}members.html`
+          })
+        }
+      );
+
+      if (!res.ok){
+        const bodyText = await res.text().catch(()=>"");
+        console.error("create-checkout-session (no trial) failed:", res.status, bodyText);
+        alert(i18n.checkout_error || "お手続き中にエラーが発生しました。");
+        return;
+      }
+
+      const data = await res.json();
+      if (data?.url) location.href = data.url;
+    }catch(e){
+      console.error("createCheckoutNoTrial error:", e);
+      alert(i18n.checkout_error || "お手続き中にエラーが発生しました。");
+    }
   }
 
   async function openPortal(userId){
@@ -1841,12 +2049,15 @@
         if (prof.stripe_customer_id) {
           b.textContent = currentLang === "ja" ? "Standardプラン登録" : "Subscribe to Standard";
           b.onclick = () => {
-            const baseUrl = BILLING_CONFIG?.stripe?.standard?.payment_link_no_trial_url;
-            if (!baseUrl) return;
-            const params = new URLSearchParams();
-            if (currentUser?.email) params.set("prefilled_email", currentUser.email);
-            params.set("client_reference_id", user.id);
-            location.href = baseUrl + "?" + params.toString();
+            gaEvent("membership_cta_click", {
+              cta_name: "standard_rejoin",
+              plan: "standard",
+              page: "members",
+              lang: currentLang,
+              destination: "stripe_checkout",
+              outbound: 1
+            });
+            showCampaignModal(() => createCheckoutNoTrial(user.id));
           };
         } else {
           b.textContent = I18N[currentLang].btn_subscribe;
@@ -1859,7 +2070,7 @@
               destination: "stripe_checkout",
               outbound: 1
             });
-            createCheckout(user.id);
+            showCampaignModal(() => createCheckout(user.id));
           };
         }
       });
@@ -1916,6 +2127,9 @@
       if (deleteStatusMsg) deleteStatusMsg.textContent = "";
 
       renderVideosForPlan("standard", videoSortMode);
+
+      const surveyBox = document.getElementById("surveyLinkBox");
+      if (surveyBox) surveyBox.classList.remove("hidden");
 
       state.statusCode = "ready";
       applyLang(currentLang);
