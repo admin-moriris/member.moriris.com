@@ -1160,10 +1160,10 @@
     }
   }
 
-  function getActivePriceId(){
+  function getPriceIds(){
     const std = BILLING_CONFIG?.stripe?.standard;
-    if (!std) return null;
-    return isLocal ? (std.price_id_test || std.price_id) : std.price_id;
+    if (!std) return { price_id: null, price_id_test: null };
+    return { price_id: std.price_id || null, price_id_test: std.price_id_test || null };
   }
 
   function showCampaignModal(onConfirm){
@@ -1416,23 +1416,14 @@
     return { data:prof, error };
   }
 
-  async function createCheckout(userId){
+  async function callCheckoutEndpoint(trialDays){
     const i18n = I18N[currentLang] || I18N["ja"] || {};
-
-    const priceId = getActivePriceId();
-    if (!priceId){
+    const { price_id, price_id_test } = getPriceIds();
+    if (!price_id && !price_id_test){
       console.error("missing price_id in billing.json", BILLING_CONFIG);
       alert(i18n.checkout_error || "課金設定の読み込みに失敗しました。時間をおいて再度お試しください。");
       return;
     }
-
-    const trialDays = BILLING_CONFIG?.stripe?.standard?.trial_days ?? 30;
-
-    gaEvent("begin_checkout", {
-      plan: "standard",
-      lang: currentLang,
-      method: "stripe_checkout_session"
-    });
 
     const { data: sess } = await sb.auth.getSession();
     const token = sess?.session?.access_token;
@@ -1447,7 +1438,8 @@
             "Authorization": `Bearer ${token}`
           },
           body: JSON.stringify({
-            price_id: priceId,
+            price_id,
+            price_id_test,
             trial_days: trialDays,
             success_url: `${SITE_TOP_URL}members.html`,
             cancel_url: `${SITE_TOP_URL}members.html`
@@ -1471,53 +1463,19 @@
 
       location.href = data.url;
     }catch(e){
-      console.error("createCheckout error:", e);
+      console.error("callCheckoutEndpoint error:", e);
       alert(i18n.checkout_error || "お手続き中にエラーが発生しました。時間をおいて再度お試しください。");
     }
   }
 
+  async function createCheckout(userId){
+    const trialDays = BILLING_CONFIG?.stripe?.standard?.trial_days ?? 30;
+    gaEvent("begin_checkout", { plan: "standard", lang: currentLang, method: "stripe_checkout_session" });
+    await callCheckoutEndpoint(trialDays);
+  }
+
   async function createCheckoutNoTrial(userId){
-    const i18n = I18N[currentLang] || I18N["ja"] || {};
-    const priceId = getActivePriceId();
-    if (!priceId){
-      alert(i18n.checkout_error || "課金設定の読み込みに失敗しました。");
-      return;
-    }
-
-    const { data: sess } = await sb.auth.getSession();
-    const token = sess?.session?.access_token;
-
-    try{
-      const res = await fetch(
-        "https://sqwyfscumunyhsvsvejv.functions.supabase.co/create-checkout-session",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            price_id: priceId,
-            trial_days: 0,
-            success_url: `${SITE_TOP_URL}members.html`,
-            cancel_url: `${SITE_TOP_URL}members.html`
-          })
-        }
-      );
-
-      if (!res.ok){
-        const bodyText = await res.text().catch(()=>"");
-        console.error("create-checkout-session (no trial) failed:", res.status, bodyText);
-        alert(i18n.checkout_error || "お手続き中にエラーが発生しました。");
-        return;
-      }
-
-      const data = await res.json();
-      if (data?.url) location.href = data.url;
-    }catch(e){
-      console.error("createCheckoutNoTrial error:", e);
-      alert(i18n.checkout_error || "お手続き中にエラーが発生しました。");
-    }
+    await callCheckoutEndpoint(0);
   }
 
   async function openPortal(userId){

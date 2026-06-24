@@ -1,7 +1,12 @@
 import Stripe from "https://esm.sh/stripe@14?target=deno";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") ?? "", {
+const appEnv = Deno.env.get("APP_ENV") ?? "prod";
+const stripeSecretKey = appEnv === "dev"
+  ? (Deno.env.get("STRIPE_SECRET_KEY_TEST") ?? "")
+  : (Deno.env.get("STRIPE_SECRET_KEY_LIVE") ?? "");
+
+const stripe = new Stripe(stripeSecretKey, {
   apiVersion: "2024-04-10",
 });
 
@@ -39,18 +44,25 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json();
-    const { price_id, trial_days, success_url, cancel_url } = body;
+    const { price_id, price_id_test, trial_days, success_url, cancel_url } = body;
 
-    if (!price_id) {
+    // APP_ENV=dev のときはテスト用 price_id を使用
+    const activePriceId = appEnv === "dev"
+      ? (price_id_test || price_id)
+      : price_id;
+
+    if (!activePriceId) {
       return new Response(JSON.stringify({ error: "price_id is required" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
+    console.log(`[create-checkout-session] env=${appEnv} price_id=${activePriceId} trial_days=${trial_days}`);
+
     const sessionParams: Stripe.Checkout.SessionCreateParams = {
       mode: "subscription",
-      line_items: [{ price: price_id, quantity: 1 }],
+      line_items: [{ price: activePriceId, quantity: 1 }],
       success_url: success_url ?? "https://member.moriris.com/members.html",
       cancel_url: cancel_url ?? "https://member.moriris.com/members.html",
       client_reference_id: user.id,
